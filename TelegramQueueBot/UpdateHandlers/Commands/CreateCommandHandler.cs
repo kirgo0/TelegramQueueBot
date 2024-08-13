@@ -18,7 +18,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     {
         public CreateCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CreateCommandHandler> logger, IQueueService queueService) : base(bot, scope, logger)
         {
-            _queueService = queueService;
+            GroupsOnly = true;
+            CheckChatExists = true;
         }
 
         public override async Task Handle(Update update)

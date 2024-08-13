@@ -15,6 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     {
         public NotifyModeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<NotifyModeCommandHandler> logger) : base(bot, scope, logger)
         {
+            GroupsOnly = true;
         }
 
         public override Task Handle(Update update)

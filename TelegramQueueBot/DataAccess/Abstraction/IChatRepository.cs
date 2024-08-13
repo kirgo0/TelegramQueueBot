@@ -9,5 +9,6 @@ namespace TelegramQueueBot.DataAccess.Abstraction
 {
     public interface IChatRepository : IRepository<Chat>
     {
+        Task<Chat> GetByTelegramIdAsync(long id);
     }
 }

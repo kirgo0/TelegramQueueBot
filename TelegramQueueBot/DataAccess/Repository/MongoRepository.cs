@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using TelegramQueueBot.DataAccess.Abstraction;
 using TelegramQueueBot.DataAccess.Context;
 using TelegramQueueBot.Models;
-using TelegramQueueBot.Options;
 
 namespace TelegramQueueBot.DataAccess.Repository
 {

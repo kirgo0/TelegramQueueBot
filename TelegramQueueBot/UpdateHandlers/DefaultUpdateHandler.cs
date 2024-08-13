@@ -9,14 +9,17 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.DataAccess.Abstraction;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers
 {
     public class DefaultUpdateHandler : UpdateHandler
     {
-        public DefaultUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DefaultUpdateHandler> logger) : base(bot, scope, logger)
+        private IChatRepository _chats;
+        public DefaultUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DefaultUpdateHandler> logger, IChatRepository chats) : base(bot, scope, logger)
         {
+            _chats = chats;
         }
 
         public override async Task Handle(Update update)

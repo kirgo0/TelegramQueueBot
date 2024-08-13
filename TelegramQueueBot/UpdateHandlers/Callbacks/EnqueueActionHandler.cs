@@ -15,6 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
     {
         public EnqueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<EnqueueActionHandler> logger) : base(bot, scope, logger)
         {
+            CheckUserExists = true;
         }
 
         public override async Task Handle(Update update)

@@ -18,21 +18,14 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 {
     public class StartCommandHandler : UpdateHandler
     {
-        private IUserRepository _users;
         public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users) : base(bot, scope, logger)
         {
-            _users = users;
+            CheckChatExists = true;
         }
 
         public override async Task Handle(Update update)
         {
-            User user = await _users.GetByTelegramIdAsync(update.Message.From.Id);
-            if(user is null)
-            {
-                user = new(update.Message.From.Id, update.Message.From.Username);
-                var res = await _users.CreateAsync(user);
-            }
-
+            throw new NotImplementedException();
         }
     }
 }
