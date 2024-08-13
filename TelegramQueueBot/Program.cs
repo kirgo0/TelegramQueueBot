@@ -14,6 +14,9 @@ using TelegramQueueBot.Modules;
 using Autofac.Extensions.DependencyInjection;
 using Telegram.Bot.Polling;
 using TelegramQueueBot.UpdateHandlers;
+using TelegramQueueBot.DataAccess.Abstraction;
+using TelegramQueueBot.DataAccess.Context;
+using TelegramQueueBot.DataAccess.Repository;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -53,6 +56,9 @@ try
             services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(context.Configuration.GetSection("TelegramBotOptions")["Token"]));
 
             services.AddTransient<TelegramQueueBot.UpdateHandlers.DefaultUpdateHandler>();
+
+            services.AddScoped<IMongoContext, MongoContext>();
+            services.AddScoped<IUserRepository, MongoUserRepository>();
 
             services.AddHostedService<QueueSaveBackgroundService>();
             services.AddQueueRenderBackgroundService(TimeSpan.FromSeconds(1), (queue) =>
