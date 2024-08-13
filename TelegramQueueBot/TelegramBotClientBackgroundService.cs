@@ -49,14 +49,14 @@ namespace TelegramQueueBot
 
         async Task HandleUpdate(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
         {
+            UpdateHandler handler = null;
             try
             {
-                UpdateHandler handler = null;
                 object type;
                 var handlers = _scope.Resolve<IEnumerable<Meta<UpdateHandler>>>();
                 foreach (var item in handlers)
                 {
-                    if (item.Metadata.TryGetValue(Metatags.HandlerType, out type))
+                    if (item.Metadata.TryGetValue(Metatags.HandleType, out type))
                     {
                         if ((UpdateType)type == update.Type)
                         {
@@ -64,9 +64,10 @@ namespace TelegramQueueBot
                         }
                     }
                 }
-                if(handler == null) throw new InvalidOperationException();
+                if (handler == null) return;
                 await handler.Handle(update);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while resolving update handler for type {type}", update.Type);
             }

@@ -8,6 +8,7 @@ namespace TelegramQueueBot.Common
 {
     internal static class Metatags
     {
-        public const string HandlerType = "type";
+        public const string HandleType = "HandleType";
+        public const string HandleCommand = "HandleCommand";
     }
 }

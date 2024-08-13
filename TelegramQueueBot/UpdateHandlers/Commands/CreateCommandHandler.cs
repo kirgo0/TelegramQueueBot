@@ -9,11 +9,11 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers
+namespace TelegramQueueBot.UpdateHandlers.Commands
 {
-    public class CallbackUpdateHandler : UpdateHandler
+    public class CreateCommandHandler : UpdateHandler
     {
-        public CallbackUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CallbackUpdateHandler> logger) : base(bot, scope, logger)
+        public CreateCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CreateCommandHandler> logger) : base(bot, scope, logger)
         {
         }
 

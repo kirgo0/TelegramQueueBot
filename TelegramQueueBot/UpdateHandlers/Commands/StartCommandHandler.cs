@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Autofac;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,11 +13,11 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 {
     public class StartCommandHandler : UpdateHandler
     {
-        public StartCommandHandler(ITelegramBotClient bot) : base(bot)
+        public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger) : base(bot, scope, logger)
         {
         }
 
-        public override Task Handle(Update update)
+        public override async Task Handle(Update update)
         {
             throw new NotImplementedException();
         }

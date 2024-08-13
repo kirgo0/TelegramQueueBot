@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Telegram.Bot.Types.Enums;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.UpdateHandlers;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -11,10 +12,10 @@ namespace TelegramQueueBot.Modules
         {
             builder.RegisterType<MessageUpdateHandler>()
                 .As<UpdateHandler>()
-                .WithMetadata("type", UpdateType.Message);
+                .WithMetadata(Metatags.HandleType, UpdateType.Message);
             builder.RegisterType<CallbackUpdateHandler>()
                 .As<UpdateHandler>()
-                .WithMetadata("type", UpdateType.CallbackQuery);
+                .WithMetadata(Metatags.HandleType, UpdateType.CallbackQuery);
         }
     }
 }

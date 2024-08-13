@@ -8,7 +8,7 @@ namespace TelegramQueueBot.Common
 {
     public class Commands
     {
-        public const string StartCommand = "/start";
+        public const string Start = "/start";
         public const string Create = "/create";
         public const string SetDefaultSize = "/setdefaultsize";
         public const string Save = "/save";
