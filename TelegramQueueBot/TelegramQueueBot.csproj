@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Extensions\" />
     <Folder Include="Options\" />
     <Folder Include="UpdateHandlers\Callbacks\" />
   </ItemGroup>

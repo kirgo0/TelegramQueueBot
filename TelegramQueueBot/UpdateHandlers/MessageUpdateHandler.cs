@@ -28,7 +28,7 @@ namespace TelegramQueueBot.UpdateHandlers
                     return item.Value;
                 return null;
             },
-            "Error while responsing");
+            "Error while resolving command handler for {text}", update.Message.Text);
         }
     }
 }

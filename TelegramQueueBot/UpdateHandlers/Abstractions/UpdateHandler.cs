@@ -30,7 +30,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
 
         public abstract Task Handle(Update update);
 
-        public virtual async Task RedirectHandle(Update update, string serviceMetaTag, Func<Update, object, Meta<UpdateHandler>, UpdateHandler> comparator, string errorMessage)
+        public virtual async Task RedirectHandle(Update update, string serviceMetaTag, Func<Update, object, Meta<UpdateHandler>, UpdateHandler> comparator, string resolvingErrorMessage, params object[] resolveErrorParams)
         {
             UpdateHandler handler = null;
             try
@@ -45,11 +45,12 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                         if (handler != null) break;
                     }
                 }
-                if (handler == null) return;
+                if (handler == null) throw new Exception();
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, errorMessage);
+                _logger.LogError(ex, resolvingErrorMessage, resolveErrorParams);
+                return;
             }
             try
             {
@@ -57,7 +58,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "some message");
+                _logger.LogError(ex, "An error occurred while handling a request with a  {handler}", handler);
                 return;
             }
         }

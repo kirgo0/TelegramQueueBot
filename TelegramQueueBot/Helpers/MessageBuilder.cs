@@ -43,5 +43,29 @@ namespace TelegramQueueBot.Helpers
             return this;
         }
 
+        public MessageBuilder AddButton(string text, string callbackData, string url)
+        {
+            if (string.IsNullOrEmpty(callbackData) && string.IsNullOrEmpty(url))
+                throw new ArgumentNullException("At least one callbackValue or url parameter must be specified");
+
+            var button = new InlineKeyboardButton(text);
+
+            if (string.IsNullOrEmpty(callbackData))
+                button.CallbackData = callbackData;
+            if (string.IsNullOrEmpty(url))
+                button.Url = url;
+
+            if (Buttons[_buttonsRow] == null) Buttons[_buttonsRow] = new();
+            Buttons[_buttonsRow].Add(button);
+
+            return this;
+        }
+
+
+        public MessageBuilder AddButtonNextRow(string text, string callbackData, string url)
+        {
+            _buttonsRow++;
+            return AddButton(text, callbackData, url);
+        }
     }
 }

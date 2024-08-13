@@ -29,7 +29,8 @@ try
         .ConfigureLogging((context, logging) =>
         {
             logging.ClearProviders();
-            logging.AddSerilog(dispose: true);
+            //logging.AddConfiguration(context.Configuration);
+            logging.AddSerilog(Log.Logger, dispose: true);
         })
         .ConfigureServices((context, services) =>
         {
