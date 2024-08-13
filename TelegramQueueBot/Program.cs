@@ -59,6 +59,9 @@ try
 
             services.AddScoped<IMongoContext, MongoContext>();
             services.AddScoped<IUserRepository, MongoUserRepository>();
+
+            services.AddScoped<IMongoContext, MongoContext>();
+            services.AddScoped<IUserRepository, MongoUserRepository>();
             services.AddScoped<IChatRepository, MongoChatRepository>();
 
             services.AddHostedService<QueueSaveBackgroundService>();
