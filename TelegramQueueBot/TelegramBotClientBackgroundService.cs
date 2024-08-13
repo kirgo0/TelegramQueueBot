@@ -61,10 +61,11 @@ namespace TelegramQueueBot
                         if ((UpdateType)type == update.Type)
                         {
                             handler = item.Value;
+                            break;
                         }
                     }
                 }
-                if (handler == null) return;
+                if (handler is null) return;
                 await handler.Handle(update);
             }
             catch (Exception ex)

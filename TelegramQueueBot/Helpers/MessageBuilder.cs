@@ -55,7 +55,7 @@ namespace TelegramQueueBot.Helpers
             if (string.IsNullOrEmpty(url))
                 button.Url = url;
 
-            if (Buttons[_buttonsRow] == null) Buttons[_buttonsRow] = new();
+            if (Buttons[_buttonsRow] is null) Buttons[_buttonsRow] = new();
             Buttons[_buttonsRow].Add(button);
 
             return this;

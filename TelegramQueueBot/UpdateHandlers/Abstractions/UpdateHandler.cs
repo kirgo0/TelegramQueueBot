@@ -42,10 +42,10 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                     if (item.Metadata.TryGetValue(serviceMetaTag, out value))
                     {
                         handler = comparator.Invoke(update, value, item);
-                        if (handler != null) break;
+                        if (handler is not null) break;
                     }
                 }
-                if (handler == null) throw new Exception();
+                if (handler is null) throw new Exception();
             }
             catch (Exception ex)
             {
