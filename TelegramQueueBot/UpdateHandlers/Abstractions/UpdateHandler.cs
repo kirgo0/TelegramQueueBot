@@ -20,7 +20,6 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
         protected ITelegramBotClient _bot;
         protected ILifetimeScope _scope;
         protected ILogger _log;
-        protected IQueueService _queueService;
         protected UpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger logger)
         {
             _bot = bot;
