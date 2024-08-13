@@ -22,13 +22,13 @@ namespace TelegramQueueBot.UpdateHandlers
 
         public override async Task Handle(Update update)
         {
-            await RedirectHandle(update, Metatags.HandleCommand, (update, value, item) =>
-            {
-                if (value.ToString().Equals(update?.Message?.Text))
-                    return item.Value;
-                return null;
-            },
-            "Error while resolving command handler for {text}", update.Message.Text);
+            await RedirectHandle(
+                update,
+                Metatags.HandleCommand,
+                (update, value, item) => value.ToString().Equals(update?.Message?.Text),
+                "An error occurred while resolving the command handler for  {text}", 
+                update.Message.Text
+                );
         }
     }
 }

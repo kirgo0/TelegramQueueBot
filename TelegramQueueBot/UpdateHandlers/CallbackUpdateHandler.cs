@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers
@@ -17,9 +18,15 @@ namespace TelegramQueueBot.UpdateHandlers
         {
         }
 
-        public override Task Handle(Update update)
+        public override async Task Handle(Update update)
         {
-            throw new NotImplementedException();
+            await RedirectHandle(
+                update,
+                Metatags.HandleAction,
+                (update, value, item) => value.ToString().StartsWith(update?.CallbackQuery?.Data),
+                "An error occurred while resolving the action handler for {data}",
+                update?.CallbackQuery?.Data
+                );
         }
     }
 }

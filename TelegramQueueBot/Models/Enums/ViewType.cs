@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TelegramQueueBot
+namespace TelegramQueueBot.Models.Enums
 {
-    public enum ChatState
+    public enum ViewType
     {
-        Open,
-        CallingUsers
+        Table,
+        Column
     }
 }

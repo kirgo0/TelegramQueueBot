@@ -9,17 +9,17 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Commands
+namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
-    public class StartCommandHandler : UpdateHandler
+    public class DequeueUpdateHandler : UpdateHandler
     {
-        public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger) : base(bot, scope, logger)
+        public DequeueUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueUpdateHandler> logger) : base(bot, scope, logger)
         {
         }
 
         public override async Task Handle(Update update)
         {
-
+            _log.LogInformation("User {id} requested {data}", update.CallbackQuery.From.Id, update.CallbackQuery.Data);
         }
     }
 }

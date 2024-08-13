@@ -10,12 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
-
-//using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.UpdateHandlers;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
+using DefaultUpdateHandler = TelegramQueueBot.UpdateHandlers.DefaultUpdateHandler;
 
 namespace TelegramQueueBot
 {
@@ -25,8 +25,10 @@ namespace TelegramQueueBot
         private ReceiverOptions _receiverOptions;
         private ILogger<TelegramBotClientBackgroundService> _logger;
         private ILifetimeScope _scope;
+        private DefaultUpdateHandler _defaultUpdateHandler;
 
-        public TelegramBotClientBackgroundService(ITelegramBotClient bot, ILogger<TelegramBotClientBackgroundService> logger, ILifetimeScope scope)
+
+        public TelegramBotClientBackgroundService(ITelegramBotClient bot, ILogger<TelegramBotClientBackgroundService> logger, ILifetimeScope scope, DefaultUpdateHandler defaultUpdateHandler)
         {
             _bot = bot;
             var receiverOptions = new ReceiverOptions
@@ -35,6 +37,7 @@ namespace TelegramQueueBot
             };
             _logger = logger;
             _scope = scope;
+            _defaultUpdateHandler = defaultUpdateHandler;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,29 +52,7 @@ namespace TelegramQueueBot
 
         async Task HandleUpdate(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
         {
-            UpdateHandler handler = null;
-            try
-            {
-                object type;
-                var handlers = _scope.Resolve<IEnumerable<Meta<UpdateHandler>>>();
-                foreach (var item in handlers)
-                {
-                    if (item.Metadata.TryGetValue(Metatags.HandleType, out type))
-                    {
-                        if ((UpdateType)type == update.Type)
-                        {
-                            handler = item.Value;
-                            break;
-                        }
-                    }
-                }
-                if (handler is null) return;
-                await handler.Handle(update);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occured while resolving update handler for type {type}", update.Type);
-            }
+            await _defaultUpdateHandler.Handle(update);
         }
         async Task HandleError(ITelegramBotClient bot, Exception ex, CancellationToken cancellationToken)
         {

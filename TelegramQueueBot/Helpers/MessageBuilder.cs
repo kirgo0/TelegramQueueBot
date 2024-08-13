@@ -13,16 +13,23 @@ namespace TelegramQueueBot.Helpers
     {
         private StringBuilder _messageText = new();
         private int _buttonsRow = 0;
-        public int ChatId { get; set; }
+        public long ChatId { get; set; }
+        public int LastMessageId { get; set; }
         public string Text => _messageText.ToString();
         public List<List<InlineKeyboardButton>> Buttons = new();
+        public InlineKeyboardMarkup ButtonsMarkup => new InlineKeyboardMarkup(Buttons);
         public ParseMode ParseMode { get; set; } = ParseMode.Html;
 
         public MessageBuilder() { }
 
-        public MessageBuilder SetChatId(int chatId)
+        public MessageBuilder SetChatId(long chatId)
         {
             ChatId = chatId;
+            return this;
+        }
+        public MessageBuilder SetLastMessageId(int lastMessageId)
+        {
+            LastMessageId = lastMessageId;
             return this;
         }
         public MessageBuilder SetParseMode(ParseMode parseMode)
@@ -43,29 +50,30 @@ namespace TelegramQueueBot.Helpers
             return this;
         }
 
-        public MessageBuilder AddButton(string text, string callbackData, string url)
+        public MessageBuilder AddButton(string text, string callbackData = "", string url = "")
         {
-            if (string.IsNullOrEmpty(callbackData) && string.IsNullOrEmpty(url))
+            if (string.IsNullOrWhiteSpace(callbackData) && string.IsNullOrWhiteSpace(url))
                 throw new ArgumentNullException("At least one callbackValue or url parameter must be specified");
 
             var button = new InlineKeyboardButton(text);
 
-            if (string.IsNullOrEmpty(callbackData))
+            if (!string.IsNullOrWhiteSpace(callbackData))
                 button.CallbackData = callbackData;
-            if (string.IsNullOrEmpty(url))
+            if (!string.IsNullOrWhiteSpace(url))
                 button.Url = url;
 
-            if (Buttons[_buttonsRow] is null) Buttons[_buttonsRow] = new();
+            if (Buttons.ElementAtOrDefault(_buttonsRow) is null) Buttons.Add(new());
             Buttons[_buttonsRow].Add(button);
 
             return this;
         }
 
 
-        public MessageBuilder AddButtonNextRow(string text, string callbackData, string url)
+        public MessageBuilder AddButtonNextRow(string text, string callbackData = "", string url = "")
         {
+            AddButton(text, callbackData, url);
             _buttonsRow++;
-            return AddButton(text, callbackData, url);
+            return this;
         }
     }
 }

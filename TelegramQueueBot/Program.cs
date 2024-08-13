@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Autofac;
 using TelegramQueueBot.Modules;
 using Autofac.Extensions.DependencyInjection;
+using Telegram.Bot.Polling;
+using TelegramQueueBot.UpdateHandlers;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -50,6 +52,8 @@ try
 
             services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(context.Configuration.GetSection("TelegramBotOptions")["Token"]));
 
+            services.AddTransient<TelegramQueueBot.UpdateHandlers.DefaultUpdateHandler>();
+
             services.AddHostedService<QueueSaveBackgroundService>();
             services.AddQueueRenderBackgroundService(TimeSpan.FromSeconds(1), (queue) =>
             {
@@ -61,6 +65,7 @@ try
         {
             containerBuilder.RegisterModule<CommandsModule>();
             containerBuilder.RegisterModule<HandlersModule>();
+            containerBuilder.RegisterModule<ActionsModule>();
         });
 
     using IHost host = builder.Build();

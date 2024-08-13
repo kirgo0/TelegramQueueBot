@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Autofac.Features.Metadata;
 using Microsoft.Extensions.Logging;
-//using Serilog;
+using QueueCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,18 +19,19 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
     {
         protected ITelegramBotClient _bot;
         protected ILifetimeScope _scope;
-        protected ILogger _logger;
+        protected ILogger _log;
+        protected IQueueService _queueService;
         protected UpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger logger)
         {
             _bot = bot;
             _scope = scope;
-            _logger = logger;
+            _log = logger;
         }
 
 
         public abstract Task Handle(Update update);
 
-        public virtual async Task RedirectHandle(Update update, string serviceMetaTag, Func<Update, object, Meta<UpdateHandler>, UpdateHandler> comparator, string resolvingErrorMessage, params object[] resolveErrorParams)
+        public virtual async Task RedirectHandle(Update update, string serviceMetaTag, Func<Update, object, Meta<UpdateHandler>, bool> comparator, string resolvingErrorMessage, params object[] resolveErrorParams)
         {
             UpdateHandler handler = null;
             try
@@ -41,7 +42,11 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 {
                     if (item.Metadata.TryGetValue(serviceMetaTag, out value))
                     {
-                        handler = comparator.Invoke(update, value, item);
+                        if(comparator.Invoke(update, value, item))
+                        {
+                            handler = item.Value;
+                            break;
+                        }
                         if (handler is not null) break;
                     }
                 }
@@ -49,7 +54,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, resolvingErrorMessage, resolveErrorParams);
+                _log.LogError(ex, resolvingErrorMessage, resolveErrorParams);
                 return;
             }
             try
@@ -58,7 +63,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while handling a request with a  {handler}", handler);
+                _log.LogError(ex, "An error occurred while handling a request with a  {handler}", handler);
                 return;
             }
         }
