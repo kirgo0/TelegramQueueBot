@@ -1,14 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TelegramQueueBot.DataAccess.Abstraction;
+using TelegramQueueBot.Data.Abstraction;
+using TelegramQueueBot.Data.Repository;
 using TelegramQueueBot.Models;
+using TelegramQueueBot.Repository.Interfaces;
 
-namespace TelegramQueueBot.DataAccess.Repository
+namespace TelegramQueueBot.Repository.Implementations
 {
     public class MongoChatRepository : MongoRepository<Chat>, IChatRepository
     {

@@ -14,9 +14,11 @@ using TelegramQueueBot.Modules;
 using Autofac.Extensions.DependencyInjection;
 using Telegram.Bot.Polling;
 using TelegramQueueBot.UpdateHandlers;
-using TelegramQueueBot.DataAccess.Abstraction;
-using TelegramQueueBot.DataAccess.Context;
-using TelegramQueueBot.DataAccess.Repository;
+using TelegramQueueBot.Data.Abstraction;
+using TelegramQueueBot.Data.Context;
+using TelegramQueueBot.Data.Repository;
+using TelegramQueueBot.Repository.Implementations;
+using TelegramQueueBot.Repository.Interfaces;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()

@@ -1,13 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TelegramQueueBot.DataAccess.Abstraction;
+using TelegramQueueBot.Data.Abstraction;
 
-namespace TelegramQueueBot.DataAccess.Context
+namespace TelegramQueueBot.Data.Context
 {
     public class MongoContext : IMongoContext
     {

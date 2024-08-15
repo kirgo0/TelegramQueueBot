@@ -1,19 +1,9 @@
 ﻿using Autofac;
 using Autofac.Features.Metadata;
 using Microsoft.Extensions.Logging;
-using QueueCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using TelegramQueueBot.Common;
-using TelegramQueueBot.DataAccess.Abstraction;
-using TelegramQueueBot.Models;
-using TelegramQueueBot.UpdateHandlers.Commands;
+using TelegramQueueBot.Repository.Interfaces;
 
 namespace TelegramQueueBot.UpdateHandlers.Abstractions
 {

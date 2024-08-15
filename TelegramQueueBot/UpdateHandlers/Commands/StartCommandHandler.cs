@@ -1,18 +1,9 @@
 ﻿using Autofac;
-using Microsoft.Diagnostics.Runtime;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
-using TelegramQueueBot.DataAccess.Abstraction;
-using TelegramQueueBot.Models;
+using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
-using User = TelegramQueueBot.Models.User;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {

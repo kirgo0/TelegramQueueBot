@@ -68,7 +68,6 @@ namespace TelegramQueueBot.Helpers
             return this;
         }
 
-
         public MessageBuilder AddButtonNextRow(string text, string callbackData = "", string url = "")
         {
             AddButton(text, callbackData, url);

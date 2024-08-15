@@ -1,18 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using QueueCore.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TelegramQueueBot.DataAccess.Abstraction;
-using TelegramQueueBot.DataAccess.Context;
+using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Models;
 
-namespace TelegramQueueBot.DataAccess.Repository
+namespace TelegramQueueBot.Data.Repository
 {
     public class MongoRepository<T> : IRepository<T> where T : Entity, new()
     {
