@@ -64,7 +64,8 @@ try
 
             services.AddScoped<IMongoContext, MongoContext>();
             services.AddScoped<IUserRepository, MongoUserRepository>();
-            services.AddScoped<IChatRepository, MongoChatRepository>();
+            services.AddScoped<MongoChatRepository>();
+            services.AddScoped<IChatRepository, CachedMongoChatRepository>();
 
             services.AddHostedService<QueueSaveBackgroundService>();
             services.AddQueueRenderBackgroundService(TimeSpan.FromSeconds(1), (queue) =>
