@@ -16,20 +16,33 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 {
     public class CreateCommandHandler : UpdateHandler
     {
+        private IQueueService _queueService;
+
         public CreateCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CreateCommandHandler> logger, IQueueService queueService) : base(bot, scope, logger)
         {
+            _queueService = queueService;
+
             GroupsOnly = true;
-            CheckChatExists = true;
+            NeedsChat = true;
         }
 
         public override async Task Handle(Update update)
         {
-            //var msg = new MessageBuilder()
-            //    .SetChatId(update.Message.Chat.Id)
-            //    .AppendText("Aboba")
-            //    .AddDefaultQueueMarkup();
+            var chat = await chatTask;
+            var queue = await _queueService.CreateQueueAsync(chat.DefaultQueueSize);
+            if (queue is null)
+            {
+                _log.LogWarning("An error occurred when creating a queue for chat {id}, a null value was received", chat.TelegramId);
+                return;
+            }
+            chat.CurrentQueueId = queue.Id;
+            await _chatRepository.UpdateAsync(chat);
 
-            //await _bot.BuildAndSendAsync(msg);
+            var msg = new MessageBuilder(chat)
+                .AppendText("Ну тіпа сасі")
+                .AddDefaultQueueMarkup(QueueHandler.GetQueueNames(queue.List, new()));
+
+            await _bot.BuildAndSendAsync(msg);
         }
     }
 }

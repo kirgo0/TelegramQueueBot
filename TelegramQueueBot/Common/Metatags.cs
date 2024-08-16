@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TelegramQueueBot.Common
 {
-    internal static class Metatags
+    public class Metatags
     {
         public const string HandleType = "HandleType";
         public const string HandleCommand = "HandleCommand";

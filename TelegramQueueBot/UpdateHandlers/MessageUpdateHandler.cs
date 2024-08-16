@@ -22,10 +22,11 @@ namespace TelegramQueueBot.UpdateHandlers
 
         public override async Task Handle(Update update)
         {
+            var sufix = Common.Commands.BotSuffix;
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,
-                (update, value, item) => value.ToString().StartsWith(update?.Message?.Text),
+                (update, value, item) => value.ToString().StartsWith(update?.Message?.Text.Replace(sufix, "")),
                 "An error occurred while resolving the command handler for {text}", 
                 update.Message.Text
                 );

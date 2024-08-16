@@ -22,14 +22,14 @@ namespace TelegramQueueBot.Extensions
                 if(string.IsNullOrWhiteSpace(userName))
                 {
                     builder.AddButtonNextRow(
-                        $"{i}. ________",
-                        callbackData: Actions.Enqueue
+                        $"{i}. __________________",
+                        callbackData: $"{Actions.Enqueue}{i}"
                         );
                 } else
                 {
                     builder.AddButtonNextRow(
                         $"{i}. {userName}",
-                        callbackData: Actions.Dequeue
+                        callbackData: $"{Actions.Dequeue}{i}"
                         );
                 }
             }

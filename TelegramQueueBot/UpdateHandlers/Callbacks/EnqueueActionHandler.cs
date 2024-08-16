@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Logging;
+using QueueCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,20 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
     public class EnqueueActionHandler : UpdateHandler
     {
-        public EnqueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<EnqueueActionHandler> logger) : base(bot, scope, logger)
+        private IQueueService _queueService;
+        public EnqueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<EnqueueActionHandler> logger, IQueueService queueService) : base(bot, scope, logger)
         {
-            CheckUserExists = true;
+            GroupsOnly = true;
+            NeedsUser = true;
+            NeedsChat = true;
+            _queueService = queueService;
         }
 
         public override async Task Handle(Update update)
         {
             _log.LogInformation("User {id} from chat {chatId} requested {data}", update.CallbackQuery.From.Id, update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Data);
+            var chat = await chatTask;
+            //_queueService.EnqueueAsync(chat.CurrentQueueId, );
         }
     }
 }

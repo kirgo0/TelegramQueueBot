@@ -11,7 +11,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     {
         public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users) : base(bot, scope, logger)
         {
-            CheckChatExists = true;
+            NeedsChat = true;
         }
 
         public override async Task Handle(Update update)

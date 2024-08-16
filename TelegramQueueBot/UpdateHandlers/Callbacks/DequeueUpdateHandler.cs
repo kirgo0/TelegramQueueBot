@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
     {
         public DequeueUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueUpdateHandler> logger) : base(bot, scope, logger)
         {
-            CheckUserExists = true;
+            NeedsUser = true;
         }
 
         public override async Task Handle(Update update)

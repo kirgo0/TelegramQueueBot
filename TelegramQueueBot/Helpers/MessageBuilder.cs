@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramQueueBot.Models;
 
 namespace TelegramQueueBot.Helpers
 {
@@ -21,6 +22,11 @@ namespace TelegramQueueBot.Helpers
         public ParseMode ParseMode { get; set; } = ParseMode.Html;
 
         public MessageBuilder() { }
+        public MessageBuilder(Chat chat)
+        {
+            ChatId = chat.TelegramId;
+            LastMessageId = chat.LastMessageId;
+        }
 
         public MessageBuilder SetChatId(long chatId)
         {
