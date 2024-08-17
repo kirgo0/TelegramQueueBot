@@ -35,13 +35,12 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 _log.LogError("An error occurred while retrieving a queue from the repository for chat {id}", chat.TelegramId);
                 return;
             }
-            var dict = await _userRepository.GetUsernamesAsync(queue.List);
-            var names = QueueHandler.GetQueueNames(queue.List, dict);
+            var names = await _userRepository.GetRangeByTelegramIdsAsync(queue.List);
 
             var msg = new MessageBuilder(chat)
                 .AppendText("Ну тіпа пасасав")
                 .AddDefaultQueueMarkup(names);
-
+            
             await _bot.BuildAndSendAsync(msg);
         }
     }

@@ -14,20 +14,28 @@ namespace TelegramQueueBot.Repository.Implementations
         }
         public async Task<Chat> GetByTelegramIdAsync(long telegramId)
         {
-            if (_cache.TryGetValue(telegramId, out Chat cachedItem))
+            try
             {
-                _log.LogDebug("Entity with TelegramId {telegramId} retrieved from cache", telegramId);
-                return cachedItem;
-            }
+                if (_cache.TryGetValue(telegramId, out Chat cachedItem))
+                {
+                    _log.LogDebug("Entity with TelegramId {telegramId} retrieved from cache", telegramId);
+                    return cachedItem;
+                }
 
-            var item = await _innerRepository.GetByTelegramIdAsync(telegramId);
-            if (item != null)
+                var item = await _innerRepository.GetByTelegramIdAsync(telegramId);
+                if (item != null)
+                {
+                    _cache.Set(telegramId, item);
+                    _log.LogDebug("Entity with TelegramId {telegramId} added to cache", telegramId);
+                }
+
+                return item;
+            }
+            catch (Exception ex)
             {
-                _cache.Set(telegramId, item);
-                _log.LogDebug("Entity with TelegramId {telegramId} added to cache", telegramId);
+                _log.LogError(ex, "An error occurred when retrieving a chat with Telegram ID {id}.", telegramId);
+                return null;
             }
-
-            return item;
         }
     }
 }

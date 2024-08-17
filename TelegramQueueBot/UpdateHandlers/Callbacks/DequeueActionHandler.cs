@@ -11,9 +11,9 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
-    public class DequeueUpdateHandler : UpdateHandler
+    public class DequeueActionHandler : UpdateHandler
     {
-        public DequeueUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueUpdateHandler> logger) : base(bot, scope, logger)
+        public DequeueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueActionHandler> logger) : base(bot, scope, logger)
         {
             NeedsUser = true;
         }

@@ -143,6 +143,21 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             }
         }
 
+        protected string GetAction(Update update)
+        {
+            if(update?.CallbackQuery?.Data is null)
+            {
+                _log.LogWarning("Update has no callback data in {type}", GetType());
+            }
+            return update.CallbackQuery.Data;
+        }
+
+        protected IEnumerable<string> GetArguments(Update update)
+        {
+            var parts = update.Message.Text.Split(' ');
+            return parts.Skip(1);
+        }
+
         private bool IsGroup(Update update, out long id)
         {
             id = 0;

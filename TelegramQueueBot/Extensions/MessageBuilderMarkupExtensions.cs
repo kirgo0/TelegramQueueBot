@@ -6,30 +6,33 @@ using System.Text;
 using System.Threading.Tasks;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Models;
 
 namespace TelegramQueueBot.Extensions
 {
     public static class MessageBuilderMarkupExtensions
     {
-        public static MessageBuilder AddDefaultQueueMarkup(this MessageBuilder builder, List<string> userNamesQueue)
-        {
-            if (userNamesQueue is not null && !userNamesQueue.Any())
-                throw new ArgumentNullException(nameof(userNamesQueue));
 
-            for (int i = 0; i < userNamesQueue.Count; i++)
+        public static MessageBuilder AddDefaultQueueMarkup(this MessageBuilder builder, List<User> usersQueue)
+        {
+            if (usersQueue is null || !usersQueue.Any())
+                throw new ArgumentNullException(nameof(usersQueue));
+
+            for (int i = 0; i < usersQueue.Count; i++)
             {
-                var userName = userNamesQueue[i];
-                if(string.IsNullOrWhiteSpace(userName))
+                var user = usersQueue[i];
+                if (user is null)
                 {
                     builder.AddButtonNextRow(
                         $"{i}. __________________",
                         callbackData: $"{Actions.Enqueue}{i}"
                         );
-                } else
+                }
+                else
                 {
                     builder.AddButtonNextRow(
-                        $"{i}. {userName}",
-                        callbackData: $"{Actions.Dequeue}{i}"
+                        $"{i}. {user.UserName}",
+                        callbackData: $"{Actions.Dequeue}{user.TelegramId}"
                         );
                 }
             }

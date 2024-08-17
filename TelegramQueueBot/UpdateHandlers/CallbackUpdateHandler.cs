@@ -23,7 +23,7 @@ namespace TelegramQueueBot.UpdateHandlers
             await RedirectHandle(
                 update,
                 Metatags.HandleAction,
-                (update, value, item) => value.ToString().StartsWith(update?.CallbackQuery?.Data),
+                (update, value, item) => update.CallbackQuery.Data.StartsWith(value.ToString()),
                 "An error occurred while resolving the action handler for {data}",
                 update?.CallbackQuery?.Data
                 );

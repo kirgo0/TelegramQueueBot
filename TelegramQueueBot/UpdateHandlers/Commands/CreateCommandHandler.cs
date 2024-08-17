@@ -10,6 +10,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Models;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
@@ -40,7 +41,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             var msg = new MessageBuilder(chat)
                 .AppendText("Ну тіпа сасі")
-                .AddDefaultQueueMarkup(QueueHandler.GetQueueNames(queue.List, new()));
+                .AddDefaultQueueMarkup(new List<Models.User>(new Models.User[chat.DefaultQueueSize]));
 
             await _bot.BuildAndSendAsync(msg);
         }

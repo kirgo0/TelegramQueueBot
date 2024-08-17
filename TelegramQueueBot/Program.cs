@@ -1,22 +1,20 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using QueueCore;
 using QueueCore.BackgroundServices;
 using QueueCore.Extensions;
 using QueueCore.Repository.Interfaces;
 using Serilog;
+using Serilog.Enrichers.WithCaller;
 using Telegram.Bot;
 using TelegramQueueBot;
-using Microsoft.Extensions.Logging;
-using Autofac;
-using TelegramQueueBot.Modules;
-using Autofac.Extensions.DependencyInjection;
-using Telegram.Bot.Polling;
-using TelegramQueueBot.UpdateHandlers;
 using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Data.Context;
-using TelegramQueueBot.Data.Repository;
+using TelegramQueueBot.Modules;
 using TelegramQueueBot.Repository.Implementations;
 using TelegramQueueBot.Repository.Interfaces;
 
@@ -63,7 +61,10 @@ try
             services.AddScoped<IUserRepository, MongoUserRepository>();
 
             services.AddScoped<IMongoContext, MongoContext>();
-            services.AddScoped<IUserRepository, MongoUserRepository>();
+
+            services.AddScoped<MongoUserRepository>();
+            services.AddScoped<IUserRepository, CachedMongoUserRepository>();
+
             services.AddScoped<MongoChatRepository>();
             services.AddScoped<IChatRepository, CachedMongoChatRepository>();
 
@@ -84,7 +85,8 @@ try
     using IHost host = builder.Build();
     await host.RunAsync();
 
-} catch(Exception ex)
+}
+catch (Exception ex)
 {
     Log.Fatal("Bot initialization exception: {message}", ex.Message);
     throw;

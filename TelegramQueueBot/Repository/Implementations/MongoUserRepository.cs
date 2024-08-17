@@ -27,27 +27,25 @@ namespace TelegramQueueBot.Repository.Implementations
             }
         }
 
-        public async Task<Dictionary<long, string>> GetUsernamesAsync(List<long> telegramIds)
+        public async Task<List<User>> GetRangeByTelegramIdsAsync(List<long> telegramIds)
         {
             try
             {
-                telegramIds = telegramIds.Where(id => id != 0).ToList();
-
                 if (!telegramIds.Any())
                 {
                     _log.LogDebug("No valid Telegram IDs provided, returning an empty dictionary.");
-                    return new Dictionary<long, string>();
+                    return new List<User>();
                 }
 
                 var filter = Builders<User>.Filter.In(u => u.TelegramId, telegramIds);
                 var users = await _items.Find(filter).ToListAsync();
 
-                return users.ToDictionary(u => u.TelegramId, u => u.UserName);
+                return users;
             }
             catch (Exception ex)
             {
                 _log.LogError(ex, "An error occurred when retrieving usernames for users with specified Telegram IDs.");
-                return new Dictionary<long, string>();
+                return new List<User>();
             }
         }
     }

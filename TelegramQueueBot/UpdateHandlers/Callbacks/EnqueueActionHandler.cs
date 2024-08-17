@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
@@ -25,9 +26,25 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
 
         public override async Task Handle(Update update)
         {
-            _log.LogInformation("User {id} from chat {chatId} requested {data}", update.CallbackQuery.From.Id, update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Data);
             var chat = await chatTask;
-            //_queueService.EnqueueAsync(chat.CurrentQueueId, );
+            var user = await userTask;
+            var action = GetAction(update);
+            _log.LogInformation("User {id} from chat {chatId} requested {data}", user.TelegramId, chat.TelegramId, action);
+
+            var actionData = action.Replace(Actions.Enqueue, string.Empty);
+            if (!int.TryParse(actionData, out int pos))
+            {
+                _log.LogError("The position {pos} in the chat {id} is not parsed", actionData, chat.TelegramId);
+            }
+
+            try
+            {
+                await _queueService.EnqueueAsync(chat.CurrentQueueId, pos, user.TelegramId);
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, "An error occured while enqueing user {userid} in chat {chatId}, queue {queueId}", user.TelegramId, chat.TelegramId, chat.CurrentQueueId);
+            }
         }
     }
 }
