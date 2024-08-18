@@ -12,13 +12,14 @@ namespace TelegramQueueBot.Repository.Implementations
         public CachedMongoChatRepository(MongoChatRepository innerRepository, ILogger<CachedMongoChatRepository> log, IMemoryCache cache) : base(innerRepository, log, cache)
         {
         }
+
         public async Task<Chat> GetByTelegramIdAsync(long telegramId)
         {
             try
             {
                 if (_cache.TryGetValue(telegramId, out Chat cachedItem))
                 {
-                    _log.LogDebug("Entity with TelegramId {telegramId} retrieved from cache", telegramId);
+                    _log.LogDebug("Chat with TelegramId {telegramId} retrieved from cache", telegramId);
                     return cachedItem;
                 }
 
@@ -26,7 +27,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 if (item != null)
                 {
                     _cache.Set(telegramId, item);
-                    _log.LogDebug("Entity with TelegramId {telegramId} added to cache", telegramId);
+                    _log.LogDebug("Chat with TelegramId {telegramId} added to cache", telegramId);
                 }
 
                 return item;

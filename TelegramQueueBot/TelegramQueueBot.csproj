@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\QueueCore\QueueCore\QueueCore.csproj" />
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 

@@ -1,24 +1,19 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Logging;
-using QueueCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
     public class GetCommandHandler : UpdateHandler
     {
-        private IQueueService _queueService;
-        public GetCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<GetCommandHandler> logger, IQueueService queueService, IUserRepository userRepository) : base(bot, scope, logger)
+        private QueueService _queueService;
+        public GetCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<GetCommandHandler> logger, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -40,7 +35,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var msg = new MessageBuilder(chat)
                 .AppendText("Ну тіпа пасасав")
                 .AddDefaultQueueMarkup(names);
-            
+
             await _bot.BuildAndSendAsync(msg);
         }
     }

@@ -12,6 +12,7 @@ namespace TelegramQueueBot.Repository.Implementations
         public MongoChatRepository(IMongoContext mongoContext, ILogger<MongoChatRepository> logger) : base(mongoContext, logger)
         {
         }
+
         public async Task<Chat> GetByTelegramIdAsync(long id)
         {
             try
@@ -21,7 +22,7 @@ namespace TelegramQueueBot.Repository.Implementations
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "An error occurred when getting an object of type {type}", typeof(User).Name);
+                _log.LogError(ex, "An error occurred when getting an object of type {type}", typeof(Chat).Name);
                 return null;
             }
         }

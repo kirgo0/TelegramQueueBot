@@ -84,10 +84,13 @@ namespace TelegramQueueBot.Repository.Implementations
                 if (missingIds.Any())
                 {
                     missingIds.RemoveAll(item => item == 0);
-                    dbUsers = await _innerRepository.GetRangeByTelegramIdsAsync(missingIds);
-                    if (dbUsers.Count != missingIds.Count)
+                    if(missingIds.Any())
                     {
-                        _log.LogError("Not all user IDs were retrieved from the database, probably an out-of-date queue");
+                        dbUsers = await _innerRepository.GetRangeByTelegramIdsAsync(missingIds);
+                        if (dbUsers.Count != missingIds.Count)
+                        {
+                            _log.LogError("Not all user IDs were retrieved from the database, probably an out-of-date queue");
+                        }
                     }
                     foreach (var user in dbUsers)
                     {

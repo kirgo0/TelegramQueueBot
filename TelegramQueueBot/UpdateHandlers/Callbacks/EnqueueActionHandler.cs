@@ -1,22 +1,17 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Logging;
-using QueueCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
     public class EnqueueActionHandler : UpdateHandler
     {
-        private IQueueService _queueService;
-        public EnqueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<EnqueueActionHandler> logger, IQueueService queueService) : base(bot, scope, logger)
+        private QueueService _queueService;
+        public EnqueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<EnqueueActionHandler> logger, QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsUser = true;

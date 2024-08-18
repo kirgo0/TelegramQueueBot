@@ -17,7 +17,7 @@ using TelegramQueueBot.UpdateHandlers;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 using DefaultUpdateHandler = TelegramQueueBot.UpdateHandlers.DefaultUpdateHandler;
 
-namespace TelegramQueueBot
+namespace TelegramQueueBot.Services
 {
     public class TelegramBotClientBackgroundService : BackgroundService
     {

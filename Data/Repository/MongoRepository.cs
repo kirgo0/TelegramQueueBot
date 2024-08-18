@@ -22,7 +22,10 @@ namespace TelegramQueueBot.Data.Repository
             try
             {
                 await _items.InsertOneAsync(item);
-                if (item is not null) _log.LogDebug("Successfuly inserted new {type}", typeof(TEntity).Name);
+                if (item is not null)
+                {
+                    _log.LogDebug("Successfuly inserted new {type}", typeof(TEntity).Name);
+                }
                 return item;
             }
             catch (Exception ex)

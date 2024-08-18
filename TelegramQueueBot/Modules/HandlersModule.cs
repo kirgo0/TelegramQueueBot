@@ -10,6 +10,7 @@ namespace TelegramQueueBot.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<DefaultUpdateHandler>();
             builder.RegisterType<MessageUpdateHandler>()
                 .As<UpdateHandler>()
                 .WithMetadata(Metatags.HandleType, UpdateType.Message);

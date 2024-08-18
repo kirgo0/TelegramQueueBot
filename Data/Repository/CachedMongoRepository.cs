@@ -24,7 +24,7 @@ namespace Data.Repository
         {
             if (_cache.TryGetValue(id, out TEntity cachedItem))
             {
-                _log.LogDebug($"Entity with Id {id} retrieved from cache.");
+                _log.LogDebug("{name} with Id {id} retrieved from cache", typeof(TEntity).Name, id);
                 return cachedItem;
             }
 
@@ -32,7 +32,7 @@ namespace Data.Repository
             if (item != null)
             {
                 _cache.Set(id, item);
-                _log.LogDebug($"Entity with Id {id} added to cache.");
+                _log.LogDebug("{name} with Id {id} added to cache",typeof(TEntity).Name, id);
             }
 
             return item;
@@ -42,7 +42,7 @@ namespace Data.Repository
         {
             var createdItem = await _innerRepository.CreateAsync(item);
             _cache.Set(createdItem.Id, createdItem);
-            _log.LogDebug($"Entity with Id {createdItem.Id} added to cache.");
+            _log.LogDebug("{name} with Id {id} added to cache", typeof(TEntity).Name, createdItem.Id);
             return createdItem;
         }
 
@@ -52,7 +52,7 @@ namespace Data.Repository
             if (result)
             {
                 _cache.Set(item.Id, item);
-                _log.LogDebug($"Entity with Id {item.Id} updated in cache.");
+                _log.LogDebug("{name} with Id {id} updated in cache", typeof(TEntity).Name, item.Id);
             }
             return result;
         }
@@ -63,7 +63,7 @@ namespace Data.Repository
             if (result)
             {
                 _cache.Remove(id);
-                _log.LogInformation($"Entity with Id {id} removed from cache.");
+                _log.LogInformation("{name} with Id {id} removed from cache", typeof(TEntity).Name, id);
             }
             return result;
         }

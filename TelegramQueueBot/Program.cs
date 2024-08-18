@@ -4,19 +4,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using QueueCore;
-using QueueCore.BackgroundServices;
-using QueueCore.Extensions;
-using QueueCore.Repository.Interfaces;
 using Serilog;
-using Serilog.Enrichers.WithCaller;
 using Telegram.Bot;
-using TelegramQueueBot;
 using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Data.Context;
+using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Modules;
 using TelegramQueueBot.Repository.Implementations;
 using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Services;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -41,22 +37,14 @@ try
         {
             services.AddMemoryCache();
 
-            services.AddMongoQueueRepository(opt =>
-            {
-                opt.ConnectionString = "mongodb://localhost:27017";
-                opt.DatabaseName = "queue_bot_db";
-                opt.CollectionName = "queues";
-            });
-            services.AddCachedMongoQueueRepository();
-            services.AddSingleton<IQueueService, QueueService>(provider =>
+            services.AddSingleton<MongoQueueRepository>();
+            services.AddSingleton<ICachedQueueRepository, CachedMongoQueueRepository>();
+            services.AddSingleton(provider =>
             {
                 return new QueueService(provider.GetRequiredService<ICachedQueueRepository>());
             });
 
             services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(context.Configuration.GetSection("TelegramBotOptions")["Token"]));
-
-            services.AddTransient<TelegramQueueBot.UpdateHandlers.DefaultUpdateHandler>();
-
             services.AddScoped<IMongoContext, MongoContext>();
             services.AddScoped<IUserRepository, MongoUserRepository>();
 
@@ -68,11 +56,8 @@ try
             services.AddScoped<MongoChatRepository>();
             services.AddScoped<IChatRepository, CachedMongoChatRepository>();
 
-            services.AddHostedService<QueueSaveBackgroundService>();
-            services.AddQueueRenderBackgroundService(TimeSpan.FromSeconds(1), (queue) =>
-            {
-                Console.WriteLine(queue.ToString());
-            });
+            services.AddMongoQueueSaveBackgroundService(TimeSpan.FromSeconds(1));
+            services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromSeconds(1));
             services.AddHostedService<TelegramBotClientBackgroundService>();
         })
         .ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>
