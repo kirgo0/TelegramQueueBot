@@ -2,11 +2,6 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 
@@ -84,7 +79,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 if (missingIds.Any())
                 {
                     missingIds.RemoveAll(item => item == 0);
-                    if(missingIds.Any())
+                    if (missingIds.Any())
                     {
                         dbUsers = await _innerRepository.GetRangeByTelegramIdsAsync(missingIds);
                         if (dbUsers.Count != missingIds.Count)

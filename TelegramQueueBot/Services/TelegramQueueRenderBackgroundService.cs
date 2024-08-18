@@ -24,12 +24,12 @@ namespace TelegramQueueBot.Services
         private ILogger _log;
 
         public TelegramQueueRenderBackgroundService(
-            ITelegramBotClient bot, 
-            QueueService queueService, 
-            IUserRepository userRepository, 
-            IChatRepository chatRepository, 
-            ICachedQueueRepository cachedQueueRepository, 
-            TimeSpan delay, 
+            ITelegramBotClient bot,
+            QueueService queueService,
+            IUserRepository userRepository,
+            IChatRepository chatRepository,
+            ICachedQueueRepository cachedQueueRepository,
+            TimeSpan delay,
             ILogger log)
         {
             _bot = bot;
@@ -66,14 +66,21 @@ namespace TelegramQueueBot.Services
         {
             await _queueService.DoThreadSafeWorkOnQueueAsync(queue.Id, async () =>
             {
-                var namesTask = _userRepository.GetRangeByTelegramIdsAsync(queue.List);
-                var chatTask = _chatRepository.GetByTelegramIdAsync(queue.ChatId);
+                try
+                {
+                    var namesTask = _userRepository.GetRangeByTelegramIdsAsync(queue.List);
+                    var chatTask = _chatRepository.GetByTelegramIdAsync(queue.ChatId);
 
-                var msg = new MessageBuilder(await chatTask)
-                    .AppendText("Капець воно само сосе")
-                    .AddDefaultQueueMarkup(await namesTask);
+                    var msg = new MessageBuilder(await chatTask)
+                            .AppendText("Капець воно само сосе")
+                            .AddDefaultQueueMarkup(await namesTask);
 
-                await _bot.BuildAndSendAsync(msg);
+                    await _bot.BuildAndEditAsync(msg);
+                }
+                catch (Exception ex)
+                {
+                    _log.LogError(ex, "An error occured while rendering queue {queueId} for chat {chatId}", queue.Id, queue.ChatId);
+                }
             });
 
         }

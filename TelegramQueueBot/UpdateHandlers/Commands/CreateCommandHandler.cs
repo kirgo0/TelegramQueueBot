@@ -38,7 +38,12 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 .AppendText("Ну тіпа сасі")
                 .AddDefaultQueueMarkup(new List<Models.User>(new Models.User[chat.DefaultQueueSize]));
 
-            await _bot.BuildAndSendAsync(msg);
+            var response = await _bot.BuildAndSendAsync(msg);
+            if (response is not null)
+            {
+                chat.LastMessageId = response.MessageId;
+                await _chatRepository.UpdateAsync(chat);
+            }
         }
     }
 }

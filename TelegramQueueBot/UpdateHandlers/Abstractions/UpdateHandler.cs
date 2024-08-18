@@ -2,9 +2,9 @@
 using Autofac.Features.Metadata;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Update = Telegram.Bot.Types.Update;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
+using Update = Telegram.Bot.Types.Update;
 
 namespace TelegramQueueBot.UpdateHandlers.Abstractions
 {
@@ -91,11 +91,18 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 else _userTask = userTask;
             }
 
-            if (_isGroup && NeedsChat)
+            if (NeedsChat)
             {
-                _chatRepository = _scope.Resolve<IChatRepository>();
-                if (chatTask is null) _chatTask = TryGetOrCreateChat(chatId);
-                else _chatTask = chatTask;
+                if (_isGroup)
+                {
+                    _chatRepository = _scope.Resolve<IChatRepository>();
+                    if (chatTask is null) _chatTask = TryGetOrCreateChat(chatId);
+                    else _chatTask = chatTask;
+                }
+                else
+                {
+                    _chatTask = Task.FromResult<Chat>(null);
+                }
             }
 
             await Handle(update);
@@ -145,7 +152,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
 
         protected string GetAction(Update update)
         {
-            if(update?.CallbackQuery?.Data is null)
+            if (update?.CallbackQuery?.Data is null)
             {
                 _log.LogWarning("Update has no callback data in {type}", GetType());
             }

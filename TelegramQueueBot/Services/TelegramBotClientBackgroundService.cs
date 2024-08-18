@@ -1,20 +1,10 @@
 ﻿using Autofac;
-using Autofac.Features.Metadata;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using TelegramQueueBot.Common;
-using TelegramQueueBot.UpdateHandlers;
-using TelegramQueueBot.UpdateHandlers.Abstractions;
 using DefaultUpdateHandler = TelegramQueueBot.UpdateHandlers.DefaultUpdateHandler;
 
 namespace TelegramQueueBot.Services

@@ -40,6 +40,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             {
                 _log.LogError(e, "An error occured while enqueing user {userid} in chat {chatId}, queue {queueId}", user.TelegramId, chat.TelegramId, chat.CurrentQueueId);
             }
+
         }
     }
 }

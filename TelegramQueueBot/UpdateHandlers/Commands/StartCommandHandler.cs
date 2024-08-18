@@ -12,11 +12,19 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users) : base(bot, scope, logger)
         {
             NeedsChat = true;
+            NeedsUser = true;
         }
 
         public override async Task Handle(Update update)
         {
-            throw new NotImplementedException();
+            var chat = await chatTask;
+            var user = await userTask;
+            if (chat is null)
+            {
+                user.IsAuthorized = true;
+                await _userRepository.UpdateAsync(user);
+            }
+
         }
     }
 }

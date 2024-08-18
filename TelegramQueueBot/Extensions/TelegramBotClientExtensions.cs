@@ -1,10 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Repository.Interfaces;
-using TelegramQueueBot.Services;
 
 namespace TelegramQueueBot.Extensions
 {
@@ -21,6 +17,18 @@ namespace TelegramQueueBot.Extensions
                 );
         }
 
+        public static async Task<Message> BuildAndEditAsync(this ITelegramBotClient bot, MessageBuilder builder)
+        {
+            if (builder.LastMessageId == 0) throw new ArgumentException("The last message Id parameter is missing", nameof(builder.LastMessageId));
+
+            return await bot.EditMessageTextAsync(
+                builder.ChatId,
+                builder.LastMessageId,
+                builder.Text,
+                parseMode: builder.ParseMode,
+                replyMarkup: builder.ButtonsMarkup
+                );
+        }
 
     }
 }
