@@ -21,7 +21,7 @@ namespace TelegramQueueBot.Modules
                 .As<UpdateHandler>()
                 .WithMetadata(Metatags.HandleCommand, Commands.Create);
 
-            builder.RegisterType<DefaultSizeCommandHandler>()
+            builder.RegisterType<SizeCommandHandler>()
                 .As<UpdateHandler>()
                 .WithMetadata(Metatags.HandleCommand, Commands.SetDefaultSize);
 
@@ -33,9 +33,9 @@ namespace TelegramQueueBot.Modules
                 .As<UpdateHandler>()
                 .WithMetadata(Metatags.HandleCommand, Commands.SkipFirst);
 
-            builder.RegisterType<NotifyModeCommandHandler>()
+            builder.RegisterType<ModeCommandHandler>()
                 .As<UpdateHandler>()
-                .WithMetadata(Metatags.HandleCommand, Commands.NotifyMode);
+                .WithMetadata(Metatags.HandleCommand, Commands.Mode);
         }
     }
 }

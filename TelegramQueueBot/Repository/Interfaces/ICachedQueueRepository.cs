@@ -1,4 +1,5 @@
 ﻿using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Models;
 
 namespace TelegramQueueBot.Repository.Interfaces
 {
@@ -6,5 +7,6 @@ namespace TelegramQueueBot.Repository.Interfaces
     {
         event EventHandler<QueueUpdatedEventArgs> QueueUpdateEvent;
         IQueueRepository InnerRepository { get; }
+        Task<bool> UpdateAsync(Queue item, bool doRender);
     }
 }

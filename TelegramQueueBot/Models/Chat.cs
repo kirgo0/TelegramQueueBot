@@ -9,7 +9,7 @@ namespace TelegramQueueBot.Models
         public List<string> QueueList { get; set; } = new List<string>();
         public string CurrentQueueId { get; set; } = string.Empty;
         public int DefaultQueueSize { get; set; } = 10;
-        public ChatState ChatIs { get; set; } = ChatState.Open;
+        public ChatMode Mode { get; set; } = ChatMode.Open;
         public ViewType View { get; set; } = ViewType.Column;
 
         public Chat(long telegramId)

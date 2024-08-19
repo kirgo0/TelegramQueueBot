@@ -37,6 +37,8 @@ try
         {
             services.AddMemoryCache();
 
+            services.AddScoped<IMongoContext, MongoContext>();
+
             services.AddSingleton<MongoQueueRepository>();
             services.AddSingleton<ICachedQueueRepository, CachedMongoQueueRepository>();
             services.AddSingleton(provider =>
@@ -44,11 +46,6 @@ try
                 return new QueueService(provider.GetRequiredService<ICachedQueueRepository>());
             });
 
-            services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(context.Configuration.GetSection("TelegramBotOptions")["Token"]));
-            services.AddScoped<IMongoContext, MongoContext>();
-            services.AddScoped<IUserRepository, MongoUserRepository>();
-
-            services.AddScoped<IMongoContext, MongoContext>();
 
             services.AddScoped<MongoUserRepository>();
             services.AddScoped<IUserRepository, CachedMongoUserRepository>();
@@ -57,7 +54,9 @@ try
             services.AddScoped<IChatRepository, CachedMongoChatRepository>();
 
             services.AddMongoQueueSaveBackgroundService(TimeSpan.FromSeconds(1));
-            services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromSeconds(1));
+            services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromMilliseconds(1000));
+
+            services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(context.Configuration.GetSection("TelegramBotOptions")["Token"]));
             services.AddHostedService<TelegramBotClientBackgroundService>();
         })
         .ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>

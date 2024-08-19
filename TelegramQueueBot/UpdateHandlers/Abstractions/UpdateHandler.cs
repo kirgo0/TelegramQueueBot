@@ -132,7 +132,11 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                     }
                     if (handler is not null) break;
                 }
-                if (handler is null) throw new Exception();
+                if (handler is null)
+                {
+                    _log.LogWarning(resolvingErrorMessage, resolveErrorParams);
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -203,6 +207,25 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 user = await _userRepository.CreateAsync(new User(from.Id, from.Username));
             }
             return user;
+        }
+
+        protected Task DeleteLastMessageAsync(Chat chat)
+        {
+            if (chat.LastMessageId != 0)
+            {
+                return Task.Run(() =>
+                {
+                    try
+                    {
+                        _bot.DeleteMessageAsync(chat.TelegramId, chat.LastMessageId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.LogWarning(ex, "An error ocured while deleting message {messageId} for chat {chatId}", chat.TelegramId, chat.LastMessageId);
+                    }
+                });
+            }
+            else return Task.CompletedTask;
         }
     }
 

@@ -9,10 +9,10 @@ namespace TelegramQueueBot.Services
     {
         public static int EmptyQueueMember { get; } = 0;
 
-        private readonly IQueueRepository _queueRepository;
+        private readonly ICachedQueueRepository _queueRepository;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphoreDictionary = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-        public QueueService(IQueueRepository queueRepository)
+        public QueueService(ICachedQueueRepository queueRepository)
         {
             _queueRepository = queueRepository;
         }
@@ -104,7 +104,7 @@ namespace TelegramQueueBot.Services
             }
         }
 
-        public async Task<bool> EnqueueAsync(string queueId, int position, long userId)
+        public async Task<bool> EnqueueAsync(string queueId, int position, long userId, bool doRender = true)
         {
             if (userId < 0 || position < 0)
                 throw new ArgumentOutOfRangeException("Argument values cannot be less than zero");
@@ -132,11 +132,11 @@ namespace TelegramQueueBot.Services
                 {
                     return false;
                 }
-            });
+            }, doRender);
 
         }
 
-        public async Task<bool> DequeueAsync(string queueId, long userId)
+        public async Task<bool> DequeueAsync(string queueId, long userId, bool doRender = true)
         {
             if (userId < 0)
                 throw new ArgumentOutOfRangeException(nameof(userId), "The id values cannot be less than zero");
@@ -148,11 +148,11 @@ namespace TelegramQueueBot.Services
 
                 queue[userPos] = EmptyQueueMember;
                 return true;
-            });
+            }, doRender);
 
         }
 
-        public async Task<bool> DequeueFirstAsync(string queueId)
+        public async Task<bool> DequeueFirstAsync(string queueId, bool doRender = true)
         {
 
             return await AccessQueueAsync(queueId, (queue) =>
@@ -167,10 +167,10 @@ namespace TelegramQueueBot.Services
                 {
                     return false;
                 }
-            });
+            },doRender);
         }
 
-        public async Task<bool> MoveUserUpAsync(string queueId, long userId)
+        public async Task<bool> MoveUserUpAsync(string queueId, long userId, bool doRender = true)
         {
             if (userId < 0)
                 throw new ArgumentOutOfRangeException(nameof(userId), "The id value cannot be less than zero");
@@ -186,10 +186,10 @@ namespace TelegramQueueBot.Services
                 queue[userPos] = temp;
 
                 return true;
-            });
+            }, doRender);
         }
 
-        public async Task<bool> SwapUsersAsync(string queueId, long firstUserId, long secondUserId)
+        public async Task<bool> SwapUsersAsync(string queueId, long firstUserId, long secondUserId, bool doRender = true)
         {
             if (firstUserId < 0 || secondUserId < 0)
                 throw new ArgumentOutOfRangeException("The id value cannot be less than zero");
@@ -209,11 +209,11 @@ namespace TelegramQueueBot.Services
                 queue[firstIndex] = queue[secondIndex];
                 queue[secondIndex] = temp;
                 return true;
-            });
+            }, doRender);
 
         }
 
-        public async Task<bool> SetQueueSizeAsync(string queueId, int size)
+        public async Task<bool> SetQueueSizeAsync(string queueId, int size, bool doRender = true)
         {
             if (size <= 1)
                 throw new ArgumentOutOfRangeException("The queue size must be greater than 0");
@@ -248,11 +248,11 @@ namespace TelegramQueueBot.Services
 
                 queue.Size = size;
                 return true;
-            });
+            }, doRender);
 
         }
 
-        public async Task<bool> RemoveBlankSpacesAsync(string queueId)
+        public async Task<bool> RemoveBlankSpacesAsync(string queueId, bool doRender = true)
         {
 
             return await AccessQueueAsync(queueId, (queue) =>
@@ -277,11 +277,11 @@ namespace TelegramQueueBot.Services
                 }
                 if (removedCount > 0) return true;
                 return false;
-            });
+            }, doRender);
 
         }
 
-        protected async Task<bool> AccessQueueAsync(string queueId, Func<Queue, bool> queueWork)
+        protected async Task<bool> AccessQueueAsync(string queueId, Func<Queue, bool> queueWork, bool doRender = true)
         {
             var semaphore = GetSemaphore(queueId);
             await semaphore.WaitAsync();
@@ -296,7 +296,7 @@ namespace TelegramQueueBot.Services
                 // saving changes if returned true
                 if (result)
                 {
-                    await _queueRepository.UpdateAsync(queue);
+                    await _queueRepository.UpdateAsync(queue, doRender);
                 }
                 return result;
             }

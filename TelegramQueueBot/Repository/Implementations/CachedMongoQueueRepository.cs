@@ -10,14 +10,11 @@ namespace TelegramQueueBot.Repository.Implementations
     public class CachedMongoQueueRepository : CachedMongoRepository<MongoQueueRepository, Queue>, ICachedQueueRepository
     {
         public IQueueRepository InnerRepository => _innerRepository;
-        private IMemoryCache _cache;
         public event EventHandler<QueueUpdatedEventArgs> QueueUpdateEvent;
 
         public CachedMongoQueueRepository(MongoQueueRepository innerRepository, ILogger<CachedMongoQueueRepository> log, IMemoryCache cache) : base(innerRepository, log, cache)
         {
-            _cache = cache;
         }
-
 
         public async Task<Queue> CreateAsync(long chatId)
         {
@@ -45,12 +42,33 @@ namespace TelegramQueueBot.Repository.Implementations
 
         public override Task<bool> UpdateAsync(Queue item)
         {
-            OnUpdateQueueEvent(new QueueUpdatedEventArgs(item));
+            OnQueueUpdatedEvent(new QueueUpdatedEventArgs(item));
             _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", item.Id, nameof(QueueUpdateEvent));
             _cache.Set(item.Id, item);
             return Task.FromResult(true);
         }
-        protected virtual void OnUpdateQueueEvent(QueueUpdatedEventArgs e)
+
+        public async Task<bool> UpdateAsync(Queue item, bool doRender)
+        {
+            if (doRender)
+            {
+                OnQueueUpdatedEvent(new QueueUpdatedEventArgs(item));
+                _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", item.Id, nameof(QueueUpdateEvent));
+                _cache.Set(item.Id, item);
+                return true;
+            } else
+            {
+                var result = await InnerRepository.UpdateAsync(item);
+                if (result)
+                {
+                    _cache.Set(item.Id, item);
+                    _log.LogDebug("{name} with Id {id} updated in cache", typeof(Queue).Name, item.Id);
+                }
+                return result;
+            }
+        }
+
+        protected virtual void OnQueueUpdatedEvent(QueueUpdatedEventArgs e)
         {
             QueueUpdateEvent?.Invoke(this, e);
         }

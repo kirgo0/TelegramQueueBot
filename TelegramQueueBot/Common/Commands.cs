@@ -9,6 +9,6 @@
         public const string SetDefaultSize = "/size";
         public const string Save = "/save";
         public const string SkipFirst = "/skipfirst";
-        public const string NotifyMode = "/notifymode";
+        public const string Mode = "/mode";
     }
 }

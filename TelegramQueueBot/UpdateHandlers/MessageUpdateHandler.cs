@@ -19,7 +19,7 @@ namespace TelegramQueueBot.UpdateHandlers
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,
-                (update, value, item) => value.ToString().StartsWith(update?.Message?.Text.Replace(sufix, "")),
+                (update, value, item) => update.Message.Text.Replace(sufix, "").StartsWith(value.ToString()),
                 "An error occurred while resolving the command handler for {text}",
                 update.Message.Text
                 );

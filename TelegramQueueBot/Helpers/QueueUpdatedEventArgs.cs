@@ -9,5 +9,7 @@ namespace TelegramQueueBot.Helpers
             Queue = queue;
         }
         public Queue Queue { get; }
+
+        public bool AsNewMessage { get; set; } = false;
     }
 }

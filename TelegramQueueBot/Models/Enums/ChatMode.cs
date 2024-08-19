@@ -1,6 +1,6 @@
 ﻿namespace TelegramQueueBot.Models.Enums
 {
-    public enum ChatState
+    public enum ChatMode
     {
         Open,
         CallingUsers
