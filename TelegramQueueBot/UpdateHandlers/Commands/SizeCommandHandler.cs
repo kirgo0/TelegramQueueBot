@@ -6,6 +6,7 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
+using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -14,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     public class SizeCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public SizeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SizeCommandHandler> logger, QueueService queueService) : base(bot, scope, logger)
+        public SizeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SizeCommandHandler> logger, QueueService queueService, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -25,7 +26,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         public override async Task Handle(Update update)
         {
             var chat = await chatTask;
-            var arguments = GetArguments(update);
+            var arguments = GetParams(update);
             var msg = new MessageBuilder(chat);
 
             if(!ValidateSize(arguments, out int size))
@@ -45,7 +46,6 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 var result = await _queueService.SetQueueSizeAsync(chat.CurrentQueueId, size, false);
                 if (!result) return;
 
-                await DeleteLastMessageAsync(chat);
                 var queue = await _queueService.GetQueueSnapshotAsync(chat.CurrentQueueId);
                 if (queue is null)
                 {
@@ -58,6 +58,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                     .AppendText("Ну тіпа пасасав")
                     .AddDefaultQueueMarkup(names);
 
+                await DeleteLastMessageAsync(chat);
                 var response = await _bot.BuildAndSendAsync(msg);
                 if (response is not null)
                 {

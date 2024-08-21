@@ -4,17 +4,19 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.UpdateHandlers.Callbacks;
 using Update = Telegram.Bot.Types.Update;
 
 namespace TelegramQueueBot.UpdateHandlers.Abstractions
 {
     public abstract class UpdateHandler
     {
-        protected ITelegramBotClient _bot;
-        protected ILifetimeScope _scope;
-        protected ILogger _log;
+        protected readonly ITelegramBotClient _bot;
+        protected readonly ILifetimeScope _scope;
+        protected readonly ILogger _log;
         protected IUserRepository _userRepository;
         protected IChatRepository _chatRepository;
+        protected ITextRepository _textRepository;
         public bool GroupsOnly { get; set; } = false;
         protected bool _isGroup;
         protected long _chatId;
@@ -56,10 +58,11 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 _chatTask = value;
             }
         }
-        protected UpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger logger)
+        protected UpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger logger, ITextRepository textRepository)
         {
             _bot = bot;
             _scope = scope;
+            _textRepository = textRepository;
             _log = logger;
         }
 
@@ -163,7 +166,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             return update.CallbackQuery.Data;
         }
 
-        protected IEnumerable<string> GetArguments(Update update)
+        protected IEnumerable<string> GetParams(Update update)
         {
             var parts = update.Message.Text.Split(' ');
             return parts.Skip(1);

@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramQueueBot.Common;
+using TelegramQueueBot.Extensions;
+using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -9,7 +12,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 {
     public class StartCommandHandler : UpdateHandler
     {
-        public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users) : base(bot, scope, logger)
+        public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
             NeedsChat = true;
             NeedsUser = true;
@@ -23,6 +26,23 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             {
                 user.IsAuthorized = true;
                 await _userRepository.UpdateAsync(user);
+                var msg = new MessageBuilder()
+                    .SetChatId(user.TelegramId)
+                    .AppendText((await _textRepository.GetByKeyAsync(TextKeys.Start)).Value);
+                await _bot.BuildAndSendAsync(msg);
+            }
+
+            if (chat is not null)
+            {
+                await DeleteLastMessageAsync(chat);
+                var msg = new MessageBuilder(chat)
+                    .AppendText((await _textRepository.GetByKeyAsync(TextKeys.Start)).Value);
+                var result = await _bot.BuildAndSendAsync(msg);
+                if(result is not null)
+                {
+                    chat.LastMessageId = result.MessageId;
+                    await _chatRepository.UpdateAsync(chat);
+                }
             }
 
         }

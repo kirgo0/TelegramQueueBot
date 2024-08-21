@@ -53,6 +53,9 @@ try
             services.AddScoped<MongoChatRepository>();
             services.AddScoped<IChatRepository, CachedMongoChatRepository>();
 
+            services.AddScoped<MongoTextRepository>();
+            services.AddScoped<ITextRepository, CachedMongoTextRepository>();
+
             services.AddMongoQueueSaveBackgroundService(TimeSpan.FromSeconds(1));
             services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromMilliseconds(1000));
 

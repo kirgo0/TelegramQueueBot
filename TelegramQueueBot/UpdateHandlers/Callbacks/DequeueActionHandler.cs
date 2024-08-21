@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -11,7 +12,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
     public class DequeueActionHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public DequeueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueActionHandler> logger, QueueService queueService) : base(bot, scope, logger)
+        public DequeueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueActionHandler> logger, QueueService queueService, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
             NeedsUser = true;
             NeedsChat = true;
@@ -37,14 +38,14 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                     await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
                 else
                 {
-                    if (!user.IsAuthorized)
-                    {
-                        await _bot.AnswerCallbackQueryAsync(update.CallbackQuery.Id, "Необхідно авторизуватись", cacheTime: 3);
-                        return;
-                    }
+                    await _bot.AnswerCallbackQueryAsync(update.CallbackQuery.Id, "Свапи не працюють, сасі", cacheTime: 3);
+                    //if (!user.IsAuthorized)
+                    //{
+                    //    await _bot.AnswerCallbackQueryAsync(update.CallbackQuery.Id, "Необхідно авторизуватись", cacheTime: 3);
+                    //    return;
+                    //}
 
-                    await _queueService.SwapUsersAsync(chat.CurrentQueueId, user.TelegramId, actionUserId);
-
+                    //await _queueService.SwapUsersAsync(chat.CurrentQueueId, user.TelegramId, actionUserId);
                 }
             }
             catch (Exception e)

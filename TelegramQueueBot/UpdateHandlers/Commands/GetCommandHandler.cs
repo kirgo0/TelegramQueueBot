@@ -13,7 +13,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     public class GetCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public GetCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<GetCommandHandler> logger, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger)
+        public GetCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<GetCommandHandler> logger, QueueService queueService, IUserRepository userRepository, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
             NeedsChat = true;

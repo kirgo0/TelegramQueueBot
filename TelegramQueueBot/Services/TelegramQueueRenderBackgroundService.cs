@@ -72,7 +72,7 @@ namespace TelegramQueueBot.Services
                     var chatTask = _chatRepository.GetByTelegramIdAsync(queue.ChatId);
 
                     var msg = new MessageBuilder(await chatTask)
-                            .AppendText("Капець воно само сосе")
+                            .AppendText("Авторендер повідомлення")
                             .AddDefaultQueueMarkup(await namesTask);
 
                     await _bot.BuildAndEditAsync(msg);

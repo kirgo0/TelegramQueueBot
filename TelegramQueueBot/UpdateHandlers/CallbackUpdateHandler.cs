@@ -3,13 +3,14 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers
 {
     public class CallbackUpdateHandler : UpdateHandler
     {
-        public CallbackUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CallbackUpdateHandler> logger) : base(bot, scope, logger)
+        public CallbackUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CallbackUpdateHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
         }
 

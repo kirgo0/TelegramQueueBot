@@ -4,6 +4,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -13,10 +14,9 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     {
         private QueueService _queueService;
 
-        public CreateCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CreateCommandHandler> logger, QueueService queueService) : base(bot, scope, logger)
+        public CreateCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CreateCommandHandler> logger, QueueService queueService, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
             _queueService = queueService;
-
             GroupsOnly = true;
             NeedsChat = true;
         }
@@ -30,7 +30,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 _log.LogWarning("An error occurred when creating a queue for chat {id}, a null value was received", chat.TelegramId);
                 return;
             }
-            if(!string.IsNullOrEmpty(chat.CurrentQueueId))
+            if(!string.IsNullOrEmpty(chat.CurrentQueueId) && !chat.SavedQueuesIds.Contains(chat.CurrentQueueId)) 
                 await _queueService.DeleteQueueAsync(chat.CurrentQueueId);
 
             chat.CurrentQueueId = queue.Id;

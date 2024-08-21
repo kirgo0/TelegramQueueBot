@@ -5,13 +5,14 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models.Enums;
+using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
     public class ModeCommandHandler : UpdateHandler
     {
-        public ModeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ModeCommandHandler> logger) : base(bot, scope, logger)
+        public ModeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ModeCommandHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
             NeedsChat = true;
