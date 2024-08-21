@@ -160,7 +160,8 @@ namespace TelegramQueueBot.Services
                 try
                 {
                     var firstUserId = queue.List.First(u => u != EmptyQueueMember);
-                    queue[queue.IndexOf(firstUserId)] = EmptyQueueMember;
+                    queue.List.Remove(firstUserId);
+                    queue.List.Add(EmptyQueueMember);
                     return true;
                 }
                 catch (InvalidOperationException)
