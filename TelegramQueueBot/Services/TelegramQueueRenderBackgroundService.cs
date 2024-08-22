@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using Telegram.Bot;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
@@ -16,6 +17,7 @@ namespace TelegramQueueBot.Services
         private QueueService _queueService;
         private IUserRepository _userRepository;
         private IChatRepository _chatRepository;
+        private ITextRepository _textRepository;
         private ICachedQueueRepository _cachedQueueRepository;
 
         private ConcurrentDictionary<string, Queue> _queues = new();
@@ -28,14 +30,17 @@ namespace TelegramQueueBot.Services
             QueueService queueService,
             IUserRepository userRepository,
             IChatRepository chatRepository,
+            ITextRepository textRepository,
             ICachedQueueRepository cachedQueueRepository,
             TimeSpan delay,
-            ILogger log)
+            ILogger log
+            )
         {
             _bot = bot;
             _queueService = queueService;
             _userRepository = userRepository;
             _chatRepository = chatRepository;
+            _textRepository = textRepository;
             _cachedQueueRepository = cachedQueueRepository;
             _delay = delay;
             _log = log;
@@ -69,11 +74,17 @@ namespace TelegramQueueBot.Services
                 try
                 {
                     var namesTask = _userRepository.GetRangeByTelegramIdsAsync(queue.List);
-                    var chatTask = _chatRepository.GetByTelegramIdAsync(queue.ChatId);
+                    var chat = await _chatRepository.GetByTelegramIdAsync(queue.ChatId);
 
-                    var msg = new MessageBuilder(await chatTask)
-                            .AppendText("Авторендер повідомлення")
-                            .AddDefaultQueueMarkup(await namesTask);
+                    var msg = new MessageBuilder(chat);
+
+                    if (chat.Mode is Models.Enums.ChatMode.CallingUsers)
+                        msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueIsCallingUsers));
+
+                    msg
+                        .AppendTextLine()
+                        .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
+                        .AddDefaultQueueMarkup(await namesTask);
 
                     await _bot.BuildAndEditAsync(msg);
                 }

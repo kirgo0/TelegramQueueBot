@@ -23,24 +23,30 @@ namespace TelegramQueueBot.Repository.Implementations
             {
                 if (_cache.TryGetValue(key, out Text cachedItem))
                 {
-                    _log.LogDebug("Text with Id {id} retrieved from cache", cachedItem.Id);
+                    _log.LogDebug("Text with Key {id} retrieved from cache", cachedItem.Key);
                     return cachedItem;
                 }
 
                 var item = await _innerRepository.GetByKeyAsync(key);
-                if (item != null)
+                if (item != null && !item.Equals(MongoTextRepository.NotFoundText))
                 {
-                    _cache.Set(key, item);
-                    _log.LogDebug("Text with Id {id} added to cache", item.Id);
+                    _cache.Set(item.Key, item);
+                    _log.LogDebug("Text with Key {id} added to cache", item.Key);
                 }
 
                 return item;
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "An error occurred when retrieving a text for {key}.", key);
+                _log.LogError(ex, "An error occurred when retrieving a text with key {key}.", key);
                 return null;
             }
+        }
+
+        public async Task<string> GetValueAsync(string key)
+        {
+            var text = await GetByKeyAsync(key);
+            return text is not null ? text.Value : string.Empty;
         }
     }
 }

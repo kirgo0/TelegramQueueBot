@@ -36,6 +36,10 @@ namespace TelegramQueueBot.Modules
             builder.RegisterType<ModeCommandHandler>()
                 .As<UpdateHandler>()
                 .WithMetadata(Metatags.HandleCommand, Commands.Mode);
+
+            builder.RegisterType<LineupCommandHandler>()
+                .As<UpdateHandler>()
+                .WithMetadata(Metatags.HandleCommand, Commands.LineUp);
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models.Enums;
@@ -32,10 +33,10 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 var msg = new MessageBuilder(chat);
                 if (chat.Mode == ChatMode.CallingUsers)
                 {
-                    msg.AppendText("Прохід по черзі - ✅");
+                    msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CallingUsersActive));
                 } else if(chat.Mode == ChatMode.Open)
                 {
-                    msg.AppendText("Прохід по черзі - ❌");
+                    msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CallingUsersInactive));
                 }
                 await _bot.BuildAndSendAsync(msg);
             }

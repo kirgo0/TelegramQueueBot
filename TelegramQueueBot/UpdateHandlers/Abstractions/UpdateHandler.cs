@@ -2,6 +2,8 @@
 using Autofac.Features.Metadata;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using TelegramQueueBot.Extensions;
+using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Callbacks;
@@ -168,8 +170,16 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
 
         protected IEnumerable<string> GetParams(Update update)
         {
-            var parts = update.Message.Text.Split(' ');
-            return parts.Skip(1);
+            try
+            {
+                var parts = update.Message.Text.Split(' ');
+                return parts.Skip(1);
+            }
+            catch (Exception ex)
+            {
+                _log.LogWarning("An error occured while getting params for update {update}", update.ToString());
+                return new List<string>();
+            }
         }
 
         private bool IsGroup(Update update, out long id)
@@ -216,11 +226,11 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
         {
             if (chat.LastMessageId != 0)
             {
-                return Task.Run(() =>
+                return Task.Run(async () =>
                 {
                     try
                     {
-                        _bot.DeleteMessageAsync(chat.TelegramId, chat.LastMessageId);
+                        await _bot.DeleteMessageAsync(chat.TelegramId, chat.LastMessageId);
                     }
                     catch (Exception ex)
                     {
@@ -229,6 +239,19 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 });
             }
             else return Task.CompletedTask;
+        }
+
+        protected async Task SendAndUpdateChatAsync(Chat chat, MessageBuilder msg, bool forceUpdate = false)
+        {
+            var response = await _bot.BuildAndSendAsync(msg);
+            if (response is not null)
+            {
+                chat.LastMessageId = response.MessageId;
+                await _chatRepository.UpdateAsync(chat);
+            } else if(forceUpdate)
+            {
+                await _chatRepository.UpdateAsync(chat);
+            }
         }
     }
 

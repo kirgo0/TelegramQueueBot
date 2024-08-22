@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
@@ -34,19 +35,12 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 await _queueService.DeleteQueueAsync(chat.CurrentQueueId);
 
             chat.CurrentQueueId = queue.Id;
-
-            await _chatRepository.UpdateAsync(chat);
-
             var msg = new MessageBuilder(chat)
-                .AppendText("Ну тіпа сасі")
+                .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.CreatedQueue))
                 .AddDefaultQueueMarkup(new List<Models.User>(new Models.User[chat.DefaultQueueSize]));
 
-            var response = await _bot.BuildAndSendAsync(msg);
-            if (response is not null)
-            {
-                chat.LastMessageId = response.MessageId;
-                await _chatRepository.UpdateAsync(chat);
-            }
+            await DeleteLastMessageAsync(chat);
+            await SendAndUpdateChatAsync(chat, msg, true);
         }
     }
 }

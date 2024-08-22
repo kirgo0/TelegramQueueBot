@@ -6,6 +6,8 @@ namespace TelegramQueueBot.Models
     {
         public int Size { get; set; }
         public long ChatId { get; set; }
+
+        public string? Name = null;
         public List<long> List { get; set; } = new List<long>();
 
         public long this[int i]

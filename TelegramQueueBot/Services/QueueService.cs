@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using System.Drawing;
+using System.Runtime.InteropServices;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 
@@ -251,6 +253,19 @@ namespace TelegramQueueBot.Services
                 return true;
             }, doRender);
 
+        }
+
+        public async Task<bool> SetQueueNameAsync(string queueId, string name, bool doRender = false)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentOutOfRangeException("The queue name must be specified");
+
+            return await AccessQueueAsync(queueId, (queue) =>
+            {
+                if (queue.Name is not null && queue.Name.Equals(name)) return false;
+                queue.Name = name;
+                return true;
+            }, doRender);
         }
 
         public async Task<bool> RemoveBlankSpacesAsync(string queueId, bool doRender = true)

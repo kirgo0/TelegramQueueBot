@@ -10,5 +10,6 @@
         public const string Save = "/save";
         public const string SkipFirst = "/skipfirst";
         public const string Mode = "/mode";
+        public const string LineUp = "/lineup";
     }
 }

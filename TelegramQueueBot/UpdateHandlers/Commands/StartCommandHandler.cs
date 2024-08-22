@@ -28,7 +28,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 await _userRepository.UpdateAsync(user);
                 var msg = new MessageBuilder()
                     .SetChatId(user.TelegramId)
-                    .AppendText((await _textRepository.GetByKeyAsync(TextKeys.Start)).Value);
+                    .AppendText(await _textRepository.GetValueAsync(TextKeys.Start));
                 await _bot.BuildAndSendAsync(msg);
             }
 
@@ -36,13 +36,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             {
                 await DeleteLastMessageAsync(chat);
                 var msg = new MessageBuilder(chat)
-                    .AppendText((await _textRepository.GetByKeyAsync(TextKeys.Start)).Value);
-                var result = await _bot.BuildAndSendAsync(msg);
-                if(result is not null)
-                {
-                    chat.LastMessageId = result.MessageId;
-                    await _chatRepository.UpdateAsync(chat);
-                }
+                    .AppendText(await _textRepository.GetValueAsync(TextKeys.Start));
+                await _bot.BuildAndSendAsync(msg);
             }
 
         }

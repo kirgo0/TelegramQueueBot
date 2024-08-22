@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
@@ -31,41 +32,50 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             if(!ValidateSize(arguments, out int size))
             {
-                // TODO: invalid size parameter message
+                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.WrongSize));
+                await _bot.BuildAndSendAsync(msg);
                 return;
             }
 
             if (size == chat.DefaultQueueSize)
             {
-                // TODO: message if first argument is equal
+                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.SizeIsSame));
+                await _bot.BuildAndSendAsync(msg);
                 return;
             }
 
             try
             {
-                var result = await _queueService.SetQueueSizeAsync(chat.CurrentQueueId, size, false);
-                if (!result) return;
-
-                var queue = await _queueService.GetQueueSnapshotAsync(chat.CurrentQueueId);
-                if (queue is null)
-                {
-                    _log.LogError("An error occurred while retrieving a queue from the repository for chat {id}", chat.TelegramId);
-                    return;
-                }
-                var names = await _userRepository.GetRangeByTelegramIdsAsync(queue.List);
                 msg
-                    .AppendTextLine($"Встановлено розмір - {size}")
-                    .AppendText("Ну тіпа пасасав")
-                    .AddDefaultQueueMarkup(names);
+                    .AppendTextLine($"{await _textRepository.GetValueAsync(TextKeys.SetSize)}{size}")
+                    .AppendTextLine();
 
-                await DeleteLastMessageAsync(chat);
-                var response = await _bot.BuildAndSendAsync(msg);
-                if (response is not null)
+                if (!string.IsNullOrEmpty(chat.CurrentQueueId))
                 {
-                    chat.DefaultQueueSize = size;
-                    chat.LastMessageId = response.MessageId;
-                    await _chatRepository.UpdateAsync(chat);
+                    var result = await _queueService.SetQueueSizeAsync(chat.CurrentQueueId, size, false);
+                    if (!result) return;
+                    // TODO: review logic
+
+                    var queue = await _queueService.GetQueueSnapshotAsync(chat.CurrentQueueId);
+                    if (queue is null)
+                    {
+                        _log.LogError("An error occurred while retrieving a queue from the repository for chat {id}", chat.TelegramId);
+                        return;
+                    }
+                    var names = await _userRepository.GetRangeByTelegramIdsAsync(queue.List);
+                    msg
+                        .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
+                        .AddDefaultQueueMarkup(names);
+                    await DeleteLastMessageAsync(chat);
                 }
+
+                var response = await _bot.BuildAndSendAsync(msg);
+                chat.DefaultQueueSize = size;
+                if (response is not null && !string.IsNullOrEmpty(chat.CurrentQueueId))
+                {
+                    chat.LastMessageId = response.MessageId;
+                }
+                await _chatRepository.UpdateAsync(chat);
 
             }
             catch (Exception ex)
@@ -79,18 +89,15 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             size = 0;
             if (!arguments.Any())
             {
-                // TODO: message if no arguments passed
                 return false;
             }
             if (!int.TryParse(arguments.First(), out size))
             {
-                // TODO: message if first argument is not a number
                 return false;
             }
 
             if (size < 2)
             {
-                // TODO: message if first argument is negative
                 return false;
             }
 

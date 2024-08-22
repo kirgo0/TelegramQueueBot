@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models.Enums;
@@ -27,32 +28,40 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var msg = new MessageBuilder(chat);
             if(chat.Mode is not ChatMode.CallingUsers)
             {
-                // TODO: if calling users mode turned off message
+                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NeedToTurnOnCallingMode));
+                await _bot.BuildAndSendAsync(msg);
                 return;
             }
 
             var result = await _queueService.DequeueFirstAsync(chat.CurrentQueueId, false);
             if (!result)
             {
-                // TODO: message if queue is empty
+                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.QueueIsEmpty));
+                await _bot.BuildAndSendAsync(msg);
                 return;
             }
-            var queue = await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
+
+            await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
             {
-                var deleteTask = DeleteLastMessageAsync(chat);
+                if (queue.IsEmpty)
+                {
+                    msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueEndedCallingUsers));
+                    chat.Mode = ChatMode.Open;
+                } else
+                {
+                    msg
+                        .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueIsCallingUsers))
+                        .AppendTextLine()
+                        .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.FirstUserDequeued));
+                }
                 var names = await _userRepository.GetRangeByTelegramIdsAsync(queue.List);
                 msg
-                    .AppendTextLine("Пропущено першого корситувача")
-                    .AppendText("Ну тіпа пасасав")
+                    .AppendTextLine()
+                    .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
                     .AddDefaultQueueMarkup(names);
 
-                await deleteTask;
-                var response = await _bot.BuildAndSendAsync(msg);
-                if (response is not null)
-                {
-                    chat.LastMessageId = response.MessageId;
-                    await _chatRepository.UpdateAsync(chat);
-                }
+                await DeleteLastMessageAsync(chat);
+                await SendAndUpdateChatAsync(chat, msg);
             });
         }
     }
