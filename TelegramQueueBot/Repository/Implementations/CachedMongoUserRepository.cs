@@ -50,14 +50,13 @@ namespace TelegramQueueBot.Repository.Implementations
         }
         public async Task<List<User>> GetRangeByTelegramIdsAsync(List<long> telegramIds)
         {
-            var cachedUsers = new Dictionary<long, User>();
             var resultUsers = new List<User>();
 
             try
             {
                 if (!telegramIds.Any())
                 {
-                    _log.LogDebug("No valid Telegram IDs provided, returning an empty list.");
+                    _log.LogDebug("No valid Telegram IDs provided, returning an empty list");
                     return resultUsers;
                 }
 
@@ -73,19 +72,15 @@ namespace TelegramQueueBot.Repository.Implementations
                     }
                 }
 
-                List<User> dbUsers = new List<User>();
 
                 // If there are any missing IDs, fetch those users from the database
+                missingIds.RemoveAll(item => item == 0);
                 if (missingIds.Any())
                 {
-                    missingIds.RemoveAll(item => item == 0);
-                    if (missingIds.Any())
+                    var dbUsers = await _innerRepository.GetRangeByTelegramIdsAsync(missingIds);
+                    if (dbUsers.Count != missingIds.Count)
                     {
-                        dbUsers = await _innerRepository.GetRangeByTelegramIdsAsync(missingIds);
-                        if (dbUsers.Count != missingIds.Count)
-                        {
-                            _log.LogError("Not all user IDs were retrieved from the database, probably an out-of-date queue");
-                        }
+                        _log.LogError("Not all users were retrieved from the database, probably an out-of-date queue");
                     }
                     foreach (var user in dbUsers)
                     {
@@ -101,13 +96,12 @@ namespace TelegramQueueBot.Repository.Implementations
                     resultUsers.Add(user);
                 }
 
-                return resultUsers;
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "An error occurred when retrieving users with specified Telegram IDs.");
-                return resultUsers;
+                _log.LogError(ex, "An error occurred when retrieving users with specified Telegram Ids");
             }
+            return resultUsers;
         }
     }
 }

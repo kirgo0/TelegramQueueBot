@@ -42,6 +42,16 @@ namespace TelegramQueueBot.Services
             return result;
         }
 
+        public async Task<List<Queue>> GetQueuesByIds(List<string> queueIds)
+        {
+            if(queueIds is null || !queueIds.Any())
+                throw new ArgumentNullException(nameof(queueIds));
+
+            var result = await _queueRepository.GetByIdsAsync(queueIds);
+
+            return result;
+        }
+
         public async Task<bool> DoThreadSafeWorkOnQueueAsync(string queueId, Action<Queue> workToDo)
         {
             var semaphore = GetSemaphore(queueId);
@@ -84,6 +94,17 @@ namespace TelegramQueueBot.Services
         {
             var queue = await _queueRepository.CreateAsync(chatId, size);
             return queue;
+        }
+
+        public async Task<bool> IsQueueEmpty(string queueId)
+        {
+            var result = false;
+            await AccessQueueAsync(queueId, (queue) =>
+            {
+                result = queue.IsEmpty;
+                return false;
+            });
+            return result;
         }
 
         public async Task<bool> DeleteQueueAsync(string queueId)
@@ -170,7 +191,7 @@ namespace TelegramQueueBot.Services
                 {
                     return false;
                 }
-            },doRender);
+            }, doRender);
         }
 
         public async Task<bool> MoveUserUpAsync(string queueId, long userId, bool doRender = true)

@@ -16,6 +16,10 @@ namespace TelegramQueueBot.Modules
             builder.RegisterType<DequeueActionHandler>()
                 .As<UpdateHandler>()
                 .WithMetadata(Metatags.HandleAction, Actions.Dequeue);
+
+            builder.RegisterType<QueueMenuActionHandler>()
+                .As<UpdateHandler>()
+                .WithMetadata(Metatags.HandleAction, Actions.QueueMenu);
         }
     }
 }

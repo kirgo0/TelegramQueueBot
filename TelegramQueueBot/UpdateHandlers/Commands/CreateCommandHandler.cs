@@ -17,9 +17,9 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
         public CreateCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CreateCommandHandler> logger, QueueService queueService, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
-            _queueService = queueService;
             GroupsOnly = true;
             NeedsChat = true;
+            _queueService = queueService;
         }
 
         public override async Task Handle(Update update)

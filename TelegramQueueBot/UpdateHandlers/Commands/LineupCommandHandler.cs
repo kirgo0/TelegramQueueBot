@@ -22,6 +22,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         private QueueService _queueService;
         public LineupCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<LineupCommandHandler> logger, ITextRepository textRepository, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger, textRepository)
         {
+            GroupsOnly = true;
             NeedsChat = true;
             _userRepository = userRepository;
             _queueService = queueService;

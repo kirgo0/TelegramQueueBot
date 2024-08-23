@@ -7,5 +7,6 @@ namespace TelegramQueueBot.Repository.Interfaces
     {
         Task<Queue> CreateAsync(long chatId);
         Task<Queue> CreateAsync(long chatId, int size);
+        Task<List<Queue>> GetByIdsAsync(List<string> queueIds);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Data.Repository;
 using TelegramQueueBot.Models;
@@ -32,6 +33,19 @@ namespace TelegramQueueBot.Repository.Implementations
             }
         }
 
+        public async Task<List<Queue>> GetByIdsAsync(List<string> queueIds)
+        {
+            try
+            {
+                var result = await _items.Find(Builders<Queue>.Filter.In(q => q.Id, queueIds)).ToListAsync();
 
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "An error occurred when getting objects if type {type} by Ids", typeof(Queue).Name);
+                return new List<Queue>();
+            }
+        }
     }
 }

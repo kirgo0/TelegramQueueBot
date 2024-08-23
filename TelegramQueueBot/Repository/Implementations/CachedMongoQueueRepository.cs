@@ -1,6 +1,8 @@
 ﻿using Data.Repository;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
+using Telegram.Bot.Types;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
@@ -14,6 +16,56 @@ namespace TelegramQueueBot.Repository.Implementations
 
         public CachedMongoQueueRepository(MongoQueueRepository innerRepository, ILogger<CachedMongoQueueRepository> log, IMemoryCache cache) : base(innerRepository, log, cache)
         {
+        }
+
+        public async Task<List<Queue>> GetByIdsAsync(List<string> queueIds)
+        {
+            var resultQueues = new List<Queue>();
+
+            if (queueIds is null || !queueIds.Any())
+            {
+                _log.LogDebug("No valid queue Ids provided, returning an empty list");
+                return resultQueues;
+            }
+
+            var missingIds = new List<string>();
+            foreach (var id in queueIds)
+            {
+                if (!_cache.TryGetValue(id, out var queue))
+                {
+                    missingIds.Add(id);
+                }
+            }
+
+            try
+            {
+                if (missingIds.Any())
+                {
+                    var dbQueues = await InnerRepository.GetByIdsAsync(missingIds);
+                    if (dbQueues.Count != missingIds.Count)
+                    {
+                        _log.LogError("Not all queues were retrieved from the database, probably an out-of-date chat");
+                    }
+                    foreach (var queue in dbQueues)
+                    {
+                        _cache.Set(queue.Id, queue);
+                        _log.LogDebug("Queue with Id {id} added to cache", queue.Id);
+                    }
+                }
+                foreach(var id in queueIds)
+                {
+                    if(_cache.TryGetValue(id,out Queue queue))
+                    {
+                        resultQueues.Add(queue);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "An error occurred when retrieving queues with specified Ids");
+            }
+            return resultQueues;
+
         }
 
         public async Task<Queue> CreateAsync(long chatId)
@@ -56,7 +108,8 @@ namespace TelegramQueueBot.Repository.Implementations
                 _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", item.Id, nameof(QueueUpdateEvent));
                 _cache.Set(item.Id, item);
                 return true;
-            } else
+            }
+            else
             {
                 var result = await InnerRepository.UpdateAsync(item);
                 if (result)

@@ -29,8 +29,10 @@ namespace TelegramQueueBot.Common
         public const string QueueSavedAs = "queue_saved_as";
         public const string ChangedSavedQueueName = "changed_saved_queue_name";
         public const string QueueIsAlreadySaved = "queue_is_already_saved";
+        public const string SavedQueuesList = "saved_queues_list";
 
         public const string RemovedAllBlankSpaces = "removed_all_blank_spaces";
         public const string NoBlankSpacesToRemove = "no_blank_spaces_to_remove";
+
     }
 }

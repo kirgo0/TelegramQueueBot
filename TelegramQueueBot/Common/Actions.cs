@@ -4,5 +4,6 @@
     {
         public const string Enqueue = "Enqueue";
         public const string Dequeue = "Dequeue";
+        public const string QueueMenu = "QueueMenu";
     }
 }

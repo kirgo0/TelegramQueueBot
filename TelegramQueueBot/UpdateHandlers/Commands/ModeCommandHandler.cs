@@ -7,39 +7,58 @@ using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models.Enums;
 using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
     public class ModeCommandHandler : UpdateHandler
     {
-        public ModeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ModeCommandHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        private QueueService _queueService;
+        public ModeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ModeCommandHandler> logger, ITextRepository textRepository, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
             NeedsChat = true;
+            _queueService = queueService;
+            _userRepository = userRepository;   
         }
 
         public override async Task Handle(Update update)
         {
             var chat = await chatTask;
-            switch(chat.Mode)
+            var msg = new MessageBuilder(chat);
+
+            if (string.IsNullOrEmpty(chat.CurrentQueueId))
+            {
+                msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
+                await _bot.BuildAndSendAsync(msg);
+                return;
+            }
+
+            if (await _queueService.IsQueueEmpty(chat.CurrentQueueId)) 
+            {
+                msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueIsEmpty));
+                await _bot.BuildAndSendAsync(msg);
+                return;
+            }
+
+            switch (chat.Mode)
             {
                 case ChatMode.Open: chat.Mode = ChatMode.CallingUsers; break;
                 case ChatMode.CallingUsers: chat.Mode = ChatMode.Open; break;
             }
-            var result = await _chatRepository.UpdateAsync(chat);
-            if(result)
+
+            await msg.AppendModeTitle(chat, _textRepository);
+            msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue));
+
+            await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
             {
-                var msg = new MessageBuilder(chat);
-                if (chat.Mode == ChatMode.CallingUsers)
-                {
-                    msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CallingUsersActive));
-                } else if(chat.Mode == ChatMode.Open)
-                {
-                    msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CallingUsersInactive));
-                }
-                await _bot.BuildAndSendAsync(msg);
-            }
+                var users = await _userRepository.GetRangeByTelegramIdsAsync(queue.List);
+                msg.AddDefaultQueueMarkup(users);
+            });
+
+            await DeleteLastMessageAsync(chat);
+            await SendAndUpdateChatAsync(chat, msg, true);
         }
     }
 }

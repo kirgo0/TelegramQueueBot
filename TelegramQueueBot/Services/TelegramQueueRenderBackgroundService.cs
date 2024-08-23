@@ -78,11 +78,9 @@ namespace TelegramQueueBot.Services
 
                     var msg = new MessageBuilder(chat);
 
-                    if (chat.Mode is Models.Enums.ChatMode.CallingUsers)
-                        msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueIsCallingUsers));
+                    await msg.AppendModeTitle(chat, _textRepository);
 
                     msg
-                        .AppendTextLine()
                         .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
                         .AddDefaultQueueMarkup(await namesTask);
 
