@@ -7,22 +7,45 @@ using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramQueueBot.Common;
+using TelegramQueueBot.Extensions;
+using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
     public class LoadActionHandler : UpdateHandler
     {
-        public LoadActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<LoadActionHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        private readonly QueueService _queueService;
+        public LoadActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<LoadActionHandler> logger, ITextRepository textRepository, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
             NeedsChat = true;
+            _queueService = queueService;
+            _userRepository = userRepository;
         }
 
-        public override Task Handle(Update update)
+        public override async Task Handle(Update update)
         {
-            throw new NotImplementedException();
+            var chat = await chatTask;
+            var msg = new MessageBuilder(chat);
+            var queueId = GetAction(update).Replace(Actions.Load, string.Empty);
+
+            chat.CurrentQueueId = queueId;
+            chat.Mode = Models.Enums.ChatMode.Open;
+            msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue));
+            await _queueService.DoThreadSafeWorkOnQueueAsync(queueId, async (queue) =>
+            {
+                chat.DefaultQueueSize = queue.Size;
+                var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
+                msg.AddDefaultQueueMarkup(users);
+            });
+
+            await DeleteLastMessageAsync(chat);
+            await SendAndUpdateChatAsync(chat, msg, true);
+
         }
     }
 }

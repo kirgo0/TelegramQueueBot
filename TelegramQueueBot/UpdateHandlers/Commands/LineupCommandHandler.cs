@@ -1,11 +1,5 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
@@ -31,7 +25,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         public override async Task Handle(Update update)
         {
             var chat = await chatTask;
-            var msg = await MessageBuilder.CreateAsync(chat, _textRepository);
+            var msg = new MessageBuilder(chat);
             if(string.IsNullOrEmpty(chat.CurrentQueueId))
             {
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
@@ -40,6 +34,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var operationResult = await _queueService.RemoveBlankSpacesAsync(chat.CurrentQueueId, false);
             if(operationResult)
             {
+                await msg.AppendModeTitle(chat, _textRepository);
                 msg
                     .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.RemovedAllBlankSpaces))
                     .AppendTextLine()

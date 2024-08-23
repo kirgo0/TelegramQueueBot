@@ -17,7 +17,7 @@ namespace TelegramQueueBot.Repository.Implementations
         {
             try
             {
-                if (_cache.TryGetValue(telegramId, out Chat cachedItem))
+                if (_cache.TryGetValue(GetKey(telegramId), out Chat cachedItem))
                 {
                     _log.LogDebug("Chat with TelegramId {telegramId} retrieved from cache", telegramId);
                     return cachedItem;
@@ -26,7 +26,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 var item = await _innerRepository.GetByTelegramIdAsync(telegramId);
                 if (item != null)
                 {
-                    _cache.Set(telegramId, item);
+                    _cache.Set(GetKey(telegramId), item);
                     _log.LogDebug("Chat with TelegramId {telegramId} added to cache", telegramId);
                 }
 

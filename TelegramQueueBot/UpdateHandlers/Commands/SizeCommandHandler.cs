@@ -16,11 +16,12 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     public class SizeCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public SizeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SizeCommandHandler> logger, QueueService queueService, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+
+        public SizeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SizeCommandHandler> logger, ITextRepository textRepository, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
             NeedsChat = true;
-            NeedsUser = true;
+            _userRepository = userRepository;
             _queueService = queueService;
         }
 

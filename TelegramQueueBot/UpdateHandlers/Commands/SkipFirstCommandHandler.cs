@@ -61,7 +61,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                     .AddDefaultQueueMarkup(names);
 
                 await DeleteLastMessageAsync(chat);
-                await SendAndUpdateChatAsync(chat, msg);
+                await SendAndUpdateChatAsync(chat, msg, true);
             });
         }
     }

@@ -39,6 +39,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             }
 
             chat.SavedQueuesIds.Remove(queueId);
+            if (chat.CurrentQueueId.Equals(queueId)) chat.CurrentQueueId = string.Empty;
             await _chatRepository.UpdateAsync(chat);
 
             await RedirectHandle(

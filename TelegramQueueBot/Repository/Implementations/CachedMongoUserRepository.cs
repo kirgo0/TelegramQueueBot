@@ -24,7 +24,7 @@ namespace TelegramQueueBot.Repository.Implementations
             try
             {
                 // Try to retrieve the user from the cache
-                if (_cache.TryGetValue(id, out User cachedUser))
+                if (_cache.TryGetValue(GetKey(id), out User cachedUser))
                 {
                     _log.LogDebug("User with Telegram ID {id} retrieved from cache.", id);
                     return cachedUser;
@@ -36,7 +36,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 if (user != null)
                 {
                     // Cache the retrieved user
-                    _cache.Set(id, user); // Set a suitable expiration time
+                    _cache.Set(GetKey(id), user); // Set a suitable expiration time
                     _log.LogDebug("User with Telegram ID {id} added to cache.", id);
                 }
 
@@ -66,7 +66,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 // Attempt to retrieve users from the cache
                 foreach (var id in telegramIds)
                 {
-                    if (!_cache.TryGetValue(id, out User cachedUser))
+                    if (!_cache.TryGetValue(GetKey(id), out User cachedUser))
                     {
                         missingIds.Add(id);
                     }
@@ -84,7 +84,7 @@ namespace TelegramQueueBot.Repository.Implementations
                     }
                     foreach (var user in dbUsers)
                     {
-                        _cache.Set(user.TelegramId, user);
+                        _cache.Set(GetKey(user.TelegramId), user);
                         _log.LogDebug("User with TelegramId {id} added to cache", user.TelegramId);
                     }
                 }
@@ -92,7 +92,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 // Combine cached users and users fetched from the database, maintaining the original order
                 foreach (var id in telegramIds)
                 {
-                    _cache.TryGetValue(id, out User user);
+                    _cache.TryGetValue(GetKey(id), out User user);
                     resultUsers.Add(user);
                 }
 

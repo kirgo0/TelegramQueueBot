@@ -19,8 +19,6 @@ namespace TelegramQueueBot.Common
 
         public const string QueueIsCallingUsers = "queue_is_calling_users";
         public const string QueueEndedCallingUsers = "queue_ended_calling_users";
-        public const string CallingUsersActive = "calling_users_active";
-        public const string CallingUsersInactive = "calling_users_inactive";
         public const string NeedToTurnOnCallingMode = "need_to_turn_on_calling_mode";
 
         public const string QueueIsEmpty = "queue_is_empty";
@@ -30,6 +28,7 @@ namespace TelegramQueueBot.Common
         public const string ChangedSavedQueueName = "changed_saved_queue_name";
         public const string QueueIsAlreadySaved = "queue_is_already_saved";
         public const string SavedQueuesList = "saved_queues_list";
+        public const string NoSavedQueues = "no_saved_queues";
 
         public const string QueueMenu = "queue_menu";
         public const string LoadQueueBtn = "load_queue_btn";

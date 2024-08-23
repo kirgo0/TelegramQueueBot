@@ -30,7 +30,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 var item = await _innerRepository.GetByKeyAsync(key);
                 if (item != null && !item.Equals(MongoTextRepository.NotFoundText))
                 {
-                    _cache.Set(item.Key, item);
+                    _cache.Set(GetKey(item.Key), item);
                     _log.LogDebug("Text with Key {id} added to cache", item.Key);
                 }
 

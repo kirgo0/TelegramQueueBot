@@ -13,16 +13,18 @@ namespace Data.Repository
         protected TRepository _innerRepository;
         protected readonly ILogger _log;
         protected IMemoryCache _cache;
+        protected readonly string _cacheKeyPrefix;
         public CachedMongoRepository(TRepository innerRepository, ILogger log, IMemoryCache cache)
         {
             _innerRepository = innerRepository;
             _log = log;
             _cache = cache;
+            _cacheKeyPrefix = typeof(TEntity).Name;
         }
 
         public virtual async Task<TEntity> GetAsync(string id)
         {
-            if (_cache.TryGetValue(id, out TEntity cachedItem))
+            if (_cache.TryGetValue(GetKey(id), out TEntity cachedItem))
             {
                 _log.LogDebug("{name} with Id {id} retrieved from cache", typeof(TEntity).Name, id);
                 return cachedItem;
@@ -31,7 +33,7 @@ namespace Data.Repository
             var item = await _innerRepository.GetAsync(id);
             if (item != null)
             {
-                _cache.Set(id, item);
+                _cache.Set(GetKey(id), item);
                 _log.LogDebug("{name} with Id {id} added to cache",typeof(TEntity).Name, id);
             }
 
@@ -41,7 +43,7 @@ namespace Data.Repository
         public virtual async Task<TEntity> CreateAsync(TEntity item)
         {
             var createdItem = await _innerRepository.CreateAsync(item);
-            _cache.Set(createdItem.Id, createdItem);
+            _cache.Set(GetKey(createdItem.Id), createdItem);
             _log.LogDebug("{name} with Id {id} added to cache", typeof(TEntity).Name, createdItem.Id);
             return createdItem;
         }
@@ -51,7 +53,7 @@ namespace Data.Repository
             var result = await _innerRepository.UpdateAsync(item);
             if (result)
             {
-                _cache.Set(item.Id, item);
+                _cache.Set(GetKey(item.Id), item);
                 _log.LogDebug("{name} with Id {id} updated in cache", typeof(TEntity).Name, item.Id);
             }
             return result;
@@ -62,11 +64,15 @@ namespace Data.Repository
             var result = await _innerRepository.DeleteAsync(id);
             if (result)
             {
-                _cache.Remove(id);
+                _cache.Remove(GetKey(id));
                 _log.LogInformation("{name} with Id {id} removed from cache", typeof(TEntity).Name, id);
             }
             return result;
         }
 
+        protected virtual string GetKey(object uniqueValue)
+        {
+            return $"{_cacheKeyPrefix}_{uniqueValue}";
+        }
     }
 }
