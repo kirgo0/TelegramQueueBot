@@ -73,7 +73,7 @@ namespace TelegramQueueBot.Services
             {
                 try
                 {
-                    var namesTask = _userRepository.GetRangeByTelegramIdsAsync(queue.List);
+                    var namesTask = _userRepository.GetByTelegramIdsAsync(queue.List);
                     var chat = await _chatRepository.GetByTelegramIdAsync(queue.ChatId);
 
                     var msg = new MessageBuilder(chat);

@@ -39,7 +39,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 return;
             }
 
-            var names = await _userRepository.GetRangeByTelegramIdsAsync(queue.List);
+            var names = await _userRepository.GetByTelegramIdsAsync(queue.List);
 
             await msg.AppendModeTitle(chat, _textRepository);
             msg

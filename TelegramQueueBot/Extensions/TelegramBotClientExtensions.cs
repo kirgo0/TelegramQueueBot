@@ -21,13 +21,20 @@ namespace TelegramQueueBot.Extensions
         {
             if (builder.LastMessageId == 0) throw new ArgumentException("The last message Id parameter is missing", nameof(builder.LastMessageId));
 
-            return await bot.EditMessageTextAsync(
-                builder.ChatId,
-                builder.LastMessageId,
-                builder.Text,
-                parseMode: builder.ParseMode,
-                replyMarkup: builder.ButtonsMarkup
-                );
+            //try
+            //{
+                return await bot.EditMessageTextAsync(
+                    builder.ChatId,
+                    builder.LastMessageId,
+                    builder.Text,
+                    parseMode: builder.ParseMode,
+                    replyMarkup: builder.ButtonsMarkup
+                    );
+            //}
+            //catch (Exception ex)
+            //{
+            //    return await bot.BuildAndSendAsync(builder);
+            //}
         }
 
     }

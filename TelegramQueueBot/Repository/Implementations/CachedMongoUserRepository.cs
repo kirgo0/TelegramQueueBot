@@ -48,7 +48,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 return null;
             }
         }
-        public async Task<List<User>> GetRangeByTelegramIdsAsync(List<long> telegramIds)
+        public async Task<List<User>> GetByTelegramIdsAsync(List<long> telegramIds)
         {
             var resultUsers = new List<User>();
 
@@ -77,7 +77,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 missingIds.RemoveAll(item => item == 0);
                 if (missingIds.Any())
                 {
-                    var dbUsers = await _innerRepository.GetRangeByTelegramIdsAsync(missingIds);
+                    var dbUsers = await _innerRepository.GetByTelegramIdsAsync(missingIds);
                     if (dbUsers.Count != missingIds.Count)
                     {
                         _log.LogError("Not all users were retrieved from the database, probably an out-of-date queue");

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
@@ -34,7 +35,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 // TODO 
                 return;
             }
-            var queues = await _queueService.GetQueuesByIds(chat.SavedQueuesIds);
+            var queues = await _queueService.GetByIdsAsync(chat.SavedQueuesIds);
             if (!queues.Any())
             {
                 _log.LogError("An error ocured while retrieving queues for chat {chatId}", chat.Id);
@@ -48,8 +49,14 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 msg.AddButtonNextRow(queue.Name, $"{Actions.QueueMenu}{queue.Id}");
             }
 
-            await DeleteLastMessageAsync(chat);
-            await SendAndUpdateChatAsync(chat, msg);
+            if(update.CallbackQuery is not null)
+            {
+                await _bot.BuildAndEditAsync(msg);
+            } else
+            {
+                await DeleteLastMessageAsync(chat);
+                await SendAndUpdateChatAsync(chat, msg);
+            }
         }
     }
 }

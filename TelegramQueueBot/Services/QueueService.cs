@@ -42,7 +42,14 @@ namespace TelegramQueueBot.Services
             return result;
         }
 
-        public async Task<List<Queue>> GetQueuesByIds(List<string> queueIds)
+        public async Task<Queue> GetByIdAsync(string queueId)
+        {
+            if(string.IsNullOrEmpty(queueId)) 
+                throw new ArgumentNullException(nameof(queueId));
+            return await _queueRepository.GetAsync(queueId);
+        }
+
+        public async Task<List<Queue>> GetByIdsAsync(List<string> queueIds)
         {
             if(queueIds is null || !queueIds.Any())
                 throw new ArgumentNullException(nameof(queueIds));

@@ -27,7 +27,7 @@ namespace TelegramQueueBot.Repository.Implementations
             }
         }
 
-        public async Task<List<User>> GetRangeByTelegramIdsAsync(List<long> telegramIds)
+        public async Task<List<User>> GetByTelegramIdsAsync(List<long> telegramIds)
         {
             try
             {

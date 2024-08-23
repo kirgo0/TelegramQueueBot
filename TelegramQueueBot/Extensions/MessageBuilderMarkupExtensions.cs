@@ -33,5 +33,31 @@ namespace TelegramQueueBot.Extensions
             return builder;
         }
 
+        public static MessageBuilder AddSavedQueueMarkup(this MessageBuilder builder, List<User> usersQueue)
+        {
+            if (usersQueue is null || !usersQueue.Any())
+                throw new ArgumentNullException(nameof(usersQueue));
+
+            for (int i = 0; i < usersQueue.Count; i++)
+            {
+                var user = usersQueue[i];
+                if (user is null)
+                {
+                    builder.AddButtonNextRow(
+                        $"{i}. __________________",
+                        callbackData: $"_"
+                        );
+                }
+                else
+                {
+                    builder.AddButtonNextRow(
+                        $"{i}. {user.UserName}",
+                        callbackData: $"_"
+                        );
+                }
+            }
+            return builder;
+        }
+
     }
 }

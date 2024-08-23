@@ -53,7 +53,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
             {
-                var users = await _userRepository.GetRangeByTelegramIdsAsync(queue.List);
+                var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
                 msg.AddDefaultQueueMarkup(users);
             });
 

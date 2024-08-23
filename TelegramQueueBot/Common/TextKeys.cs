@@ -31,8 +31,17 @@ namespace TelegramQueueBot.Common
         public const string QueueIsAlreadySaved = "queue_is_already_saved";
         public const string SavedQueuesList = "saved_queues_list";
 
+        public const string QueueMenu = "queue_menu";
+        public const string LoadQueueBtn = "load_queue_btn";
+        public const string DeleteQueueBtn = "delete_queue_btn";
+        public const string ConfirmDeletion = "confirm_deletion";
+        public const string ConfirmDeletionBtn = "confirm_deletion_btn";
+        public const string BackBtn = "back_btn";
+
+
         public const string RemovedAllBlankSpaces = "removed_all_blank_spaces";
         public const string NoBlankSpacesToRemove = "no_blank_spaces_to_remove";
+
 
     }
 }
