@@ -3,6 +3,7 @@
     public enum ViewType
     {
         Table,
-        Column
+        Column,
+        Auto
     }
 }

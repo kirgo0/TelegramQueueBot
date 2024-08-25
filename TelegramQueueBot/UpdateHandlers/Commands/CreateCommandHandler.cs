@@ -37,7 +37,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             chat.CurrentQueueId = queue.Id;
             var msg = new MessageBuilder(chat)
                 .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.CreatedQueue))
-                .AddDefaultQueueMarkup(new List<Models.User>(new Models.User[chat.DefaultQueueSize]));
+                .AddDefaultQueueMarkup(new List<Models.User>(new Models.User[chat.DefaultQueueSize]), chat.View);
 
             await DeleteLastMessageAsync(chat);
             await SendAndUpdateChatAsync(chat, msg, true);

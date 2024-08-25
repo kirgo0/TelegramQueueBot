@@ -82,7 +82,7 @@ namespace TelegramQueueBot.Services
 
                     msg
                         .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
-                        .AddDefaultQueueMarkup(await namesTask);
+                        .AddDefaultQueueMarkup(await namesTask, chat.View);
 
                     await _bot.BuildAndEditAsync(msg);
                 }

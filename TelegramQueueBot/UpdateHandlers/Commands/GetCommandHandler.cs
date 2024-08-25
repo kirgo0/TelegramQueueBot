@@ -44,7 +44,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             await msg.AppendModeTitle(chat, _textRepository);
             msg
                 .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
-                .AddDefaultQueueMarkup(names);
+                .AddDefaultQueueMarkup(names, chat.View);
 
             await DeleteLastMessageAsync(chat);
             await SendAndUpdateChatAsync(chat, msg);

@@ -40,7 +40,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             {
                 chat.DefaultQueueSize = queue.Size;
                 var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
-                msg.AddDefaultQueueMarkup(users);
+                msg.AddDefaultQueueMarkup(users, chat.View);
             });
 
             await DeleteLastMessageAsync(chat);

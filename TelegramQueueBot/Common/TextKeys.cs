@@ -37,9 +37,13 @@ namespace TelegramQueueBot.Common
         public const string ConfirmDeletionBtn = "confirm_deletion_btn";
         public const string BackBtn = "back_btn";
 
-
         public const string RemovedAllBlankSpaces = "removed_all_blank_spaces";
         public const string NoBlankSpacesToRemove = "no_blank_spaces_to_remove";
+
+        public const string ChangedChatView = "changed_chat_view";
+        public const string ChatViewAuto = "chat_view_auto";
+        public const string ChatViewTable = "chat_view_table";
+        public const string ChatViewColumn = "chat_view_column";
 
 
     }
