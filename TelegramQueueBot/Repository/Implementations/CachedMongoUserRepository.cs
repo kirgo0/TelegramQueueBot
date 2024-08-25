@@ -9,7 +9,7 @@ namespace TelegramQueueBot.Repository.Implementations
 {
     public class CachedMongoUserRepository : CachedMongoRepository<MongoUserRepository, User>, IUserRepository
     {
-        public CachedMongoUserRepository(MongoUserRepository innerRepository, ILogger<CachedMongoUserRepository> log, IMemoryCache cache) : base(innerRepository, log, cache)
+        public CachedMongoUserRepository(MongoUserRepository innerRepository, ILogger<CachedMongoUserRepository> log, IMemoryCache cache, TimeSpan cacheDuration) : base(innerRepository, log, cache, cacheDuration)
         {
         }
 
@@ -36,7 +36,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 if (user != null)
                 {
                     // Cache the retrieved user
-                    _cache.Set(GetKey(id), user); // Set a suitable expiration time
+                    _cache.Set(GetKey(id), user, _cacheDuration); // Set a suitable expiration time
                     _log.LogDebug("User with Telegram ID {id} added to cache.", id);
                 }
 
@@ -84,7 +84,7 @@ namespace TelegramQueueBot.Repository.Implementations
                     }
                     foreach (var user in dbUsers)
                     {
-                        _cache.Set(GetKey(user.TelegramId), user);
+                        _cache.Set(GetKey(user.TelegramId), user, _cacheDuration);
                         _log.LogDebug("User with TelegramId {id} added to cache", user.TelegramId);
                     }
                 }

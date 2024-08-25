@@ -13,7 +13,7 @@ namespace TelegramQueueBot.Repository.Implementations
 {
     public class CachedMongoTextRepository : CachedMongoRepository<MongoTextRepository, Text>, ITextRepository
     {
-        public CachedMongoTextRepository(MongoTextRepository innerRepository, ILogger<CachedMongoTextRepository> log, IMemoryCache cache) : base(innerRepository, log, cache)
+        public CachedMongoTextRepository(MongoTextRepository innerRepository, ILogger<CachedMongoTextRepository> log, IMemoryCache cache, TimeSpan cacheDuration) : base(innerRepository, log, cache, cacheDuration)
         {
         }
 
@@ -30,7 +30,7 @@ namespace TelegramQueueBot.Repository.Implementations
                 var item = await _innerRepository.GetByKeyAsync(key);
                 if (item != null && !item.Equals(MongoTextRepository.NotFoundText))
                 {
-                    _cache.Set(GetKey(item.Key), item);
+                    _cache.Set(GetKey(item.Key), item, _cacheDuration);
                     _log.LogDebug("Text with Key {id} added to cache", item.Key);
                 }
 

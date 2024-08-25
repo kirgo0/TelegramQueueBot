@@ -1,25 +1,29 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System.Threading;
+using System;
+using System.Threading.Tasks;
 using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Models;
 
 namespace Data.Repository
 {
-    public class CachedMongoRepository<TRepository, TEntity> : IRepository<TEntity> 
+    public class CachedMongoRepository<TRepository, TEntity> : IRepository<TEntity>
         where TEntity : Entity, new()
         where TRepository : IRepository<TEntity>
     {
-        protected TRepository _innerRepository;
+        protected readonly TRepository _innerRepository;
         protected readonly ILogger _log;
-        protected IMemoryCache _cache;
+        protected readonly IMemoryCache _cache;
         protected readonly string _cacheKeyPrefix;
-        public CachedMongoRepository(TRepository innerRepository, ILogger log, IMemoryCache cache)
+        protected readonly TimeSpan _cacheDuration;
+
+        public CachedMongoRepository(TRepository innerRepository, ILogger log, IMemoryCache cache, TimeSpan cacheDuration)
         {
             _innerRepository = innerRepository;
             _log = log;
             _cache = cache;
             _cacheKeyPrefix = typeof(TEntity).Name;
+            _cacheDuration = cacheDuration;
         }
 
         public virtual async Task<TEntity> GetAsync(string id)
@@ -33,8 +37,8 @@ namespace Data.Repository
             var item = await _innerRepository.GetAsync(id);
             if (item != null)
             {
-                _cache.Set(GetKey(id), item);
-                _log.LogDebug("{name} with Id {id} added to cache",typeof(TEntity).Name, id);
+                _cache.Set(GetKey(id), item, _cacheDuration);
+                _log.LogDebug("{name} with Id {id} added to cache", typeof(TEntity).Name, id);
             }
 
             return item;
@@ -43,7 +47,7 @@ namespace Data.Repository
         public virtual async Task<TEntity> CreateAsync(TEntity item)
         {
             var createdItem = await _innerRepository.CreateAsync(item);
-            _cache.Set(GetKey(createdItem.Id), createdItem);
+            _cache.Set(GetKey(createdItem.Id), createdItem, _cacheDuration);
             _log.LogDebug("{name} with Id {id} added to cache", typeof(TEntity).Name, createdItem.Id);
             return createdItem;
         }
@@ -53,7 +57,7 @@ namespace Data.Repository
             var result = await _innerRepository.UpdateAsync(item);
             if (result)
             {
-                _cache.Set(GetKey(item.Id), item);
+                _cache.Set(GetKey(item.Id), item, _cacheDuration);
                 _log.LogDebug("{name} with Id {id} updated in cache", typeof(TEntity).Name, item.Id);
             }
             return result;

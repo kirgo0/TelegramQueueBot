@@ -9,6 +9,7 @@ using Telegram.Bot;
 using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Data.Context;
 using TelegramQueueBot.Extensions;
+using TelegramQueueBot.Models;
 using TelegramQueueBot.Modules;
 using TelegramQueueBot.Repository.Implementations;
 using TelegramQueueBot.Repository.Interfaces;
@@ -38,23 +39,29 @@ try
             services.AddMemoryCache();
 
             services.AddScoped<IMongoContext, MongoContext>();
-
-            services.AddSingleton<MongoQueueRepository>();
-            services.AddSingleton<ICachedQueueRepository, CachedMongoQueueRepository>();
             services.AddSingleton(provider =>
             {
                 return new QueueService(provider.GetRequiredService<ICachedQueueRepository>());
             });
 
+            TimeSpan cacheDuration = TimeSpan.FromMinutes(30);
 
-            services.AddScoped<MongoUserRepository>();
-            services.AddScoped<IUserRepository, CachedMongoUserRepository>();
+            services.AddMongoRepositoryWithCaching<MongoUserRepository, CachedMongoUserRepository, User, IUserRepository>(TimeSpan.FromMinutes(10));
+            services.AddMongoRepositoryWithCaching<MongoChatRepository, CachedMongoChatRepository, Chat, IChatRepository>(TimeSpan.FromMinutes(10));
+            services.AddMongoRepositoryWithCaching<MongoTextRepository, CachedMongoTextRepository, Text, ITextRepository>(TimeSpan.FromMinutes(60));
+            services.AddMongoRepositoryWithCaching<MongoQueueRepository, CachedMongoQueueRepository, Queue, ICachedQueueRepository>(TimeSpan.FromMinutes(10));
 
-            services.AddScoped<MongoChatRepository>();
-            services.AddScoped<IChatRepository, CachedMongoChatRepository>();
+            //services.AddSingleton<MongoQueueRepository>();
+            //services.AddSingleton<ICachedQueueRepository, CachedMongoQueueRepository>();
 
-            services.AddScoped<MongoTextRepository>();
-            services.AddScoped<ITextRepository, CachedMongoTextRepository>();
+            //services.AddScoped<MongoUserRepository>();
+            //services.AddScoped<IUserRepository, CachedMongoUserRepository>();
+
+            //services.AddScoped<MongoChatRepository>();
+            //services.AddScoped<IChatRepository, CachedMongoChatRepository>();
+
+            //services.AddScoped<MongoTextRepository>();
+            //services.AddScoped<ITextRepository, CachedMongoTextRepository>();
 
             services.AddMongoQueueSaveBackgroundService(TimeSpan.FromSeconds(1));
             services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromMilliseconds(1000));
