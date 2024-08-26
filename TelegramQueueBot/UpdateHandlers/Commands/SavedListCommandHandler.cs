@@ -30,8 +30,11 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
+
             if(!chat.SavedQueuesIds.Any())
             {
+                if(update.CallbackQuery is not null)
+                    await DeleteLastMessageAsync(chat);
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoSavedQueues));
                 await _bot.BuildAndSendAsync(msg);
                 return;

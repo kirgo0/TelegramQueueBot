@@ -34,6 +34,13 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 return;
             }
 
+            if (await _queueService.IsQueueEmpty(chat.CurrentQueueId))
+            {
+                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.QueueIsEmpty));
+                await _bot.BuildAndSendAsync(msg);
+                return;
+            }
+
             if (string.IsNullOrEmpty(name))
             {
                 name = DateTime.Now.ToString();

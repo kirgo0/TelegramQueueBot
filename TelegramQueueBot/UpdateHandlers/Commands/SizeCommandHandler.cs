@@ -97,11 +97,10 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 return false;
             }
 
-            if (size < 2)
+            if (size < 2 || size > 100)
             {
                 return false;
             }
-
             return true;
         }
     }

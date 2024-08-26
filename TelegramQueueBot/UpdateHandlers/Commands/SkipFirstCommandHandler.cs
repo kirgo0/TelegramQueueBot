@@ -42,13 +42,14 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 return;
             }
 
-            var result = await _queueService.DequeueFirstAsync(chat.CurrentQueueId, false);
-            if (!result)
+            if (await _queueService.IsQueueEmpty(chat.CurrentQueueId))
             {
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.QueueIsEmpty));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
+
+            await _queueService.DequeueFirstAsync(chat.CurrentQueueId, false);
 
             await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
             {

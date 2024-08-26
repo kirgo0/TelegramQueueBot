@@ -25,6 +25,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         public override async Task Handle(Update update)
         {
             var chat = await chatTask;
+            if (!string.IsNullOrEmpty(chat.CurrentQueueId))
+                await DeleteLastMessageAsync(chat);
             var queue = await _queueService.CreateQueueAsync(chat.TelegramId, chat.DefaultQueueSize);
             if (queue is null)
             {
@@ -39,7 +41,6 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.CreatedQueue))
                 .AddDefaultQueueMarkup(new List<Models.User>(new Models.User[chat.DefaultQueueSize]), chat.View);
 
-            await DeleteLastMessageAsync(chat);
             await SendAndUpdateChatAsync(chat, msg, true);
         }
     }
