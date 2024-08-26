@@ -21,7 +21,7 @@ namespace TelegramQueueBot.Repository.Implementations
         {
             try
             {
-                if (_cache.TryGetValue(key, out Text cachedItem))
+                if (_cache.TryGetValue(GetKey(key), out Text cachedItem))
                 {
                     _log.LogDebug("Text with Key {id} retrieved from cache", cachedItem.Key);
                     return cachedItem;

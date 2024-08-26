@@ -43,6 +43,7 @@ namespace TelegramQueueBot.Models
 
         public bool IsEmpty => List.Count(e => e != QueueService.EmptyQueueMember) == 0;
 
+        public int Count => List.Count(e => e != QueueService.EmptyQueueMember);
         public Queue()
         {
 

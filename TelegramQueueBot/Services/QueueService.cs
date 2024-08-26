@@ -44,14 +44,14 @@ namespace TelegramQueueBot.Services
 
         public async Task<Queue> GetByIdAsync(string queueId)
         {
-            if(string.IsNullOrEmpty(queueId)) 
+            if (string.IsNullOrEmpty(queueId))
                 throw new ArgumentNullException(nameof(queueId));
             return await _queueRepository.GetAsync(queueId);
         }
 
         public async Task<List<Queue>> GetByIdsAsync(List<string> queueIds)
         {
-            if(queueIds is null || !queueIds.Any())
+            if (queueIds is null || !queueIds.Any())
                 throw new ArgumentNullException(nameof(queueIds));
 
             var result = await _queueRepository.GetByIdsAsync(queueIds);
@@ -109,6 +109,17 @@ namespace TelegramQueueBot.Services
             await AccessQueueAsync(queueId, (queue) =>
             {
                 result = queue.IsEmpty;
+                return false;
+            });
+            return result;
+        }
+
+        public async Task<int> GetQueueCountAsync(string queueId)
+        {
+            var result = 0;
+            await AccessQueueAsync(queueId, (queue) =>
+            {
+                result = queue.Count;
                 return false;
             });
             return result;

@@ -17,6 +17,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         private QueueService _queueService;
         public SkipFirstCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SkipFirstCommandHandler> logger, QueueService queueSrevice, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
+            GroupsOnly = true;
             NeedsChat = true;
             NeedsUser = true;
             _queueService = queueSrevice;
@@ -26,7 +27,15 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
-            if(chat.Mode is not ChatMode.CallingUsers)
+
+            if (string.IsNullOrEmpty(chat.CurrentQueueId))
+            {
+                msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
+                await _bot.BuildAndSendAsync(msg);
+                return;
+            }
+
+            if (chat.Mode is not ChatMode.CallingUsers)
             {
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NeedToTurnOnCallingMode));
                 await _bot.BuildAndSendAsync(msg);

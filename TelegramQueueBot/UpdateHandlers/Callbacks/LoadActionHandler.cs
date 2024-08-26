@@ -35,12 +35,13 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
 
             chat.CurrentQueueId = queueId;
             chat.Mode = Models.Enums.ChatMode.Open;
-            msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue));
             await _queueService.DoThreadSafeWorkOnQueueAsync(queueId, async (queue) =>
             {
                 chat.DefaultQueueSize = queue.Size;
                 var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
-                msg.AddDefaultQueueMarkup(users, chat.View);
+                msg
+                    .AppendText($"{await _textRepository.GetValueAsync(TextKeys.CurrentQueue)} - {queue.Name}")
+                    .AddDefaultQueueMarkup(users, chat.View);
             });
 
             await DeleteLastMessageAsync(chat);

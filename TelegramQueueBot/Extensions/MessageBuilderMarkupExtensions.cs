@@ -26,6 +26,15 @@ namespace TelegramQueueBot.Extensions
             return builder;
         }
 
+        public static MessageBuilder AddEmptyQueueMarkup(this MessageBuilder builder, int queueSize, ViewType view)
+        {
+            if(queueSize < 2 || queueSize > 100) throw new ArgumentOutOfRangeException(nameof(queueSize),"Range for queue size param is [2;100]");
+
+            var list = new List<User>(new User[queueSize]);
+            builder.AddDefaultQueueMarkup(list, view);
+            return builder;
+        }
+
         private static MessageBuilder SetColumnQueueMarkup(MessageBuilder builder, List<User> usersQueue)
         {
             for (int i = 0; i < usersQueue.Count; i++)
@@ -50,7 +59,7 @@ namespace TelegramQueueBot.Extensions
         }
 
 
-        private static MessageBuilder SetTableQueueMarkup(MessageBuilder builder, List<User> usersQueue, int columns = 2)
+        private static MessageBuilder SetTableQueueMarkup(MessageBuilder builder, List<User> usersQueue, int columns = 2, bool emptyCallback = false)
         {
             int rows = (int)Math.Ceiling((double)usersQueue.Count / columns);
 
@@ -67,12 +76,12 @@ namespace TelegramQueueBot.Extensions
                         if (user is null)
                         {
                             btnText = $"{index}. {EmptyQueueValue}";
-                            btnCallback = $"{Actions.Enqueue}{index}";
+                            if (!emptyCallback) btnCallback = $"{Actions.Enqueue}{index}";
                         }
                         else
                         {
                             btnText = $"{index}. {user.UserName}";
-                            btnCallback = $"{Actions.Dequeue}{user.TelegramId}";
+                            if (!emptyCallback) btnCallback = $"{Actions.Dequeue}{user.TelegramId}";
                         }
                     }
 
@@ -102,24 +111,25 @@ namespace TelegramQueueBot.Extensions
             if (usersQueue is null || !usersQueue.Any())
                 throw new ArgumentNullException(nameof(usersQueue));
 
-            for (int i = 0; i < usersQueue.Count; i++)
-            {
-                var user = usersQueue[i];
-                if (user is null)
-                {
-                    builder.AddButtonNextRow(
-                        $"{i}. __________________",
-                        callbackData: $"_"
-                        );
-                }
-                else
-                {
-                    builder.AddButtonNextRow(
-                        $"{i}. {user.UserName}",
-                        callbackData: $"_"
-                        );
-                }
-            }
+            SetTableQueueMarkup(builder, usersQueue, 2, true);
+            //for (int i = 0; i < usersQueue.Count; i++)
+            //{
+            //    var user = usersQueue[i];
+            //    if (user is null)
+            //    {
+            //        builder.AddButtonNextRow(
+            //            $"{i}. __________________",
+            //            callbackData: $"_"
+            //            );
+            //    }
+            //    else
+            //    {
+            //        builder.AddButtonNextRow(
+            //            $"{i}. {user.UserName}",
+            //            callbackData: $"_"
+            //            );
+            //    }
+            //}
             return builder;
         }
 

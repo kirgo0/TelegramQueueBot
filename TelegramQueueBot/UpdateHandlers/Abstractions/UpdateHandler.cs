@@ -1,12 +1,12 @@
 ﻿using Autofac;
 using Autofac.Features.Metadata;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using Telegram.Bot;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
-using TelegramQueueBot.UpdateHandlers.Callbacks;
 using Update = Telegram.Bot.Types.Update;
 
 namespace TelegramQueueBot.UpdateHandlers.Abstractions
@@ -234,7 +234,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                     }
                     catch (Exception ex)
                     {
-                        _log.LogWarning(ex, "An error ocured while deleting message {messageId} for chat {chatId}", chat.TelegramId, chat.LastMessageId);
+                        _log.LogWarning(ex, "An error ocured while deleting message {messageId} for chat {chatId}", chat.LastMessageId, chat.TelegramId);
                     }
                 });
             }
@@ -248,10 +248,30 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             {
                 chat.LastMessageId = response.MessageId;
                 await _chatRepository.UpdateAsync(chat);
-            } else if(forceUpdate)
+            }
+            else if (forceUpdate)
             {
                 await _chatRepository.UpdateAsync(chat);
             }
+        }
+
+        protected async Task NotifyUsersAsync(MessageBuilder messageTemplate, params int[] userIds)
+        {
+            var tasks = new List<Task>();
+            foreach (var userId in userIds)
+            {
+                var t = Task.Run(async () =>
+                {
+                    await _bot.SendTextMessageAsync(
+                        userId, 
+                        messageTemplate.Text, 
+                        parseMode: messageTemplate.ParseMode, 
+                        replyMarkup: messageTemplate.ButtonsMarkup
+                        );
+                });
+                tasks.Add(t);
+            }
+            await Task.WhenAll(tasks);
         }
     }
 

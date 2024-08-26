@@ -73,7 +73,7 @@ namespace TelegramQueueBot.Services
             {
                 try
                 {
-                    var namesTask = _userRepository.GetByTelegramIdsAsync(queue.List);
+                    var usersTask = _userRepository.GetByTelegramIdsAsync(queue.List);
                     var chat = await _chatRepository.GetByTelegramIdAsync(queue.ChatId);
 
                     var msg = new MessageBuilder(chat);
@@ -82,7 +82,7 @@ namespace TelegramQueueBot.Services
 
                     msg
                         .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
-                        .AddDefaultQueueMarkup(await namesTask, chat.View);
+                        .AddDefaultQueueMarkup(await usersTask, chat.View);
 
                     await _bot.BuildAndEditAsync(msg);
                 }

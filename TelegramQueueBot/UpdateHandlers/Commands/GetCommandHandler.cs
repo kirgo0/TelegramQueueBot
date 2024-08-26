@@ -32,19 +32,19 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 await _bot.BuildAndSendAsync(msg); 
                 return; 
             }
-            var queue = await _queueService.GetQueueSnapshotAsync(chat.CurrentQueueId);
-            if (queue is null)
+            await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
             {
-                _log.LogError("An error occurred while retrieving a queue from the repository for chat {id}", chat.TelegramId);
-                return;
-            }
-
-            var names = await _userRepository.GetByTelegramIdsAsync(queue.List);
+                if(queue.Count == 0)
+                {
+                    msg.AddEmptyQueueMarkup(queue.Size, chat.View);
+                    return;
+                }
+                var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
+                msg.AddDefaultQueueMarkup(users, chat.View);
+            });
 
             await msg.AppendModeTitle(chat, _textRepository);
-            msg
-                .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
-                .AddDefaultQueueMarkup(names, chat.View);
+            msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue));
 
             await DeleteLastMessageAsync(chat);
             await SendAndUpdateChatAsync(chat, msg);

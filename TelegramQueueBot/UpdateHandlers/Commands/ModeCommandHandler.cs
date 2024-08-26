@@ -42,11 +42,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 return;
             }
 
-            switch (chat.Mode)
-            {
-                case ChatMode.Open: chat.Mode = ChatMode.CallingUsers; break;
-                case ChatMode.CallingUsers: chat.Mode = ChatMode.Open; break;
-            }
+            chat.Mode = chat.Mode.Next();
 
             await msg.AppendModeTitle(chat, _textRepository);
             msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue));
