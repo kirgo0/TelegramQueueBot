@@ -14,5 +14,6 @@
         public const string Mode = "/mode";
         public const string LineUp = "/lineup";
         public const string View = "/view";
+        public const string Jobs = "/jobs";
     }
 }

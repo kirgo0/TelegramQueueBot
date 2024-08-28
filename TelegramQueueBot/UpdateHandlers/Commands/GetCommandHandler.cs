@@ -29,12 +29,12 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             if (string.IsNullOrEmpty(chat.CurrentQueueId))
             {
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
-                await _bot.BuildAndSendAsync(msg); 
-                return; 
+                await _bot.BuildAndSendAsync(msg);
+                return;
             }
             await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
             {
-                if(queue.Count == 0)
+                if (queue.Count == 0)
                 {
                     msg.AddEmptyQueueMarkup(queue.Size, chat.View);
                     return;

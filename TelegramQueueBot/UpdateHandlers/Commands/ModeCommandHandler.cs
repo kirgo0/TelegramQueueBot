@@ -5,7 +5,6 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Models.Enums;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
@@ -20,7 +19,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             GroupsOnly = true;
             NeedsChat = true;
             _queueService = queueService;
-            _userRepository = userRepository;   
+            _userRepository = userRepository;
         }
 
         public override async Task Handle(Update update)
@@ -35,7 +34,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 return;
             }
 
-            if (await _queueService.IsQueueEmpty(chat.CurrentQueueId)) 
+            if (await _queueService.IsQueueEmpty(chat.CurrentQueueId))
             {
                 msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueIsEmpty));
                 await _bot.BuildAndSendAsync(msg);

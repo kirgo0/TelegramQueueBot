@@ -40,7 +40,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                 // dequeing user
                 if (user.TelegramId == actionUserId)
                 {
-                    if(await _queueService.GetQueueCountAsync(chat.CurrentQueueId) != 1 || chat.Mode == Models.Enums.ChatMode.Open)
+                    if (await _queueService.GetQueueCountAsync(chat.CurrentQueueId) != 1 || chat.Mode == Models.Enums.ChatMode.Open)
                     {
                         await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
                         return;

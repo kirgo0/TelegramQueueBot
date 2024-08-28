@@ -25,7 +25,8 @@ namespace TelegramQueueBot.Helpers
             return builder;
         }
 
-        public async Task<MessageBuilder> AppendModeTitle(Chat chat, ITextRepository textRepository) {
+        public async Task<MessageBuilder> AppendModeTitle(Chat chat, ITextRepository textRepository)
+        {
             if (chat.Mode is Models.Enums.ChatMode.CallingUsers)
             {
                 AppendTextLine(await textRepository.GetValueAsync(TextKeys.QueueIsCallingUsers));
@@ -98,6 +99,6 @@ namespace TelegramQueueBot.Helpers
             _buttonsRow++;
             return this;
         }
-        
+
     }
 }

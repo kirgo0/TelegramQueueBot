@@ -1,11 +1,6 @@
 ﻿using Data.Repository;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 

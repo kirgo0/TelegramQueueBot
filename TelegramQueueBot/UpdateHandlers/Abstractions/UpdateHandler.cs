@@ -263,9 +263,9 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 var t = Task.Run(async () =>
                 {
                     await _bot.SendTextMessageAsync(
-                        userId, 
-                        messageTemplate.Text, 
-                        parseMode: messageTemplate.ParseMode, 
+                        userId,
+                        messageTemplate.Text,
+                        parseMode: messageTemplate.ParseMode,
                         replyMarkup: messageTemplate.ButtonsMarkup
                         );
                 });

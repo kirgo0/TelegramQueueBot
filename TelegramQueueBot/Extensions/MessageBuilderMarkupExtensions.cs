@@ -28,7 +28,7 @@ namespace TelegramQueueBot.Extensions
 
         public static MessageBuilder AddEmptyQueueMarkup(this MessageBuilder builder, int queueSize, ViewType view)
         {
-            if(queueSize < 2 || queueSize > 100) throw new ArgumentOutOfRangeException(nameof(queueSize),"Range for queue size param is [2;100]");
+            if (queueSize < 2 || queueSize > 100) throw new ArgumentOutOfRangeException(nameof(queueSize), "Range for queue size param is [2;100]");
 
             var list = new List<User>(new User[queueSize]);
             builder.AddDefaultQueueMarkup(list, view);
@@ -96,14 +96,15 @@ namespace TelegramQueueBot.Extensions
         private static MessageBuilder SetAutoQueueMarkup(MessageBuilder builder, List<User> usersQueue)
         {
             if (usersQueue == null) throw new ArgumentNullException(nameof(usersQueue));
-            if(usersQueue.Count > MinAutoColumnSeparationCount)
+            if (usersQueue.Count > MinAutoColumnSeparationCount)
             {
                 SetTableQueueMarkup(builder, usersQueue);
-            } else
+            }
+            else
             {
                 SetColumnQueueMarkup(builder, usersQueue);
             }
-            return builder; 
+            return builder;
         }
 
         public static MessageBuilder AddSavedQueueMarkup(this MessageBuilder builder, List<User> usersQueue)

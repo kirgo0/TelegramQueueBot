@@ -9,7 +9,7 @@ namespace TelegramQueueBot.Repository.Implementations
 {
     public class MongoTextRepository : MongoRepository<Text>, ITextRepository
     {
-        public static Text NotFoundText = new Text() { Value = "Text is not found"};
+        public static Text NotFoundText = new Text() { Value = "Text is not found" };
         public MongoTextRepository(IMongoContext mongoContext, ILogger<MongoTextRepository> logger) : base(mongoContext, logger)
         {
         }

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Drawing;
-using System.Runtime.InteropServices;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 

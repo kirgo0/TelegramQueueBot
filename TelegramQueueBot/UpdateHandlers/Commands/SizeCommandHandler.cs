@@ -6,7 +6,6 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
@@ -31,7 +30,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var arguments = GetParams(update);
             var msg = new MessageBuilder(chat);
 
-            if(!ValidateSize(arguments, out int size))
+            if (!ValidateSize(arguments, out int size))
             {
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.WrongSize));
                 await _bot.BuildAndSendAsync(msg);

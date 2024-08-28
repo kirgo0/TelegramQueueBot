@@ -1,10 +1,5 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
@@ -32,7 +27,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             msg
                 .AppendText($"{await _textRepository.GetValueAsync(TextKeys.ConfirmDeletion)}")
                 .AddButton(await _textRepository.GetValueAsync(TextKeys.BackBtn), $"{Actions.QueueMenu}{queueId}")
-                .AddButton(await _textRepository.GetValueAsync(TextKeys.ConfirmDeletionBtn), $"{Actions.ConfirmDeletion}{queueId}" );
+                .AddButton(await _textRepository.GetValueAsync(TextKeys.ConfirmDeletionBtn), $"{Actions.ConfirmDeletion}{queueId}");
 
             await _bot.BuildAndEditAsync(msg);
         }

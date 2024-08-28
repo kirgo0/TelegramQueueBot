@@ -26,13 +26,13 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
-            if(string.IsNullOrEmpty(chat.CurrentQueueId))
+            if (string.IsNullOrEmpty(chat.CurrentQueueId))
             {
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
                 await _bot.BuildAndSendAsync(msg);
             }
             var operationResult = await _queueService.RemoveBlankSpacesAsync(chat.CurrentQueueId, false);
-            if(operationResult)
+            if (operationResult)
             {
                 await msg.AppendModeTitle(chat, _textRepository);
                 msg
@@ -47,7 +47,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
                 await DeleteLastMessageAsync(chat);
                 await SendAndUpdateChatAsync(chat, msg);
-            } else
+            }
+            else
             {
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoBlankSpacesToRemove));
                 await _bot.BuildAndSendAsync(msg);

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Data.Repository;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;

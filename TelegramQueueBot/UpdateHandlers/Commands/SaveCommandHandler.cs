@@ -47,7 +47,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             }
 
             var operationResult = await _queueService.SetQueueNameAsync(chat.CurrentQueueId, name);
-            if(!operationResult)
+            if (!operationResult)
             {
                 msg.AppendText($"{await _textRepository.GetValueAsync(TextKeys.QueueIsAlreadySaved)}{name}");
             }
@@ -56,7 +56,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 chat.SavedQueuesIds.Add(chat.CurrentQueueId);
                 msg.AppendText($"{await _textRepository.GetValueAsync(TextKeys.QueueSavedAs)}{name}");
                 await _chatRepository.UpdateAsync(chat);
-            } else
+            }
+            else
             {
                 msg.AppendText($"{await _textRepository.GetValueAsync(TextKeys.ChangedSavedQueueName)}{name}");
             }

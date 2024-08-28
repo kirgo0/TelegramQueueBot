@@ -57,7 +57,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 {
                     msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueEndedCallingUsers));
                     chat.Mode = ChatMode.Open;
-                } else
+                }
+                else
                 {
                     msg
                         .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueIsCallingUsers))

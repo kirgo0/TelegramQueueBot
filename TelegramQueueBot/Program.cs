@@ -1,5 +1,9 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Hangfire;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +13,8 @@ using Telegram.Bot;
 using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Data.Context;
 using TelegramQueueBot.Extensions;
+using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Jobs;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Modules;
 using TelegramQueueBot.Repository.Implementations;
@@ -38,24 +44,49 @@ try
         {
             services.AddMemoryCache();
 
+            var mongoConnectionString = context.Configuration["MongoSettings:Connection"];
+            var mongoDatabaseName = context.Configuration["MongoSettings:DatabaseName"];
+
             services.AddScoped<IMongoContext, MongoContext>();
             services.AddSingleton(provider =>
             {
                 return new QueueService(provider.GetRequiredService<ICachedQueueRepository>());
             });
 
-            TimeSpan cacheDuration = TimeSpan.FromMinutes(30);
-
             services.AddMongoRepositoryWithCaching<MongoUserRepository, CachedMongoUserRepository, User, IUserRepository>(TimeSpan.FromMinutes(10));
             services.AddMongoRepositoryWithCaching<MongoChatRepository, CachedMongoChatRepository, Chat, IChatRepository>(TimeSpan.FromMinutes(10));
             services.AddMongoRepositoryWithCaching<MongoTextRepository, CachedMongoTextRepository, Text, ITextRepository>(TimeSpan.FromMinutes(60));
             services.AddMongoRepositoryWithCaching<MongoQueueRepository, CachedMongoQueueRepository, Queue, ICachedQueueRepository>(TimeSpan.FromMinutes(10));
+            services.AddScoped<IChatJobRepository, ChatJobMongoRepository>();
 
             services.AddMongoQueueSaveBackgroundService(TimeSpan.FromSeconds(1));
             services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromMilliseconds(1000));
 
             services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(context.Configuration.GetSection("TelegramBotOptions")["Token"]));
             services.AddHostedService<TelegramBotClientBackgroundService>();
+
+            services.AddHangfire(config =>
+            {
+                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                      .UseSimpleAssemblyNameTypeSerializer()
+                      .UseDefaultTypeSerializer()
+                      .UseMongoStorage(mongoConnectionString, mongoDatabaseName, new MongoStorageOptions
+                      {
+                          MigrationOptions = new MongoMigrationOptions
+                          {
+                              MigrationStrategy = new MigrateMongoMigrationStrategy(),
+                              BackupStrategy = new CollectionMongoBackupStrategy()
+                          },
+                          Prefix = "hangfire.mongo",
+                          CheckConnection = true,
+                          CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
+                      })
+                      .UseActivator(new HangfireActivator(services.BuildServiceProvider()));
+            });
+            services.AddScoped<CreateScheduledQueueJob>();
+            services.AddScoped<JobService>();
+
+            services.AddHangfireServer();
         })
         .ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>
         {

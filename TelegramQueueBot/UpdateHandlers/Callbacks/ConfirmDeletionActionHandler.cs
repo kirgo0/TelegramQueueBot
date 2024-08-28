@@ -1,15 +1,8 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver.Core.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
-using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
@@ -32,7 +25,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             var queueId = GetAction(update).Replace(Actions.ConfirmDeletion, string.Empty);
 
             var result = await _queueService.DeleteQueueAsync(queueId);
-            if(!result)
+            if (!result)
             {
                 _log.LogError("An error occured while deleting a queue with id {queueId}", queueId);
                 return;

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Telegram.Bot.Types;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
@@ -52,9 +51,9 @@ namespace TelegramQueueBot.Repository.Implementations
                         _log.LogDebug("Queue with Id {id} added to cache", queue.Id);
                     }
                 }
-                foreach(var id in queueIds)
+                foreach (var id in queueIds)
                 {
-                    if(_cache.TryGetValue(GetKey(id), out Queue queue))
+                    if (_cache.TryGetValue(GetKey(id), out Queue queue))
                     {
                         resultQueues.Add(queue);
                     }

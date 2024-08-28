@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TelegramQueueBot.Common
+﻿namespace TelegramQueueBot.Common
 {
     public static class TextKeys
     {
@@ -45,6 +39,10 @@ namespace TelegramQueueBot.Common
         public const string ChatViewTable = "chat_view_table";
         public const string ChatViewColumn = "chat_view_column";
 
+        //public const string Jobs = "jobs";
+        public const string JobsList = "jobs_list";
+        public const string JobsListIsEmpty = "jobs_list_is_empty";
+        public const string JobCreatedQueue = "job_created_queue";
 
     }
 }

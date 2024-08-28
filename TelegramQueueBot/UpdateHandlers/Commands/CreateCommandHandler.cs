@@ -33,7 +33,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 _log.LogWarning("An error occurred when creating a queue for chat {id}, a null value was received", chat.TelegramId);
                 return;
             }
-            if(!string.IsNullOrEmpty(chat.CurrentQueueId) && !chat.SavedQueuesIds.Contains(chat.CurrentQueueId)) 
+            if (!string.IsNullOrEmpty(chat.CurrentQueueId) && !chat.SavedQueuesIds.Contains(chat.CurrentQueueId))
                 await _queueService.DeleteQueueAsync(chat.CurrentQueueId);
 
             chat.CurrentQueueId = queue.Id;
