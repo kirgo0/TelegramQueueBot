@@ -90,9 +90,7 @@ try
         })
         .ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>
         {
-            containerBuilder.RegisterModule<CommandsModule>();
             containerBuilder.RegisterModule<HandlersModule>();
-            containerBuilder.RegisterModule<ActionsModule>();
         });
 
     using IHost host = builder.Build();

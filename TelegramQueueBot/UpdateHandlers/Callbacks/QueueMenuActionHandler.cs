@@ -11,6 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
+    [HandleAction(Actions.QueueMenu)]
     public class QueueMenuActionHandler : UpdateHandler
     {
         QueueService _queueService;

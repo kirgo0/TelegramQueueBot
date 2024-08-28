@@ -12,6 +12,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
+    [HandleCommand(Command.SkipFirst)]
     public class SkipFirstCommandHandler : UpdateHandler
     {
         private QueueService _queueService;

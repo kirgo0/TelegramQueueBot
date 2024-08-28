@@ -3,13 +3,15 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
-    internal class ConfirmDeletionActionHandler : UpdateHandler
+    [HandleAction(Actions.ConfirmDeletion)]
+    public class ConfirmDeletionActionHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
         public ConfirmDeletionActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ConfirmDeletionActionHandler> logger, ITextRepository textRepository, QueueService queueService) : base(bot, scope, logger, textRepository)
@@ -38,9 +40,9 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,
-                (update, value, item) => value == Common.Commands.SavedList,
+                (update, value, item) => value == Common.Command.SavedList,
                 "An error ocured while redirecting from {from} to {to}",
-                Actions.ConfirmDeletion, Common.Commands.SavedList
+                Actions.ConfirmDeletion, Common.Command.SavedList
                 );
         }
     }

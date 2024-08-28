@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using TelegramQueueBot.Common;
-using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 
 namespace TelegramQueueBot.Jobs

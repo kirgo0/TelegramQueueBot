@@ -12,6 +12,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
+    [HandleCommand(Command.Size)]
     public class SizeCommandHandler : UpdateHandler
     {
         private QueueService _queueService;

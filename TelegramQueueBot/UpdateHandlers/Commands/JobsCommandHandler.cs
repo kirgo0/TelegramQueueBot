@@ -1,17 +1,15 @@
 ﻿using Autofac;
-using Hangfire;
-using Hangfire.Storage;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Jobs;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
+    [HandleCommand(Command.Jobs)]
     public class JobsCommandHandler : UpdateHandler
     {
         public JobsCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsCommandHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)

@@ -11,6 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
+    [HandleCommand(Command.Mode)]
     public class ModeCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
