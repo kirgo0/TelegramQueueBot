@@ -8,7 +8,7 @@ using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Callbacks
+namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 {
     [HandleAction(Actions.ConfirmDeletion)]
     public class ConfirmDeletionActionHandler : UpdateHandler
@@ -40,9 +40,9 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,
-                (update, value, item) => value == Common.Command.SavedList,
+                (update, value, item) => value == Command.SavedList,
                 "An error ocured while redirecting from {from} to {to}",
-                Actions.ConfirmDeletion, Common.Command.SavedList
+                Actions.ConfirmDeletion, Command.SavedList
                 );
         }
     }

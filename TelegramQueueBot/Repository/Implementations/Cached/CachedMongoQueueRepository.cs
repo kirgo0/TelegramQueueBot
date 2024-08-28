@@ -6,7 +6,7 @@ using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 
-namespace TelegramQueueBot.Repository.Implementations
+namespace TelegramQueueBot.Repository.Implementations.Cached
 {
     public class CachedMongoQueueRepository : CachedMongoRepository<MongoQueueRepository, Queue>, ICachedQueueRepository
     {

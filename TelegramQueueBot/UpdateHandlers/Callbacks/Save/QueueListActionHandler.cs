@@ -7,7 +7,7 @@ using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Callbacks
+namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 {
     [HandleAction(Actions.QueueList)]
     public class QueueListActionHandler : UpdateHandler
@@ -23,9 +23,9 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,
-                (update, value, item) => value == Common.Command.SavedList,
+                (update, value, item) => value == Command.SavedList,
                 "An error ocured while redirecting from {from} to {to}",
-                Actions.QueueList, Common.Command.SavedList
+                Actions.QueueList, Command.SavedList
                 );
 
         }

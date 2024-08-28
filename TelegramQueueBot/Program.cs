@@ -18,6 +18,7 @@ using TelegramQueueBot.Jobs;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Modules;
 using TelegramQueueBot.Repository.Implementations;
+using TelegramQueueBot.Repository.Implementations.Cached;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 

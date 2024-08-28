@@ -12,10 +12,12 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     [HandleCommand(Command.Jobs)]
     public class JobsCommandHandler : UpdateHandler
     {
-        public JobsCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsCommandHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        private IChatJobRepository _jobRepository;
+        public JobsCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsCommandHandler> logger, ITextRepository textRepository, IChatJobRepository jobRepository) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
             NeedsChat = true;
+            _jobRepository = jobRepository;
         }
 
         public override async Task Handle(Update update)
@@ -23,6 +25,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
 
+            var list = await _jobRepository.GetAllByChatIdAsync(chat.TelegramId);
             msg.AppendText(await _textRepository.GetValueAsync(TextKeys.JobsList));
 
         }

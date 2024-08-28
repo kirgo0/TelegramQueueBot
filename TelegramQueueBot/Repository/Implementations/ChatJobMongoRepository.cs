@@ -15,7 +15,7 @@ namespace TelegramQueueBot.Repository.Implementations
 
         public Task<List<ChatJob>> GetAllByChatIdAsync(long chatId)
         {
-            return null;
+
         }
     }
 

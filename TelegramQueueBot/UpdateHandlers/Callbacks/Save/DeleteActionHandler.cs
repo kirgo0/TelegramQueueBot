@@ -9,7 +9,7 @@ using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Callbacks
+namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 {
     [HandleAction(Actions.Delete)]
     public class DeleteActionHandler : UpdateHandler
