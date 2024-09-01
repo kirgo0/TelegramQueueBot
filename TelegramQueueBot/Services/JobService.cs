@@ -1,4 +1,6 @@
-﻿using Hangfire;
+﻿using Cronos;
+using Hangfire;
+using Hangfire.Common;
 using Microsoft.Extensions.Logging;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
@@ -18,48 +20,62 @@ namespace TelegramQueueBot.Services
             _logger = logger;
         }
 
-        public async Task CreateOrUpdateJobAsync(long chatId, string jobName, string cronExpression)
+        public async Task<ChatJob> GetAsync(string chatJobId)
         {
-            // Створити або знайти існуючу роботу для даного чату
-            var chatJob = await _chatJobRepository.GetAsync(jobName);
-            if (chatJob == null)
-            {
-                chatJob = new ChatJob
-                {
-                    ChatId = chatId,
-                    JobName = jobName,
-                    CronExpression = cronExpression,
-                    LastRunTime = DateTime.UtcNow,
-                    NextRunTime = DateTime.UtcNow
-                };
-
-                await _chatJobRepository.CreateAsync(chatJob);
-                _logger.LogInformation("Created a new job with name {JobName} for chat {ChatId}", jobName, chatId);
-            }
-            else
-            {
-                chatJob.CronExpression = cronExpression;
-                await _chatJobRepository.UpdateAsync(chatJob);
-                _logger.LogInformation("Updated job with name {JobName} for chat {ChatId}", jobName, chatId);
-            }
-
-            RecurringJob.AddOrUpdate(chatJob.JobName, () => ExecuteJob(chatJob.Id), chatJob.CronExpression);
+            return await _chatJobRepository.GetAsync(chatJobId);
         }
 
-        public void ExecuteJob(string jobId)
+        public async Task<ChatJob> CreateJobAsync(long chatId, string jobName, string cronExpression, string? queueId = null)
         {
-            _logger.LogInformation("Executing job {jobId}", jobId);
+            var chatJob = new ChatJob
+            {
+                ChatId = chatId,
+                QueueId = queueId,
+                JobId = Guid.NewGuid().ToString(),
+                JobName = jobName,
+                CronExpression = cronExpression,
+                Interval = 1,
+                LastRunTime = DateTime.UtcNow
+            };
+
+            RecurringJob.AddOrUpdate(chatJob.JobId, () => ExecuteJob(chatJob), chatJob.CronExpression);
+
+            SetNextRunTime(chatJob);
+            chatJob = await _chatJobRepository.CreateAsync(chatJob);
+            _logger.LogDebug("Created a new job with name {JobName} for chat {ChatId}", jobName, chatId);
+
+            return chatJob;
+        }
+
+        public async Task<ChatJob> UpdateJobAsync(ChatJob updatedJob)
+        {
+            RecurringJob.AddOrUpdate(updatedJob.JobId, () => ExecuteJob(updatedJob), updatedJob.CronExpression);
+
+            SetNextRunTime(updatedJob);
+            await _chatJobRepository.UpdateAsync(updatedJob);
+            _logger.LogDebug("Updated job with name {JobName} for chat {ChatId}", updatedJob.JobName, updatedJob.ChatId);
+
+            return updatedJob;
+        }
+
+        public void ExecuteJob(ChatJob job)
+        {
+            _logger.LogInformation("Executing job {jobId}", job.Id);
         }
 
         public async Task DeleteJobAsync(string jobId)
         {
-            // Видалити роботу з Hangfire
             var job = await _chatJobRepository.GetAsync(jobId);
-            RecurringJob.RemoveIfExists(job.JobName);
+            RecurringJob.RemoveIfExists(job.JobId);
 
-            // Видалити роботу з бази даних
             await _chatJobRepository.DeleteAsync(jobId);
             _logger.LogInformation("Deleted job with Id {jobId}", jobId);
+        }
+
+        private void SetNextRunTime(ChatJob chatJob)
+        {
+            var cron = CronExpression.Parse(chatJob.CronExpression);
+            chatJob.NextRunTime = cron.GetNextOccurrence(chatJob.LastRunTime).Value;
         }
     }
 }

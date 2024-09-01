@@ -2,6 +2,7 @@
 using Autofac.Features.Metadata;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using System.Globalization;
 using Telegram.Bot;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
@@ -13,6 +14,8 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
 {
     public abstract class UpdateHandler
     {
+        protected readonly CultureInfo _culture = new CultureInfo("uk-UA");
+
         protected readonly ITelegramBotClient _bot;
         protected readonly ILifetimeScope _scope;
         protected readonly ILogger _log;

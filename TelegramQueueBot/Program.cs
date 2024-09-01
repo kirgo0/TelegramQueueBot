@@ -14,7 +14,6 @@ using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Data.Context;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Jobs;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Modules;
 using TelegramQueueBot.Repository.Implementations;
@@ -53,12 +52,13 @@ try
             {
                 return new QueueService(provider.GetRequiredService<ICachedQueueRepository>());
             });
+            services.AddScoped<JobService>();
 
             services.AddMongoRepositoryWithCaching<MongoUserRepository, CachedMongoUserRepository, User, IUserRepository>(TimeSpan.FromMinutes(10));
             services.AddMongoRepositoryWithCaching<MongoChatRepository, CachedMongoChatRepository, Chat, IChatRepository>(TimeSpan.FromMinutes(10));
             services.AddMongoRepositoryWithCaching<MongoTextRepository, CachedMongoTextRepository, Text, ITextRepository>(TimeSpan.FromMinutes(60));
             services.AddMongoRepositoryWithCaching<MongoQueueRepository, CachedMongoQueueRepository, Queue, ICachedQueueRepository>(TimeSpan.FromMinutes(10));
-            services.AddScoped<IChatJobRepository, ChatJobMongoRepository>();
+            services.AddScoped<IChatJobRepository, MongoChatJobRepository>();
 
             services.AddMongoQueueSaveBackgroundService(TimeSpan.FromSeconds(1));
             services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromMilliseconds(1000));
@@ -84,8 +84,6 @@ try
                       })
                       .UseActivator(new HangfireActivator(services.BuildServiceProvider()));
             });
-            services.AddScoped<CreateScheduledQueueJob>();
-            services.AddScoped<JobService>();
 
             services.AddHangfireServer();
         })

@@ -1,13 +1,15 @@
-﻿using TelegramQueueBot.Common;
+﻿using Hangfire.Common;
+using System.Globalization;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Models.Enums;
+using TelegramQueueBot.Repository.Interfaces;
 
 namespace TelegramQueueBot.Extensions
 {
     public static class MessageBuilderMarkupExtensions
     {
-        //public static readonly string EmptyQueueValue = Enumerable.Repeat("_", 10).Aggregate((a, b) => a + b);
         public static readonly string EmptyQueueValue = "__________";
         public static readonly int MinAutoColumnSeparationCount = 10;
 
@@ -113,27 +115,40 @@ namespace TelegramQueueBot.Extensions
                 throw new ArgumentNullException(nameof(usersQueue));
 
             SetTableQueueMarkup(builder, usersQueue, 2, true);
-            //for (int i = 0; i < usersQueue.Count; i++)
-            //{
-            //    var user = usersQueue[i];
-            //    if (user is null)
-            //    {
-            //        builder.AddButtonNextRow(
-            //            $"{i}. __________________",
-            //            callbackData: $"_"
-            //            );
-            //    }
-            //    else
-            //    {
-            //        builder.AddButtonNextRow(
-            //            $"{i}. {user.UserName}",
-            //            callbackData: $"_"
-            //            );
-            //    }
-            //}
             return builder;
         }
 
+        public static async Task<MessageBuilder> AddJobMenuMarkup(this MessageBuilder builder, string jobId, DateTime? nextOccurrence, ITextRepository textRepository)
+        {
+            var culture = new CultureInfo("uk-UA");
+            builder
+                .AddButton("_", "_")
+                .AddButton("_", "_")
+                .AddButtonNextRow(await textRepository.GetValueAsync(TextKeys.DeleteQueueBtn), $"{Actions.DeleteJob}{jobId}")
 
+                .AddButton("-60", $"{Actions.AddMinutes}{-60}/{jobId}")
+                .AddButton("-15", $"{Actions.AddMinutes}{-15}/{jobId}")
+                .AddButton("-5", $"{Actions.AddMinutes}{-5}/{jobId}")
+                .AddButton(nextOccurrence.Value.ToLocalTime().ToString("HH:mm"), "_")
+                .AddButton("5", $"{Actions.AddMinutes}{5}/{jobId}")
+                .AddButton("15", $"{Actions.AddMinutes}{15}/{jobId}")
+                .AddButtonNextRow("60", $"{Actions.AddMinutes}{60}/{jobId}")
+
+                .AddButton("◀️", $"{Actions.AddDays}{-1}/{jobId}")
+                .AddButton(culture.DateTimeFormat.GetDayName(nextOccurrence.Value.ToLocalTime().DayOfWeek), "_")
+                .AddButtonNextRow("▶️", $"{Actions.AddDays}{1}/{jobId}");
+            return builder;
+        }
+
+        public static async Task<MessageBuilder> AddJobMenuCaption(this MessageBuilder builder, ChatJob job, ITextRepository _textRepository)
+        {
+            builder
+                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobMenu)).AppendTextLine(job.JobName)
+                .AppendText("[DEBUG last] ").AppendTextLine(job.LastRunTime.ToLocalTime().ToString())
+                .AppendText("[DEBUG next] ").AppendTextLine(job.NextRunTime.ToLocalTime().ToString())
+                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTime.ToLocalTime().ToString("dd.MM.yyyy"));
+
+            return builder;
+        }
     }
 }

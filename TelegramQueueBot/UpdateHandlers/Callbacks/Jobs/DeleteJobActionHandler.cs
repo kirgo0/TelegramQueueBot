@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
@@ -15,11 +16,21 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     {
         public DeleteJobActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DeleteJobActionHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
+            GroupsOnly = true;
+            NeedsChat = true;           
         }
 
-        public override Task Handle(Update update)
+        public override async Task Handle(Update update)
         {
-            throw new NotImplementedException();
+            var chat = await chatTask;
+            var msg = new MessageBuilder(chat);
+            var jobId = GetAction(update).Replace(Actions.DeleteJob, string.Empty);
+            msg
+                .AppendText($"{await _textRepository.GetValueAsync(TextKeys.ConfirmJobDeletion)}")
+                .AddButton(await _textRepository.GetValueAsync(TextKeys.BackBtn), $"{Actions.JobMenu}{jobId}")
+                .AddButton(await _textRepository.GetValueAsync(TextKeys.ConfirmDeletionBtn), $"{Actions.ConfirmJobDeletion}{jobId}");
+
+            await _bot.BuildAndEditAsync(msg);
         }
     }
 }

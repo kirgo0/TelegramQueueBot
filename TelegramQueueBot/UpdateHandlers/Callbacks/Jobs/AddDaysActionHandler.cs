@@ -1,7 +1,6 @@
 ﻿using Autofac;
+using Hangfire;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
-using System;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
@@ -10,15 +9,14 @@ using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
-using Cronos;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
-    [HandleAction(Actions.AddMinutes)]
-    public class AddMinutesActionHandler : UpdateHandler
+    [HandleAction(Actions.AddDays)]
+    public class AddDaysActionHandler : UpdateHandler
     {
         private readonly JobService _jobService;
-        public AddMinutesActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddMinutesActionHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
+        public AddDaysActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddDaysActionHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -29,22 +27,20 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
         {
             var arguments = 
                 GetAction(update).
-                Replace(Actions.AddMinutes, string.Empty).
+                Replace(Actions.AddDays, string.Empty).
                 Split("/");
-            if(arguments.Length != 2)
+
+            if (arguments.Length != 2)
             {
                 return;
             }
             var jobId = arguments[1];
-            if(!int.TryParse(arguments[0], out int minutes))
+            if (!int.TryParse(arguments[0], out int days))
             {
                 return;
             }
-
             var job = await _jobService.GetAsync(jobId);
-            
-            job.CronExpression = CronHelper.AddMinutes(job.CronExpression, minutes);
-
+            job.CronExpression = CronHelper.AddDays(job.CronExpression, days);
             await _jobService.UpdateJobAsync(job);
 
             var chat = await chatTask;
@@ -52,8 +48,6 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             await msg.AddJobMenuCaption(job, _textRepository);
 
             await _bot.BuildAndEditAsync(msg);
-
         }
     }
 }
-

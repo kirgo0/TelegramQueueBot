@@ -44,5 +44,10 @@
         public const string JobsListIsEmpty = "jobs_list_is_empty";
         public const string JobCreatedQueue = "job_created_queue";
 
+        public const string JobMenu = "job_menu";
+        public const string JobNextTime = "job_next_time";
+
+        public const string ConfirmJobDeletion = "confirm_job_deletion";
+
     }
 }

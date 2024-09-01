@@ -1,15 +1,18 @@
 ﻿using Autofac;
+using Hangfire;
+using Hangfire.Storage;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
-    [HandleCommand(Command.Jobs)]
+    [HandlesCommand(Command.Jobs)]
     public class JobsCommandHandler : UpdateHandler
     {
         private IChatJobRepository _jobRepository;
@@ -22,12 +25,39 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
         public override async Task Handle(Update update)
         {
+            using (var connection = JobStorage.Current.GetConnection())
+            {
+                var recurringJobs = connection.GetRecurringJobs();
+                //foreach (var recurringJob in recurringJobs)
+                //{
+                //    RecurringJob.RemoveIfExists(recurringJob.Id);
+                //}
+                _log.LogDebug("Jobs available: {count}", recurringJobs.Count);
+            }
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
 
-            var list = await _jobRepository.GetAllByChatIdAsync(chat.TelegramId);
-            msg.AppendText(await _textRepository.GetValueAsync(TextKeys.JobsList));
+            var jobs = await _jobRepository.GetAllByChatIdAsync(chat.TelegramId);
 
+            if (jobs.Count == 0)
+            {
+                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.JobsListIsEmpty));
+            }
+            else
+            {
+                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.JobsList));
+                foreach (var job in jobs)
+                {
+                    msg.AddButtonNextRow(job.JobName, $"{Actions.JobMenu}{job.Id}");
+                }
+            }
+            if(update.CallbackQuery is not null) {
+                await _bot.BuildAndEditAsync(msg);
+            } else
+            {
+                await DeleteLastMessageAsync(chat);
+                await SendAndUpdateChatAsync(chat, msg);
+            }
         }
     }
 }

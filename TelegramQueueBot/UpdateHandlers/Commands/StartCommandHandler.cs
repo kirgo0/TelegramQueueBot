@@ -10,7 +10,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
-    [HandleCommand(Command.Start)]
+    [HandlesCommand(Command.Start)]
     public class StartCommandHandler : UpdateHandler
     {
         public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
@@ -35,8 +35,6 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             if (chat is not null)
             {
-                // TODO: remove deletion on start
-                await DeleteLastMessageAsync(chat);
                 var msg = new MessageBuilder(chat)
                     .AppendText(await _textRepository.GetValueAsync(TextKeys.Start));
                 await _bot.BuildAndSendAsync(msg);

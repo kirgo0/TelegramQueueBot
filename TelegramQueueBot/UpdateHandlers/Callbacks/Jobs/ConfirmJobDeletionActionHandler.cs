@@ -5,6 +5,7 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
@@ -12,13 +13,25 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     [HandleAction(Actions.ConfirmJobDeletion)]
     public class ConfirmJobDeletionActionHandler : UpdateHandler
     {
-        public ConfirmJobDeletionActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ConfirmJobDeletionActionHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        private readonly JobService _jobService;
+        public ConfirmJobDeletionActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ConfirmJobDeletionActionHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
         {
+            GroupsOnly = true;
+            NeedsChat = true;
+            _jobService = jobService;
         }
 
-        public override Task Handle(Update update)
+        public override async Task Handle(Update update)
         {
-            throw new NotImplementedException();
+            var jobId = GetAction(update).Replace(Actions.ConfirmJobDeletion, string.Empty);
+            await _jobService.DeleteJobAsync(jobId);
+            await RedirectHandle(
+                update,
+                Metatags.HandleCommand,
+                (update, value, item) => value.Equals(Command.Jobs),
+                "An error ocured while redirecting from {from} action handler to the {to} command handler",
+                Actions.ConfirmJobDeletion, Command.Jobs
+                );
         }
     }
 }

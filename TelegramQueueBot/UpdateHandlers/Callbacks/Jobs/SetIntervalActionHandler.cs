@@ -14,6 +14,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     {
         public SetIntervalActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetIntervalActionHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
+            GroupsOnly = true;
         }
 
         public override Task Handle(Update update)
