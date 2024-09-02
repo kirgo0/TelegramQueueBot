@@ -20,6 +20,7 @@
         public const string SetInterval = "SetInterval";
         public const string SetQueue = "SetQueue";
         public const string JobQueueMenu = "JobQueueMenu";
+        public const string AddIntervalWeeks = "AddIntervalWeeks";
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using Hangfire.Common;
+﻿using Cronos;
+using Hangfire.Common;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using TelegramQueueBot.Common;
@@ -119,6 +120,17 @@ namespace TelegramQueueBot.Extensions
             return builder;
         }
 
+        public static async Task<MessageBuilder> AddJobMenuCaption(this MessageBuilder builder, ChatJob job, ITextRepository _textRepository)
+        {
+            builder
+                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobMenu)).AppendTextLine(job.JobName)
+                .AppendText("[DEBUG lastInterval] ").AppendTextLine(job.LastInterval.ToString())
+                .AppendText("[DEBUG next] ").AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString())
+                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString("dd.MM.yyyy"));
+
+            return builder;
+        }
+
         public static async Task<MessageBuilder> AddJobMenuMarkup(this MessageBuilder builder, ChatJob job, ITextRepository textRepository)
         {
 
@@ -127,7 +139,7 @@ namespace TelegramQueueBot.Extensions
                 .AddButton($"_{job.QueueId}", $"{Actions.JobQueueMenu}{job.Id}")
                 .AddButtonNextRow(await textRepository.GetValueAsync(TextKeys.DeleteQueueBtn), $"{Actions.DeleteJob}{job.Id}")
 
-                .AddJobMenuMinutes(job, 5, 15, 60)
+                .AddJobMenuMinutes(job, 1, 5, 10)
 
                 .AddJobMenuWeeks(job, 1)
 
@@ -150,7 +162,7 @@ namespace TelegramQueueBot.Extensions
                 builder.AddButton($"{minutes[i]}", $"{Actions.AddMinutes}{minutes[i]}/{job.Id}");
             }
             builder.AddButtonNextRow(
-                $"{minutes[minutes.Length - 1]}", 
+                $"{minutes[minutes.Length - 1]}",
                 $"{Actions.AddMinutes}{minutes[minutes.Length - 1]}/{job.Id}"
                 );
             return builder;
@@ -158,7 +170,10 @@ namespace TelegramQueueBot.Extensions
 
         private static MessageBuilder AddJobMenuIntervals(this MessageBuilder builder, ChatJob job, int maxInterval)
         {
-            builder.AddButtonNextRow("Інтервал в тижнях", "_");
+            builder
+                .AddButton("◀️", $"{Actions.AddIntervalWeeks}{1}/{job.Id}")
+                .AddButton("Інтервал в тижнях", "_")
+                .AddButtonNextRow("▶️", $"{Actions.AddIntervalWeeks}{-1}/{job.Id}");
             for (int i = 1; i <= maxInterval; i++)
             {
                 builder.AddButton(
@@ -179,16 +194,6 @@ namespace TelegramQueueBot.Extensions
                 .AddButtonNextRow("▶️", $"{Actions.AddDays}{shift}/{job.Id}");
         }
 
-        public static async Task<MessageBuilder> AddJobMenuCaption(this MessageBuilder builder, ChatJob job, ITextRepository _textRepository)
-        {
-            builder
-                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobMenu)).AppendTextLine(job.JobName)
-                .AppendText("[DEBUG last] ").AppendTextLine(job.LastRunTimeUtc.ToLocalTime().ToString())
-                .AppendText("[DEBUG next] ").AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString())
-                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString("dd.MM.yyyy"));
-
-            return builder;
-        }
 
     }
 }

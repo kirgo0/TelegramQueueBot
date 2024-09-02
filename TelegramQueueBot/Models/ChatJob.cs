@@ -8,7 +8,7 @@
         public string JobName { get; set; } = string.Empty;
         public string CronExpression { get; set; } = string.Empty;
         public int Interval { get; set; } = 1;
-        public DateTime LastRunTimeUtc { get; set; }
+        public int LastInterval { get; set; } = 1;
         public DateTime NextRunTimeUtc { get; set; }
 
         public ChatJob() { }
@@ -19,7 +19,6 @@
             JobName = jobName;
             CronExpression = cronExpression;
             JobId = Guid.NewGuid().ToString();
-            LastRunTimeUtc = DateTime.UtcNow;
         }
     }
 }

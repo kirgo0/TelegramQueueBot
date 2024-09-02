@@ -2,6 +2,7 @@
 using Hangfire;
 using Hangfire.Common;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver.Linq;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 
@@ -32,6 +33,7 @@ namespace TelegramQueueBot.Services
             RecurringJob.AddOrUpdate(chatJob.JobId, () => ExecuteJob(chatJob), chatJob.CronExpression);
 
             SetNextRunTime(chatJob);
+
             chatJob = await _chatJobRepository.CreateAsync(chatJob);
             _logger.LogDebug("Created a new job with name {JobName} for chat {ChatId}", jobName, chatId);
 
@@ -49,9 +51,18 @@ namespace TelegramQueueBot.Services
             return updatedJob;
         }
 
-        public void ExecuteJob(ChatJob job)
+        public async Task ExecuteJob(ChatJob job)
         {
+            if(job.Interval > job.LastInterval)
+            {
+                job.LastInterval++;
+                _logger.LogDebug("The chat job has been rescheduled for the next week {lastInterval}/{interval}", job.LastInterval, job.Interval);
+                return;
+            }
+            job.LastInterval = 1;
+            await UpdateJobAsync(job);
             _logger.LogInformation("Executing chat job {chatJobId}", job.Id);
+            // TODO: send message logic & clear out dated data
         }
 
         public async Task DeleteJobAsync(string chatJobId)
@@ -66,7 +77,8 @@ namespace TelegramQueueBot.Services
         private void SetNextRunTime(ChatJob chatJob)
         {
             var cron = CronExpression.Parse(chatJob.CronExpression);
-            chatJob.NextRunTimeUtc = cron.GetNextOccurrence(chatJob.LastRunTimeUtc).Value;
+            chatJob.NextRunTimeUtc = cron.GetNextOccurrence(DateTime.UtcNow).Value.AddDays(7 * (chatJob.Interval - chatJob.LastInterval));
         }
+
     }
 }

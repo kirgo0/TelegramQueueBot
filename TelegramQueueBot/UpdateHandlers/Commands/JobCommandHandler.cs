@@ -42,7 +42,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             }
 
             var now = DateTime.UtcNow;
-            now.AddMinutes(1);
+            now = now.AddMinutes(1);
             //var minutes = now.Minute % 5 == 0 ? now.Minute + 5 : now.Minute + (5 - now.Minute % 5);
             var cron = $"{now.Minute} {now.Hour} * * {(int)now.DayOfWeek}";
             var job = await _jobService.CreateJobAsync(chat.TelegramId, "New job", cron);
