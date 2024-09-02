@@ -42,12 +42,16 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             }
 
             var now = DateTime.UtcNow;
+            now.AddMinutes(1);
             //var minutes = now.Minute % 5 == 0 ? now.Minute + 5 : now.Minute + (5 - now.Minute % 5);
-            var minutes = now.Minute + 1;
-            var cron = $"{minutes} {now.Hour} * * {(int)now.DayOfWeek}";
+            var cron = $"{now.Minute} {now.Hour} * * {(int)now.DayOfWeek}";
             var job = await _jobService.CreateJobAsync(chat.TelegramId, "New job", cron);
 
+            await msg.AddJobMenuCaption(job, _textRepository);
+            await msg.AddJobMenuMarkup(job, _textRepository);
 
+            await DeleteLastMessageAsync(chat);
+            await SendAndUpdateChatAsync(chat, msg);
         }
     }
 }

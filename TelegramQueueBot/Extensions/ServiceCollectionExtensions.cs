@@ -51,6 +51,38 @@ namespace TelegramQueueBot.Extensions
 
         public static IServiceCollection AddMongoRepositoryWithCaching<TRepository, TCachedRepository, TEntity, IRepository>(
         this IServiceCollection services,
+        Action<MemoryCacheEntryOptions> cacheOptionsBuilder)
+        where TRepository : MongoRepository<TEntity>
+        where TCachedRepository : CachedMongoRepository<TRepository, TEntity>, IRepository
+        where TEntity : Entity, new()
+        where IRepository : class
+        {
+            // Register the MongoRepository by its interface
+            services.AddScoped<TRepository>();
+
+            // Register the CachedMongoRepository by its interface
+            services.AddScoped<IRepository>(provider =>
+            {
+                var innerRepository = provider.GetRequiredService<TRepository>();
+                var logger = provider.GetRequiredService<ILogger<TCachedRepository>>();
+                var cache = provider.GetRequiredService<IMemoryCache>();
+                var cacheOptions = new MemoryCacheEntryOptions();
+                cacheOptionsBuilder.Invoke(cacheOptions);
+                // Instantiate and return the cached repository
+                return (TCachedRepository)Activator.CreateInstance(
+                    typeof(TCachedRepository),
+                    innerRepository,
+                    logger,
+                    cache,
+                    cacheOptions
+                );
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection AddMongoRepositoryWithCaching<TRepository, TCachedRepository, TEntity, IRepository>(
+        this IServiceCollection services,
         TimeSpan cacheDuration)
         where TRepository : MongoRepository<TEntity>
         where TCachedRepository : CachedMongoRepository<TRepository, TEntity>, IRepository
@@ -66,14 +98,18 @@ namespace TelegramQueueBot.Extensions
                 var innerRepository = provider.GetRequiredService<TRepository>();
                 var logger = provider.GetRequiredService<ILogger<TCachedRepository>>();
                 var cache = provider.GetRequiredService<IMemoryCache>();
-
+                var cacheOptions = new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = cacheDuration
+                };
+                
                 // Instantiate and return the cached repository
                 return (TCachedRepository)Activator.CreateInstance(
                     typeof(TCachedRepository),
                     innerRepository,
                     logger,
                     cache,
-                    cacheDuration
+                    cacheOptions
                 );
             });
 

@@ -9,7 +9,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
 {
     public class CachedMongoChatRepository : CachedMongoRepository<MongoChatRepository, Chat>, IChatRepository
     {
-        public CachedMongoChatRepository(MongoChatRepository innerRepository, ILogger<CachedMongoChatRepository> log, IMemoryCache cache, TimeSpan cacheDuration) : base(innerRepository, log, cache, cacheDuration)
+        public CachedMongoChatRepository(MongoChatRepository innerRepository, ILogger log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions = null) : base(innerRepository, log, cache, cacheOptions)
         {
         }
 
@@ -26,7 +26,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                 var item = await _innerRepository.GetByTelegramIdAsync(telegramId);
                 if (item != null)
                 {
-                    _cache.Set(GetKey(telegramId), item, _cacheDuration);
+                    _cache.Set(GetKey(telegramId), item, _cacheOptions);
                     _log.LogDebug("Chat with TelegramId {telegramId} added to cache", telegramId);
                 }
 

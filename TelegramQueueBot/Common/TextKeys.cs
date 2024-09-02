@@ -49,5 +49,7 @@
 
         public const string ConfirmJobDeletion = "confirm_job_deletion";
 
+        public const string SelectJobQueueMenu = "select_job_queue_menu";
+
     }
 }

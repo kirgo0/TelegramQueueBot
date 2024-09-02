@@ -13,7 +13,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
         public IQueueRepository InnerRepository => _innerRepository;
         public event EventHandler<QueueUpdatedEventArgs> QueueUpdateEvent;
 
-        public CachedMongoQueueRepository(MongoQueueRepository innerRepository, ILogger<CachedMongoQueueRepository> log, IMemoryCache cache, TimeSpan cacheDuration) : base(innerRepository, log, cache, cacheDuration)
+        public CachedMongoQueueRepository(MongoQueueRepository innerRepository, ILogger<CachedMongoQueueRepository> log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions = null) : base(innerRepository, log, cache, cacheOptions)
         {
         }
 
@@ -47,7 +47,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                     }
                     foreach (var queue in dbQueues)
                     {
-                        _cache.Set(GetKey(queue.Id), queue, _cacheDuration);
+                        _cache.Set(GetKey(queue.Id), queue, _cacheOptions);
                         _log.LogDebug("Queue with Id {id} added to cache", queue.Id);
                     }
                 }
@@ -79,7 +79,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                 var queue = await InnerRepository.CreateAsync(chatId, size);
                 if (queue is not null)
                 {
-                    _cache.Set(GetKey(queue.Id), queue, _cacheDuration);
+                    _cache.Set(GetKey(queue.Id), queue, _cacheOptions);
                     _log.LogDebug("{name} with Id {id} added to cache", nameof(Queue), queue.Id);
                 }
                 return queue;
@@ -95,7 +95,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
         {
             OnQueueUpdatedEvent(new QueueUpdatedEventArgs(item));
             _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", item.Id, nameof(QueueUpdateEvent));
-            _cache.Set(GetKey(item.Id), item, _cacheDuration);
+            _cache.Set(GetKey(item.Id), item, _cacheOptions);
             return Task.FromResult(true);
         }
 
@@ -105,7 +105,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
             {
                 OnQueueUpdatedEvent(new QueueUpdatedEventArgs(item));
                 _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", item.Id, nameof(QueueUpdateEvent));
-                _cache.Set(GetKey(item.Id), item, _cacheDuration);
+                _cache.Set(GetKey(item.Id), item, _cacheOptions);
                 return true;
             }
             else
@@ -113,7 +113,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                 var result = await InnerRepository.UpdateAsync(item);
                 if (result)
                 {
-                    _cache.Set(GetKey(item.Id), item, _cacheDuration);
+                    _cache.Set(GetKey(item.Id), item, _cacheOptions);
                     _log.LogDebug("{name} with Id {id} updated in cache", typeof(Queue).Name, item.Id);
                 }
                 return result;

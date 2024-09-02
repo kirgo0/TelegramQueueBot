@@ -37,7 +37,7 @@ namespace TelegramQueueBot.Repository.Implementations
             }
         }
 
-        public async Task<string> GetValueAsync(string key)
+        public virtual async Task<string> GetValueAsync(string key)
         {
             var text = await GetByKeyAsync(key);
             return text is not null ? text.Value : string.Empty;

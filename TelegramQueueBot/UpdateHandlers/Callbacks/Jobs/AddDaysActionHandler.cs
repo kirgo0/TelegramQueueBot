@@ -34,17 +34,17 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             {
                 return;
             }
-            var jobId = arguments[1];
             if (!int.TryParse(arguments[0], out int days))
             {
                 return;
             }
+            var jobId = arguments[1];
             var job = await _jobService.GetAsync(jobId);
             job.CronExpression = CronHelper.AddDays(job.CronExpression, days);
             await _jobService.UpdateJobAsync(job);
 
             var chat = await chatTask;
-            var msg = await new MessageBuilder(chat).AddJobMenuMarkup(job.Id, job.NextRunTime, _textRepository);
+            var msg = await new MessageBuilder(chat).AddJobMenuMarkup(job, _textRepository);
             await msg.AddJobMenuCaption(job, _textRepository);
 
             await _bot.BuildAndEditAsync(msg);

@@ -1,5 +1,6 @@
 ﻿using Hangfire.Common;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
@@ -118,37 +119,76 @@ namespace TelegramQueueBot.Extensions
             return builder;
         }
 
-        public static async Task<MessageBuilder> AddJobMenuMarkup(this MessageBuilder builder, string jobId, DateTime? nextOccurrence, ITextRepository textRepository)
+        public static async Task<MessageBuilder> AddJobMenuMarkup(this MessageBuilder builder, ChatJob job, ITextRepository textRepository)
+        {
+
+            builder
+                .AddButton(await textRepository.GetValueAsync(TextKeys.BackBtn), Actions.Jobs)
+                .AddButton($"_{job.QueueId}", $"{Actions.JobQueueMenu}{job.Id}")
+                .AddButtonNextRow(await textRepository.GetValueAsync(TextKeys.DeleteQueueBtn), $"{Actions.DeleteJob}{job.Id}")
+
+                .AddJobMenuMinutes(job, 5, 15, 60)
+
+                .AddJobMenuWeeks(job, 1)
+
+                .AddJobMenuIntervals(job, 4);
+
+
+            return builder;
+        }
+
+        private static MessageBuilder AddJobMenuMinutes(this MessageBuilder builder, ChatJob job, params int[] minutes)
+        {
+            for (var i = minutes.Length - 1; i >= 0; i--)
+            {
+                builder.AddButton($"-{minutes[i]}", $"{Actions.AddMinutes}{-minutes[i]}/{job.Id}");
+            }
+            builder.AddButton(job.NextRunTimeUtc.ToLocalTime().ToString("HH:mm"), "_");
+            for (var i = 0; i < minutes.Length - 1; i++)
+            {
+
+                builder.AddButton($"{minutes[i]}", $"{Actions.AddMinutes}{minutes[i]}/{job.Id}");
+            }
+            builder.AddButtonNextRow(
+                $"{minutes[minutes.Length - 1]}", 
+                $"{Actions.AddMinutes}{minutes[minutes.Length - 1]}/{job.Id}"
+                );
+            return builder;
+        }
+
+        private static MessageBuilder AddJobMenuIntervals(this MessageBuilder builder, ChatJob job, int maxInterval)
+        {
+            builder.AddButtonNextRow("Інтервал в тижнях", "_");
+            for (int i = 1; i <= maxInterval; i++)
+            {
+                builder.AddButton(
+                    i == job.Interval ? $"{i} ✅" : i.ToString(),
+                    $"{Actions.SetInterval}{i}/{job.Id}"
+                    );
+            }
+
+            return builder;
+        }
+
+        private static MessageBuilder AddJobMenuWeeks(this MessageBuilder builder, ChatJob job, int shift)
         {
             var culture = new CultureInfo("uk-UA");
-            builder
-                .AddButton("_", "_")
-                .AddButton("_", "_")
-                .AddButtonNextRow(await textRepository.GetValueAsync(TextKeys.DeleteQueueBtn), $"{Actions.DeleteJob}{jobId}")
-
-                .AddButton("-60", $"{Actions.AddMinutes}{-60}/{jobId}")
-                .AddButton("-15", $"{Actions.AddMinutes}{-15}/{jobId}")
-                .AddButton("-5", $"{Actions.AddMinutes}{-5}/{jobId}")
-                .AddButton(nextOccurrence.Value.ToLocalTime().ToString("HH:mm"), "_")
-                .AddButton("5", $"{Actions.AddMinutes}{5}/{jobId}")
-                .AddButton("15", $"{Actions.AddMinutes}{15}/{jobId}")
-                .AddButtonNextRow("60", $"{Actions.AddMinutes}{60}/{jobId}")
-
-                .AddButton("◀️", $"{Actions.AddDays}{-1}/{jobId}")
-                .AddButton(culture.DateTimeFormat.GetDayName(nextOccurrence.Value.ToLocalTime().DayOfWeek), "_")
-                .AddButtonNextRow("▶️", $"{Actions.AddDays}{1}/{jobId}");
-            return builder;
+            return builder
+                .AddButton("◀️", $"{Actions.AddDays}{-shift}/{job.Id}")
+                .AddButton(culture.DateTimeFormat.GetDayName(job.NextRunTimeUtc.ToLocalTime().DayOfWeek), "_")
+                .AddButtonNextRow("▶️", $"{Actions.AddDays}{shift}/{job.Id}");
         }
 
         public static async Task<MessageBuilder> AddJobMenuCaption(this MessageBuilder builder, ChatJob job, ITextRepository _textRepository)
         {
             builder
                 .AppendText(await _textRepository.GetValueAsync(TextKeys.JobMenu)).AppendTextLine(job.JobName)
-                .AppendText("[DEBUG last] ").AppendTextLine(job.LastRunTime.ToLocalTime().ToString())
-                .AppendText("[DEBUG next] ").AppendTextLine(job.NextRunTime.ToLocalTime().ToString())
-                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTime.ToLocalTime().ToString("dd.MM.yyyy"));
+                .AppendText("[DEBUG last] ").AppendTextLine(job.LastRunTimeUtc.ToLocalTime().ToString())
+                .AppendText("[DEBUG next] ").AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString())
+                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString("dd.MM.yyyy"));
 
             return builder;
         }
+
     }
 }

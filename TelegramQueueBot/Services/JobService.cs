@@ -27,16 +27,7 @@ namespace TelegramQueueBot.Services
 
         public async Task<ChatJob> CreateJobAsync(long chatId, string jobName, string cronExpression, string? queueId = null)
         {
-            var chatJob = new ChatJob
-            {
-                ChatId = chatId,
-                QueueId = queueId,
-                JobId = Guid.NewGuid().ToString(),
-                JobName = jobName,
-                CronExpression = cronExpression,
-                Interval = 1,
-                LastRunTime = DateTime.UtcNow
-            };
+            var chatJob = new ChatJob(chatId, jobName, cronExpression);
 
             RecurringJob.AddOrUpdate(chatJob.JobId, () => ExecuteJob(chatJob), chatJob.CronExpression);
 
@@ -60,22 +51,22 @@ namespace TelegramQueueBot.Services
 
         public void ExecuteJob(ChatJob job)
         {
-            _logger.LogInformation("Executing job {jobId}", job.Id);
+            _logger.LogInformation("Executing chat job {chatJobId}", job.Id);
         }
 
-        public async Task DeleteJobAsync(string jobId)
+        public async Task DeleteJobAsync(string chatJobId)
         {
-            var job = await _chatJobRepository.GetAsync(jobId);
+            var job = await _chatJobRepository.GetAsync(chatJobId);
             RecurringJob.RemoveIfExists(job.JobId);
 
-            await _chatJobRepository.DeleteAsync(jobId);
-            _logger.LogInformation("Deleted job with Id {jobId}", jobId);
+            await _chatJobRepository.DeleteAsync(chatJobId);
+            _logger.LogInformation("Deleted chat job with Id {chatJobId}", chatJobId);
         }
 
         private void SetNextRunTime(ChatJob chatJob)
         {
             var cron = CronExpression.Parse(chatJob.CronExpression);
-            chatJob.NextRunTime = cron.GetNextOccurrence(chatJob.LastRunTime).Value;
+            chatJob.NextRunTimeUtc = cron.GetNextOccurrence(chatJob.LastRunTimeUtc).Value;
         }
     }
 }

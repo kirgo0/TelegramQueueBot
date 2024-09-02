@@ -48,7 +48,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             await _jobService.UpdateJobAsync(job);
 
             var chat = await chatTask;
-            var msg = await new MessageBuilder(chat).AddJobMenuMarkup(job.Id, job.NextRunTime, _textRepository);
+            var msg = await new MessageBuilder(chat).AddJobMenuMarkup(job, _textRepository);
             await msg.AddJobMenuCaption(job, _textRepository);
 
             await _bot.BuildAndEditAsync(msg);

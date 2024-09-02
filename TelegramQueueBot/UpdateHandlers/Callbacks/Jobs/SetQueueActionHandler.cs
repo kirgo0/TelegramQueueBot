@@ -3,8 +3,10 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
@@ -12,14 +14,38 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     [HandleAction(Actions.SetQueue)]
     public class SetQueueActionHandler : UpdateHandler
     {
-        public SetQueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetQueueActionHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        private readonly JobService _jobService;
+        public SetQueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetQueueActionHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
+            NeedsChat = true;
+            _jobService = jobService;
         }
 
-        public override Task Handle(Update update)
+        public override async Task Handle(Update update)
         {
-            throw new NotImplementedException();
+            var arguments =
+                GetAction(update).
+                Replace(Actions.SetQueue, string.Empty).
+                Split("/");
+            if (arguments.Length != 2)
+            {
+                return;
+            }
+            var queueId = arguments[0];
+            var jobId = arguments[1];
+
+            var job = await _jobService.GetAsync(jobId);
+            job.QueueId = string.IsNullOrEmpty(queueId) ? null : queueId;
+            await _jobService.UpdateJobAsync(job);
+
+            var chat = await chatTask;
+            var msg = new MessageBuilder(chat);
+
+            await msg.AddJobMenuCaption(job, _textRepository);
+            await msg.AddJobMenuMarkup(job, _textRepository);
+
+            await _bot.BuildAndEditAsync(msg);
         }
     }
 }

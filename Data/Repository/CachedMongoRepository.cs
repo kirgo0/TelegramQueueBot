@@ -15,15 +15,15 @@ namespace Data.Repository
         protected readonly ILogger _log;
         protected readonly IMemoryCache _cache;
         protected readonly string _cacheKeyPrefix;
-        protected readonly TimeSpan _cacheDuration;
+        protected readonly MemoryCacheEntryOptions _cacheOptions;
 
-        public CachedMongoRepository(TRepository innerRepository, ILogger log, IMemoryCache cache, TimeSpan cacheDuration)
+        public CachedMongoRepository(TRepository innerRepository, ILogger log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions = null)
         {
             _innerRepository = innerRepository;
             _log = log;
             _cache = cache;
             _cacheKeyPrefix = typeof(TEntity).Name;
-            _cacheDuration = cacheDuration;
+            _cacheOptions = cacheOptions ?? new MemoryCacheEntryOptions(); 
         }
 
         public virtual async Task<TEntity> GetAsync(string id)
@@ -37,7 +37,7 @@ namespace Data.Repository
             var item = await _innerRepository.GetAsync(id);
             if (item != null)
             {
-                _cache.Set(GetKey(id), item, _cacheDuration);
+                _cache.Set(GetKey(id), item, _cacheOptions);
                 _log.LogDebug("{name} with Id {id} added to cache", typeof(TEntity).Name, id);
             }
 
@@ -47,7 +47,7 @@ namespace Data.Repository
         public virtual async Task<TEntity> CreateAsync(TEntity item)
         {
             var createdItem = await _innerRepository.CreateAsync(item);
-            _cache.Set(GetKey(createdItem.Id), createdItem, _cacheDuration);
+            _cache.Set(GetKey(createdItem.Id), createdItem, _cacheOptions);
             _log.LogDebug("{name} with Id {id} added to cache", typeof(TEntity).Name, createdItem.Id);
             return createdItem;
         }
@@ -57,7 +57,7 @@ namespace Data.Repository
             var result = await _innerRepository.UpdateAsync(item);
             if (result)
             {
-                _cache.Set(GetKey(item.Id), item, _cacheDuration);
+                _cache.Set(GetKey(item.Id), item, _cacheOptions);
                 _log.LogDebug("{name} with Id {id} updated in cache", typeof(TEntity).Name, item.Id);
             }
             return result;

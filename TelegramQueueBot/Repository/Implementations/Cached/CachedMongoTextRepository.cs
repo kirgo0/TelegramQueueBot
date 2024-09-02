@@ -1,6 +1,8 @@
 ﻿using Data.Repository;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 
@@ -8,7 +10,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
 {
     public class CachedMongoTextRepository : CachedMongoRepository<MongoTextRepository, Text>, ITextRepository
     {
-        public CachedMongoTextRepository(MongoTextRepository innerRepository, ILogger<CachedMongoTextRepository> log, IMemoryCache cache, TimeSpan cacheDuration) : base(innerRepository, log, cache, cacheDuration)
+        public CachedMongoTextRepository(MongoTextRepository innerRepository, ILogger log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions = null) : base(innerRepository, log, cache, cacheOptions)
         {
         }
 
@@ -25,7 +27,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                 var item = await _innerRepository.GetByKeyAsync(key);
                 if (item != null && !item.Equals(MongoTextRepository.NotFoundText))
                 {
-                    _cache.Set(GetKey(item.Key), item, _cacheDuration);
+                    _cache.Set(GetKey(item.Key), item, _cacheOptions);
                     _log.LogDebug("Text with Key {id} added to cache", item.Key);
                 }
 
@@ -43,5 +45,6 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
             var text = await GetByKeyAsync(key);
             return text is not null ? text.Value : string.Empty;
         }
+
     }
 }

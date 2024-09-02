@@ -33,17 +33,9 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 
             var data = GetAction(update).Replace(Actions.JobMenu, "");
             var job = await _jobService.GetAsync(data); 
-            
-            var cron = CronExpression.Parse(job.CronExpression);
-            DateTime? nextOccurrence = cron.GetNextOccurrence(job.LastRunTime);
-
-            if (!nextOccurrence.HasValue) {
-                _log.LogError("An error ocured while parsing a cron expression: {expr}", job.CronExpression);
-                return;
-            }
 
             await msg.AddJobMenuCaption(job, _textRepository);
-            await msg.AddJobMenuMarkup(job.Id, nextOccurrence, _textRepository);
+            await msg.AddJobMenuMarkup(job, _textRepository);
 
             await _bot.BuildAndEditAsync(msg);
         }
