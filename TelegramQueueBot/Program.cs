@@ -4,6 +4,7 @@ using Hangfire;
 using Hangfire.Mongo;
 using Hangfire.Mongo.Migration.Strategies;
 using Hangfire.Mongo.Migration.Strategies.Backup;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +44,7 @@ try
         .ConfigureServices((context, services) =>
         {
             services.AddMemoryCache();
+            services.AddSingleton<ICacheService, CacheService>();
 
             var mongoConnectionString = context.Configuration["MongoSettings:Connection"];
             var mongoDatabaseName = context.Configuration["MongoSettings:DatabaseName"];

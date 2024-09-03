@@ -30,7 +30,6 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
-
             var data = GetAction(update).Replace(Actions.JobMenu, "");
             var job = await _jobService.GetAsync(data); 
 

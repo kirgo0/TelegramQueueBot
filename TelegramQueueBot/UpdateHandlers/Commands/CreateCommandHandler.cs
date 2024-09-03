@@ -28,6 +28,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var chat = await chatTask;
             if (!string.IsNullOrEmpty(chat.CurrentQueueId))
                 await DeleteLastMessageAsync(chat);
+
             var queue = await _queueService.CreateQueueAsync(chat.TelegramId, chat.DefaultQueueSize);
             if (queue is null)
             {

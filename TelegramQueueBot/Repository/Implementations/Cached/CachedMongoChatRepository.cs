@@ -26,7 +26,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                 var item = await _innerRepository.GetByTelegramIdAsync(telegramId);
                 if (item != null)
                 {
-                    _cache.Set(GetKey(telegramId), item, _cacheOptions);
+                    AddOrUpdateCache(item);
                     _log.LogDebug("Chat with TelegramId {telegramId} added to cache", telegramId);
                 }
 
@@ -37,6 +37,18 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                 _log.LogError(ex, "An error occurred when retrieving a chat with Telegram ID {id}.", telegramId);
                 return null;
             }
+        }
+
+        protected override void AddOrUpdateCache(Chat item)
+        {
+            _cache.Set(GetKey(item.TelegramId), item, _cacheOptions);
+            _cache.Set(GetKey(item.Id), item, _cacheOptions);
+        }
+
+        protected override void RemoveFromCache(Chat item)
+        {
+            _cache.Remove(GetKey(item.TelegramId));
+            _cache.Remove(GetKey(item.Id));
         }
     }
 }

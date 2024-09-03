@@ -37,7 +37,7 @@ namespace Data.Repository
             var item = await _innerRepository.GetAsync(id);
             if (item != null)
             {
-                _cache.Set(GetKey(id), item, _cacheOptions);
+                AddOrUpdateCache(item);
                 _log.LogDebug("{name} with Id {id} added to cache", typeof(TEntity).Name, id);
             }
 
@@ -47,7 +47,7 @@ namespace Data.Repository
         public virtual async Task<TEntity> CreateAsync(TEntity item)
         {
             var createdItem = await _innerRepository.CreateAsync(item);
-            _cache.Set(GetKey(createdItem.Id), createdItem, _cacheOptions);
+            AddOrUpdateCache(createdItem);
             _log.LogDebug("{name} with Id {id} added to cache", typeof(TEntity).Name, createdItem.Id);
             return createdItem;
         }
@@ -57,7 +57,7 @@ namespace Data.Repository
             var result = await _innerRepository.UpdateAsync(item);
             if (result)
             {
-                _cache.Set(GetKey(item.Id), item, _cacheOptions);
+                AddOrUpdateCache(item);
                 _log.LogDebug("{name} with Id {id} updated in cache", typeof(TEntity).Name, item.Id);
             }
             return result;
@@ -65,10 +65,12 @@ namespace Data.Repository
 
         public virtual async Task<bool> DeleteAsync(string id)
         {
+            var item = await _innerRepository.GetAsync(id);
+            if (item is null) return false;
             var result = await _innerRepository.DeleteAsync(id);
             if (result)
             {
-                _cache.Remove(GetKey(id));
+                RemoveFromCache(item);
                 _log.LogInformation("{name} with Id {id} removed from cache", typeof(TEntity).Name, id);
             }
             return result;
@@ -77,6 +79,16 @@ namespace Data.Repository
         protected virtual string GetKey(object uniqueValue)
         {
             return $"{_cacheKeyPrefix}_{uniqueValue}";
+        }
+
+        protected virtual void AddOrUpdateCache(TEntity item)
+        {
+            _cache.Set(GetKey(item.Id), item, _cacheOptions);
+        }
+
+        protected virtual void RemoveFromCache(TEntity item)
+        {
+            _cache.Remove(GetKey(item.Id));
         }
     }
 }

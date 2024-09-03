@@ -58,10 +58,10 @@ namespace TelegramQueueBot.Extensions
         where IRepository : class
         {
             // Register the MongoRepository by its interface
-            services.AddScoped<TRepository>();
+            services.AddTransient<TRepository>();
 
             // Register the CachedMongoRepository by its interface
-            services.AddScoped<IRepository>(provider =>
+            services.AddSingleton<IRepository>(provider =>
             {
                 var innerRepository = provider.GetRequiredService<TRepository>();
                 var logger = provider.GetRequiredService<ILogger<TCachedRepository>>();
@@ -90,10 +90,10 @@ namespace TelegramQueueBot.Extensions
         where IRepository : class
         {
             // Register the MongoRepository by its interface
-            services.AddScoped<TRepository>();
+            services.AddTransient<TRepository>();
 
             // Register the CachedMongoRepository by its interface
-            services.AddScoped<IRepository>(provider =>
+            services.AddSingleton<IRepository>(provider =>
             {
                 var innerRepository = provider.GetRequiredService<TRepository>();
                 var logger = provider.GetRequiredService<ILogger<TCachedRepository>>();

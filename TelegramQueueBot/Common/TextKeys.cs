@@ -51,5 +51,7 @@
 
         public const string SelectJobQueueMenu = "select_job_queue_menu";
 
+        public const string ScheduledQueue = "scheduled_queue";
+
     }
 }
