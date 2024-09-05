@@ -79,8 +79,8 @@ namespace TelegramQueueBot.UpdateHandlers.Others
             chat.CurrentQueueId = queue.Id;
 
             var msg = new MessageBuilder(chat)
-                .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.ScheduledQueue))
-                .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.CreatedQueue))
+                .AppendTextLine(TextResources.GetValue(TextKeys.ScheduledQueue))
+                .AppendTextLine(TextResources.GetValue(TextKeys.CreatedQueue))
                 .AddDefaultQueueMarkup(new List<User>(new User[chat.DefaultQueueSize]), chat.View);
 
             await DeleteLastMessageAndSendNew(chat, msg);
@@ -97,8 +97,8 @@ namespace TelegramQueueBot.UpdateHandlers.Others
                 chat.DefaultQueueSize = queue.Size;
                 var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
                 msg
-                    .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.ScheduledQueue))
-                    .AppendText($"{await _textRepository.GetValueAsync(TextKeys.CurrentQueue)} - {queue.Name}")
+                    .AppendTextLine(TextResources.GetValue(TextKeys.ScheduledQueue))
+                    .AppendText($"{TextResources.GetValue(TextKeys.CurrentQueue)} - {queue.Name}")
                     .AddDefaultQueueMarkup(users, chat.View);
             });
             await DeleteLastMessageAndSendNew(chat, msg);

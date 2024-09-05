@@ -29,8 +29,8 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             var data = GetAction(update).Replace(Actions.JobMenu, "");
             var job = await _jobService.GetAsync(data);
 
-            await msg.AddJobMenuCaption(job, _textRepository);
-            await msg.AddJobMenuMarkup(job, _textRepository);
+            await msg.AddJobMenuCaption(job);
+            await msg.AddJobMenuMarkup(job);
 
             await _bot.BuildAndEditAsync(msg);
         }

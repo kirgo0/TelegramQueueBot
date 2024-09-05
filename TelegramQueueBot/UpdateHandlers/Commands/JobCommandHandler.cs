@@ -29,7 +29,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             if (string.IsNullOrEmpty(chat.CurrentQueueId))
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
+                msg.AppendText(TextResources.GetValue(TextKeys.NoCreatedQueue));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
@@ -40,8 +40,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var cron = $"{now.Minute} {now.Hour} * * {(int)now.DayOfWeek}";
             var job = await _jobService.CreateJobAsync(chat.TelegramId, "New job", cron);
 
-            await msg.AddJobMenuCaption(job, _textRepository);
-            await msg.AddJobMenuMarkup(job, _textRepository);
+            await msg.AddJobMenuCaption(job);
+            await msg.AddJobMenuMarkup(job);
 
             await DeleteLastMessageAsync(chat);
             await SendAndUpdateChatAsync(chat, msg);

@@ -9,7 +9,7 @@ using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Commands
+namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 {
     [HandlesCommand(Command.Mode)]
     public class ModeCommandHandler : UpdateHandler
@@ -30,14 +30,14 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             if (string.IsNullOrEmpty(chat.CurrentQueueId))
             {
-                msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
+                msg.AppendTextLine(TextResources.GetValue(TextKeys.NoCreatedQueue));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
 
             if (await _queueService.IsQueueEmpty(chat.CurrentQueueId))
             {
-                msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueIsEmpty));
+                msg.AppendTextLine(TextResources.GetValue(TextKeys.QueueIsEmpty));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
@@ -45,7 +45,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             chat.Mode = chat.Mode.Next();
 
             await msg.AppendModeTitle(chat, _textRepository);
-            msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue));
+            msg.AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
 
             await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
             {

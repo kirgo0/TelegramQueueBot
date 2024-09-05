@@ -31,7 +31,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             {
                 if (update.CallbackQuery is not null)
                     await DeleteLastMessageAsync(chat);
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoSavedQueues));
+                msg.AppendText(TextResources.GetValue(TextKeys.NoSavedQueues));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
@@ -42,7 +42,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 return;
             }
 
-            msg.AppendText(await _textRepository.GetValueAsync(TextKeys.SavedQueuesList));
+            msg.AppendText(TextResources.GetValue(TextKeys.SavedQueuesList));
 
             foreach (var queue in queues)
             {

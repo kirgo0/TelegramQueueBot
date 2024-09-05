@@ -29,7 +29,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var msg = new MessageBuilder(chat);
             if (string.IsNullOrEmpty(chat.CurrentQueueId))
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
+                msg.AppendText(TextResources.GetValue(TextKeys.NoCreatedQueue));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
@@ -45,7 +45,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             });
 
             await msg.AppendModeTitle(chat, _textRepository);
-            msg.AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue));
+            msg.AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
 
             await DeleteLastMessageAsync(chat);
             await SendAndUpdateChatAsync(chat, msg);

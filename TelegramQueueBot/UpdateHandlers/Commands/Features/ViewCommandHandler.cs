@@ -9,7 +9,7 @@ using TelegramQueueBot.Models.Enums;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Commands
+namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 {
     [HandlesCommand(Command.View)]
     public class ViewCommandHandler : UpdateHandler
@@ -29,9 +29,9 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var textForType = "";
             switch (chat.View)
             {
-                case ViewType.Table: textForType = await _textRepository.GetValueAsync(TextKeys.ChatViewTable); break;
-                case ViewType.Column: textForType = await _textRepository.GetValueAsync(TextKeys.ChatViewColumn); break;
-                case ViewType.Auto: textForType = await _textRepository.GetValueAsync(TextKeys.ChatViewAuto); break;
+                case ViewType.Table: textForType = TextResources.GetValue(TextKeys.ChatViewTable); break;
+                case ViewType.Column: textForType = TextResources.GetValue(TextKeys.ChatViewColumn); break;
+                case ViewType.Auto: textForType = TextResources.GetValue(TextKeys.ChatViewAuto); break;
             }
             msg.AppendText($"{await titleTask}{textForType}");
             await _chatRepository.UpdateAsync(chat);

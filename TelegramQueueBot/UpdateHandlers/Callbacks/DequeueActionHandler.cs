@@ -58,9 +58,9 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                     });
 
                     msg
-                        .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueEndedCallingUsers))
+                        .AppendTextLine(TextResources.GetValue(TextKeys.QueueEndedCallingUsers))
                         .AppendTextLine()
-                        .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue));
+                        .AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
 
                     await DeleteLastMessageAsync(chat);
                     await SendAndUpdateChatAsync(chat, msg, true);

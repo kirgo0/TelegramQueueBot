@@ -26,9 +26,9 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             var msg = new MessageBuilder(chat);
             var jobId = GetAction(update).Replace(Actions.DeleteJob, string.Empty);
             msg
-                .AppendText($"{await _textRepository.GetValueAsync(TextKeys.ConfirmJobDeletion)}")
-                .AddButton(await _textRepository.GetValueAsync(TextKeys.BackBtn), $"{Actions.JobMenu}{jobId}")
-                .AddButton(await _textRepository.GetValueAsync(TextKeys.ConfirmDeletionBtn), $"{Actions.ConfirmJobDeletion}{jobId}");
+                .AppendText($"{TextResources.GetValue(TextKeys.ConfirmJobDeletion)}")
+                .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Actions.JobMenu}{jobId}")
+                .AddButton(TextResources.GetValue(TextKeys.ConfirmDeletionBtn), $"{Actions.ConfirmJobDeletion}{jobId}");
 
             await _bot.BuildAndEditAsync(msg);
         }

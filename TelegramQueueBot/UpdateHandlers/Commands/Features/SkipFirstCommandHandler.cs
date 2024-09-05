@@ -10,7 +10,7 @@ using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Commands
+namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 {
     [HandlesCommand(Command.SkipFirst)]
     public class SkipFirstCommandHandler : UpdateHandler
@@ -31,21 +31,21 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             if (string.IsNullOrEmpty(chat.CurrentQueueId))
             {
-                msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
+                msg.AppendTextLine(TextResources.GetValue(TextKeys.NoCreatedQueue));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
 
             if (chat.Mode is not ChatMode.CallingUsers)
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NeedToTurnOnCallingMode));
+                msg.AppendText(TextResources.GetValue(TextKeys.NeedToTurnOnCallingMode));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
 
             if (await _queueService.IsQueueEmpty(chat.CurrentQueueId))
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.QueueIsEmpty));
+                msg.AppendText(TextResources.GetValue(TextKeys.QueueIsEmpty));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
@@ -56,20 +56,20 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             {
                 if (queue.IsEmpty)
                 {
-                    msg.AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueEndedCallingUsers));
+                    msg.AppendTextLine(TextResources.GetValue(TextKeys.QueueEndedCallingUsers));
                     chat.Mode = ChatMode.Open;
                 }
                 else
                 {
                     msg
-                        .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.QueueIsCallingUsers))
+                        .AppendTextLine(TextResources.GetValue(TextKeys.QueueIsCallingUsers))
                         .AppendTextLine()
-                        .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.FirstUserDequeued));
+                        .AppendTextLine(TextResources.GetValue(TextKeys.FirstUserDequeued));
                 }
                 var names = await _userRepository.GetByTelegramIdsAsync(queue.List);
                 msg
                     .AppendTextLine()
-                    .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
+                    .AppendText(TextResources.GetValue(TextKeys.CurrentQueue))
                     .AddDefaultQueueMarkup(names, chat.View);
 
                 await DeleteLastMessageAsync(chat);

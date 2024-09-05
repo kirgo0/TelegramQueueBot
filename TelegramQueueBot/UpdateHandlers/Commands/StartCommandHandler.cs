@@ -29,14 +29,14 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 await _userRepository.UpdateAsync(user);
                 var msg = new MessageBuilder()
                     .SetChatId(user.TelegramId)
-                    .AppendText(await _textRepository.GetValueAsync(TextKeys.Start));
+                    .AppendText(TextResources.GetValue(TextKeys.Start));
                 await _bot.BuildAndSendAsync(msg);
             }
 
             if (chat is not null)
             {
                 var msg = new MessageBuilder(chat)
-                    .AppendText(await _textRepository.GetValueAsync(TextKeys.Start));
+                    .AppendText(TextResources.GetValue(TextKeys.Start));
                 await _bot.BuildAndSendAsync(msg);
             }
 

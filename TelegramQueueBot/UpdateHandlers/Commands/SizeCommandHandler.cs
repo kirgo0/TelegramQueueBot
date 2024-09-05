@@ -33,14 +33,14 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             if (!ValidateSize(arguments, out int size))
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.WrongSize));
+                msg.AppendText(TextResources.GetValue(TextKeys.WrongSize));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
 
             if (size == chat.DefaultQueueSize)
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.SizeIsSame));
+                msg.AppendText(TextResources.GetValue(TextKeys.SizeIsSame));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
@@ -48,7 +48,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             try
             {
                 msg
-                    .AppendTextLine($"{await _textRepository.GetValueAsync(TextKeys.SetSize)}{size}")
+                    .AppendTextLine($"{TextResources.GetValue(TextKeys.SetSize)}{size}")
                     .AppendTextLine();
 
                 if (!string.IsNullOrEmpty(chat.CurrentQueueId))
@@ -65,7 +65,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                     }
                     var names = await _userRepository.GetByTelegramIdsAsync(queue.List);
                     msg
-                        .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
+                        .AppendText(TextResources.GetValue(TextKeys.CurrentQueue))
                         .AddDefaultQueueMarkup(names, chat.View);
                     await DeleteLastMessageAsync(chat);
                 }

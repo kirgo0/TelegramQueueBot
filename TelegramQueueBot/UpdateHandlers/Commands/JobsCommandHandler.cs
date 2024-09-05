@@ -41,11 +41,11 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             if (jobs.Count == 0)
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.JobsListIsEmpty));
+                msg.AppendText(TextResources.GetValue(TextKeys.JobsListIsEmpty));
             }
             else
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.JobsList));
+                msg.AppendText(TextResources.GetValue(TextKeys.JobsList));
                 foreach (var job in jobs)
                 {
                     msg.AddButtonNextRow(job.JobName, $"{Actions.JobMenu}{job.Id}");

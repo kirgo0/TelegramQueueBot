@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Telegram.Bot;
+using TelegramQueueBot.Common;
 using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Data.Context;
 using TelegramQueueBot.Extensions;
@@ -58,11 +59,7 @@ try
 
             services.AddMongoRepositoryWithCaching<MongoUserRepository, CachedMongoUserRepository, User, IUserRepository>(TimeSpan.FromMinutes(10));
             services.AddMongoRepositoryWithCaching<MongoChatRepository, CachedMongoChatRepository, Chat, IChatRepository>(TimeSpan.FromMinutes(10));
-            services.AddMongoRepositoryWithCaching<MongoTextRepository, CachedMongoTextRepository, Text, ITextRepository>(opt =>
-            {
-                opt.AbsoluteExpiration = null;
-                opt.SlidingExpiration = null;
-            });
+            services.AddScoped<ITextRepository, MongoTextRepository>();
             services.AddMongoRepositoryWithCaching<MongoQueueRepository, CachedMongoQueueRepository, Queue, ICachedQueueRepository>(TimeSpan.FromMinutes(10));
             services.AddSingleton<IChatJobRepository, MongoChatJobRepository>();
             // test service
@@ -102,7 +99,14 @@ try
         });
 
     using IHost host = builder.Build();
-    await host.RunAsync();
+
+    var hostTask = host.RunAsync();
+    
+    var logger = host.Services.GetRequiredService<ILogger<TextResources>>();
+    var textRepository = host.Services.GetRequiredService<ITextRepository>();
+    await TextResources.Load(logger, textRepository, typeof(TextKeys));
+
+    await hostTask;
 
 }
 catch (Exception ex)

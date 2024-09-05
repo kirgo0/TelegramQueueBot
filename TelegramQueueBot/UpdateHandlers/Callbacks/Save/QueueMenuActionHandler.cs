@@ -34,10 +34,10 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
                 var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
 
                 msg
-                    .AppendText($"{await _textRepository.GetValueAsync(TextKeys.QueueMenu)}{queue.Name}")
-                    .AddButton(await _textRepository.GetValueAsync(TextKeys.BackBtn), $"{Actions.QueueList}")
-                    .AddButton(await _textRepository.GetValueAsync(TextKeys.LoadQueueBtn), $"{Actions.Load}{queueId}")
-                    .AddButtonNextRow(await _textRepository.GetValueAsync(TextKeys.DeleteQueueBtn), $"{Actions.Delete}{queueId}")
+                    .AppendText($"{TextResources.GetValue(TextKeys.QueueMenu)}{queue.Name}")
+                    .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Actions.QueueList}")
+                    .AddButton(TextResources.GetValue(TextKeys.LoadQueueBtn), $"{Actions.Load}{queueId}")
+                    .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Actions.Delete}{queueId}")
                     .AddSavedQueueMarkup(users);
 
                 await _bot.BuildAndEditAsync(msg);

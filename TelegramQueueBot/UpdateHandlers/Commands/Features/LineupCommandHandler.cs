@@ -9,7 +9,7 @@ using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Commands
+namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 {
     [HandlesCommand(Command.LineUp)]
     public class LineupCommandHandler : UpdateHandler
@@ -29,7 +29,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var msg = new MessageBuilder(chat);
             if (string.IsNullOrEmpty(chat.CurrentQueueId))
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
+                msg.AppendText(TextResources.GetValue(TextKeys.NoCreatedQueue));
                 await _bot.BuildAndSendAsync(msg);
             }
             var operationResult = await _queueService.RemoveBlankSpacesAsync(chat.CurrentQueueId, false);
@@ -37,9 +37,9 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             {
                 await msg.AppendModeTitle(chat, _textRepository);
                 msg
-                    .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.RemovedAllBlankSpaces))
+                    .AppendTextLine(TextResources.GetValue(TextKeys.RemovedAllBlankSpaces))
                     .AppendTextLine()
-                    .AppendTextLine(await _textRepository.GetValueAsync(TextKeys.CurrentQueue));
+                    .AppendTextLine(TextResources.GetValue(TextKeys.CurrentQueue));
                 await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
                 {
                     var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
@@ -51,7 +51,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             }
             else
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoBlankSpacesToRemove));
+                msg.AppendText(TextResources.GetValue(TextKeys.NoBlankSpacesToRemove));
                 await _bot.BuildAndSendAsync(msg);
             }
         }

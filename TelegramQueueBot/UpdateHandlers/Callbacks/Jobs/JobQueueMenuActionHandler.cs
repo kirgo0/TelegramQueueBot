@@ -29,7 +29,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 
             if (!chat.SavedQueuesIds.Any())
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoSavedQueues));
+                msg.AppendText(TextResources.GetValue(TextKeys.NoSavedQueues));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
@@ -39,13 +39,13 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             if (!queues.Any())
             {
                 chat.SavedQueuesIds = new List<string>();
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoSavedQueues));
+                msg.AppendText(TextResources.GetValue(TextKeys.NoSavedQueues));
                 await SendAndUpdateChatAsync(chat, msg, true);
                 return;
             }
 
             var jobId = GetAction(update).Replace(Actions.JobQueueMenu, string.Empty);
-            msg.AppendText(await _textRepository.GetValueAsync(TextKeys.SelectJobQueueMenu));
+            msg.AppendText(TextResources.GetValue(TextKeys.SelectJobQueueMenu));
 
             msg.AddButtonNextRow("Пуста черга", $"{Actions.SetQueue}/{jobId}");
             foreach (var queue in queues)

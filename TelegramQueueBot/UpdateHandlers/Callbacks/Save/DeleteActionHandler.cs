@@ -26,9 +26,9 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
             var msg = new MessageBuilder(chat);
             var queueId = GetAction(update).Replace(Actions.Delete, string.Empty);
             msg
-                .AppendText($"{await _textRepository.GetValueAsync(TextKeys.ConfirmDeletion)}")
-                .AddButton(await _textRepository.GetValueAsync(TextKeys.BackBtn), $"{Actions.QueueMenu}{queueId}")
-                .AddButton(await _textRepository.GetValueAsync(TextKeys.ConfirmDeletionBtn), $"{Actions.ConfirmDeletion}{queueId}");
+                .AppendText($"{TextResources.GetValue(TextKeys.ConfirmDeletion)}")
+                .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Actions.QueueMenu}{queueId}")
+                .AddButton(TextResources.GetValue(TextKeys.ConfirmDeletionBtn), $"{Actions.ConfirmDeletion}{queueId}");
 
             await _bot.BuildAndEditAsync(msg);
         }

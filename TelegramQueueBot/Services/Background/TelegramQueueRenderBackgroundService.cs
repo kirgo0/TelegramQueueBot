@@ -81,7 +81,7 @@ namespace TelegramQueueBot.Services.Background
                     await msg.AppendModeTitle(chat, _textRepository);
 
                     msg
-                        .AppendText(await _textRepository.GetValueAsync(TextKeys.CurrentQueue))
+                        .AppendText(TextResources.GetValue(TextKeys.CurrentQueue))
                         .AddDefaultQueueMarkup(await usersTask, chat.View);
 
                     await _bot.BuildAndEditAsync(msg);

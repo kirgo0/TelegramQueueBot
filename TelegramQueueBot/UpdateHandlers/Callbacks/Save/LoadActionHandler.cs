@@ -36,7 +36,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
                 chat.DefaultQueueSize = queue.Size;
                 var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
                 msg
-                    .AppendText($"{await _textRepository.GetValueAsync(TextKeys.CurrentQueue)} - {queue.Name}")
+                    .AppendText($"{TextResources.GetValue(TextKeys.CurrentQueue)} - {queue.Name}")
                     .AddDefaultQueueMarkup(users, chat.View);
             });
 

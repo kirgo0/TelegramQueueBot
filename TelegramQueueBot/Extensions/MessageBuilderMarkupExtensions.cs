@@ -117,24 +117,24 @@ namespace TelegramQueueBot.Extensions
             return builder;
         }
 
-        public static async Task<MessageBuilder> AddJobMenuCaption(this MessageBuilder builder, ChatJob job, ITextRepository _textRepository)
+        public static async Task<MessageBuilder> AddJobMenuCaption(this MessageBuilder builder, ChatJob job)
         {
             builder
-                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobMenu)).AppendTextLine(job.JobName)
+                .AppendText(TextResources.GetValue(TextKeys.JobMenu)).AppendTextLine(job.JobName)
                 .AppendText("[DEBUG lastInterval] ").AppendTextLine(job.LastInterval.ToString())
                 .AppendText("[DEBUG next] ").AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString())
-                .AppendText(await _textRepository.GetValueAsync(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString("dd.MM.yyyy"));
+                .AppendText(TextResources.GetValue(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString("dd.MM.yyyy"));
 
             return builder;
         }
 
-        public static async Task<MessageBuilder> AddJobMenuMarkup(this MessageBuilder builder, ChatJob job, ITextRepository textRepository)
+        public static async Task<MessageBuilder> AddJobMenuMarkup(this MessageBuilder builder, ChatJob job)
         {
 
             builder
-                .AddButton(await textRepository.GetValueAsync(TextKeys.BackBtn), Actions.Jobs)
+                .AddButton(TextResources.GetValue(TextKeys.BackBtn), Actions.Jobs)
                 .AddButton($"_{job.QueueId}", $"{Actions.JobQueueMenu}{job.Id}")
-                .AddButtonNextRow(await textRepository.GetValueAsync(TextKeys.DeleteQueueBtn), $"{Actions.DeleteJob}{job.Id}")
+                .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Actions.DeleteJob}{job.Id}")
 
                 .AddJobMenuMinutes(job, 1, 5, 10)
 

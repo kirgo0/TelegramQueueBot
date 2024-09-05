@@ -30,14 +30,14 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             if (string.IsNullOrEmpty(chat.CurrentQueueId))
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
+                msg.AppendText(TextResources.GetValue(TextKeys.NoCreatedQueue));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
 
             if (await _queueService.IsQueueEmpty(chat.CurrentQueueId))
             {
-                msg.AppendText(await _textRepository.GetValueAsync(TextKeys.QueueIsEmpty));
+                msg.AppendText(TextResources.GetValue(TextKeys.QueueIsEmpty));
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
@@ -50,17 +50,17 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var operationResult = await _queueService.SetQueueNameAsync(chat.CurrentQueueId, name);
             if (!operationResult)
             {
-                msg.AppendText($"{await _textRepository.GetValueAsync(TextKeys.QueueIsAlreadySaved)}{name}");
+                msg.AppendText($"{TextResources.GetValue(TextKeys.QueueIsAlreadySaved)}{name}");
             }
             else if (!chat.SavedQueuesIds.Contains(chat.CurrentQueueId))
             {
                 chat.SavedQueuesIds.Add(chat.CurrentQueueId);
-                msg.AppendText($"{await _textRepository.GetValueAsync(TextKeys.QueueSavedAs)}{name}");
+                msg.AppendText($"{TextResources.GetValue(TextKeys.QueueSavedAs)}{name}");
                 await _chatRepository.UpdateAsync(chat);
             }
             else
             {
-                msg.AppendText($"{await _textRepository.GetValueAsync(TextKeys.ChangedSavedQueueName)}{name}");
+                msg.AppendText($"{TextResources.GetValue(TextKeys.ChangedSavedQueueName)}{name}");
             }
             await _bot.BuildAndSendAsync(msg);
         }

@@ -6,7 +6,6 @@
         public const string SetSize = "set_size";
         public const string WrongSize = "wrong_size";
         public const string SizeIsSame = "size_is_same";
-        public const string NewQueue = "new_queue";
         public const string CurrentQueue = "current_queue";
         public const string CreatedQueue = "created_queue";
         public const string NoCreatedQueue = "no_created_queue";
