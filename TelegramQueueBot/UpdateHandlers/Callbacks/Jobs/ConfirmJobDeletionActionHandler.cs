@@ -14,7 +14,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     public class ConfirmJobDeletionActionHandler : UpdateHandler
     {
         private readonly JobService _jobService;
-        public ConfirmJobDeletionActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ConfirmJobDeletionActionHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
+        public ConfirmJobDeletionActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ConfirmJobDeletionActionHandler> logger,  JobService jobService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

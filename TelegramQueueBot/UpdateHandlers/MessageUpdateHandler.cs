@@ -13,7 +13,7 @@ namespace TelegramQueueBot.UpdateHandlers
     [HandlerMetadata(Metatags.HandleType, UpdateType.Message)]
     public class MessageUpdateHandler : UpdateHandler
     {
-        public MessageUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<MessageUpdateHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        public MessageUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<MessageUpdateHandler> logger ) : base(bot, scope, logger)
         {
         }
 

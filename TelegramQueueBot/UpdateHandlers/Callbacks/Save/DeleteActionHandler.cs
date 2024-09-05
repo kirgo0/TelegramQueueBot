@@ -14,7 +14,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
     [HandleAction(Actions.Delete)]
     public class DeleteActionHandler : UpdateHandler
     {
-        public DeleteActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DeleteActionHandler> logger, ITextRepository textRepository, QueueService queueService) : base(bot, scope, logger, textRepository)
+        public DeleteActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DeleteActionHandler> logger,  QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

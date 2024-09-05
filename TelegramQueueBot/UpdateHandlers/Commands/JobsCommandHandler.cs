@@ -16,7 +16,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     public class JobsCommandHandler : UpdateHandler
     {
         private IChatJobRepository _jobRepository;
-        public JobsCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsCommandHandler> logger, ITextRepository textRepository, IChatJobRepository jobRepository) : base(bot, scope, logger, textRepository)
+        public JobsCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsCommandHandler> logger,  IChatJobRepository jobRepository) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

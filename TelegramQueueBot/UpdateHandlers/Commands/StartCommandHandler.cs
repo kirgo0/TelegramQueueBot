@@ -13,7 +13,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     [HandlesCommand(Command.Start)]
     public class StartCommandHandler : UpdateHandler
     {
-        public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users ) : base(bot, scope, logger)
         {
             NeedsChat = true;
             NeedsUser = true;

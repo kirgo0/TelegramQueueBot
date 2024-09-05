@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     public class GetCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public GetCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<GetCommandHandler> logger, QueueService queueService, IUserRepository userRepository, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        public GetCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<GetCommandHandler> logger, QueueService queueService, IUserRepository userRepository ) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -44,7 +44,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 msg.AddDefaultQueueMarkup(users, chat.View);
             });
 
-            await msg.AppendModeTitle(chat, _textRepository);
+            msg.AppendModeTitle(chat);
             msg.AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
 
             await DeleteLastMessageAsync(chat);

@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
     public class LoadActionHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
-        public LoadActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<LoadActionHandler> logger, ITextRepository textRepository, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger, textRepository)
+        public LoadActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<LoadActionHandler> logger,  QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

@@ -27,6 +27,16 @@ namespace TelegramQueueBot.Extensions
             return builder;
         }
 
+        public static MessageBuilder AppendModeTitle(this MessageBuilder builder, Chat chat)
+        {
+            if (chat.Mode is ChatMode.CallingUsers)
+            {
+                builder.AppendTextLine(TextResources.GetValue(TextKeys.QueueIsCallingUsers));
+                builder.AppendTextLine();
+            }
+            return builder;
+        }
+
         public static MessageBuilder AddEmptyQueueMarkup(this MessageBuilder builder, int queueSize, ViewType view)
         {
             if (queueSize < 2 || queueSize > 100) throw new ArgumentOutOfRangeException(nameof(queueSize), "Range for queue size param is [2;100]");
@@ -117,7 +127,7 @@ namespace TelegramQueueBot.Extensions
             return builder;
         }
 
-        public static async Task<MessageBuilder> AddJobMenuCaption(this MessageBuilder builder, ChatJob job)
+        public static MessageBuilder AddJobMenuCaption(this MessageBuilder builder, ChatJob job)
         {
             builder
                 .AppendText(TextResources.GetValue(TextKeys.JobMenu)).AppendTextLine(job.JobName)
@@ -128,7 +138,7 @@ namespace TelegramQueueBot.Extensions
             return builder;
         }
 
-        public static async Task<MessageBuilder> AddJobMenuMarkup(this MessageBuilder builder, ChatJob job)
+        public static MessageBuilder AddJobMenuMarkup(this MessageBuilder builder, ChatJob job)
         {
 
             builder
@@ -136,7 +146,7 @@ namespace TelegramQueueBot.Extensions
                 .AddButton($"_{job.QueueId}", $"{Actions.JobQueueMenu}{job.Id}")
                 .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Actions.DeleteJob}{job.Id}")
 
-                .AddJobMenuMinutes(job, 1, 5, 10)
+                .AddJobMenuMinutes(job, 5, 15, 60)
 
                 .AddJobMenuWeeks(job, 1)
 

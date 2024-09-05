@@ -12,7 +12,7 @@ namespace TelegramQueueBot.UpdateHandlers
     public class DefaultUpdateHandler : UpdateHandler
     {
         private IChatRepository _chats;
-        public DefaultUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DefaultUpdateHandler> logger, IChatRepository chats, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        public DefaultUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DefaultUpdateHandler> logger, IChatRepository chats ) : base(bot, scope, logger)
         {
             _chats = chats;
         }

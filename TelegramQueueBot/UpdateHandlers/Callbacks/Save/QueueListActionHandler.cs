@@ -12,7 +12,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
     [HandleAction(Actions.QueueList)]
     public class QueueListActionHandler : UpdateHandler
     {
-        public QueueListActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<QueueListActionHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        public QueueListActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<QueueListActionHandler> logger ) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

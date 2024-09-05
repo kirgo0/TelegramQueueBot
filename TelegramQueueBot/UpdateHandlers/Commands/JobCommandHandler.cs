@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     public class JobCommandHandler : UpdateHandler
     {
         private readonly JobService _jobService;
-        public JobCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobCommandHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
+        public JobCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobCommandHandler> logger,  JobService jobService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -40,8 +40,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var cron = $"{now.Minute} {now.Hour} * * {(int)now.DayOfWeek}";
             var job = await _jobService.CreateJobAsync(chat.TelegramId, "New job", cron);
 
-            await msg.AddJobMenuCaption(job);
-            await msg.AddJobMenuMarkup(job);
+            msg.AddJobMenuCaption(job);
+            msg.AddJobMenuMarkup(job);
 
             await DeleteLastMessageAsync(chat);
             await SendAndUpdateChatAsync(chat, msg);

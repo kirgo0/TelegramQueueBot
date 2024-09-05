@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     public class AddMinutesActionHandler : UpdateHandler
     {
         private readonly JobService _jobService;
-        public AddMinutesActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddMinutesActionHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
+        public AddMinutesActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddMinutesActionHandler> logger,  JobService jobService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -45,8 +45,8 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             await _jobService.UpdateJobAsync(job);
 
             var chat = await chatTask;
-            var msg = await new MessageBuilder(chat).AddJobMenuMarkup(job);
-            await msg.AddJobMenuCaption(job);
+            var msg = new MessageBuilder(chat).AddJobMenuMarkup(job);
+            msg.AddJobMenuCaption(job);
 
             await _bot.BuildAndEditAsync(msg);
 

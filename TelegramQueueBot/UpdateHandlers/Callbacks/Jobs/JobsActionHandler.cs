@@ -12,7 +12,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     [HandleAction(Actions.Jobs)]
     public class JobsActionHandler : UpdateHandler
     {
-        public JobsActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsActionHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        public JobsActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsActionHandler> logger ) : base(bot, scope, logger)
         {
         }
 

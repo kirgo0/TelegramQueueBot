@@ -17,7 +17,6 @@ namespace TelegramQueueBot.Services.Background
         private QueueService _queueService;
         private IUserRepository _userRepository;
         private IChatRepository _chatRepository;
-        private ITextRepository _textRepository;
         private ICachedQueueRepository _cachedQueueRepository;
 
         private ConcurrentDictionary<string, Queue> _queues = new();
@@ -30,7 +29,6 @@ namespace TelegramQueueBot.Services.Background
             QueueService queueService,
             IUserRepository userRepository,
             IChatRepository chatRepository,
-            ITextRepository textRepository,
             ICachedQueueRepository cachedQueueRepository,
             TimeSpan delay,
             ILogger log
@@ -41,7 +39,6 @@ namespace TelegramQueueBot.Services.Background
             _queueService = queueService;
             _chatRepository = chatRepository;
             _userRepository = userRepository;
-            _textRepository = textRepository;
             _cachedQueueRepository = cachedQueueRepository;
             _delay = delay;
             _cachedQueueRepository.QueueUpdateEvent += OnQueueUpdatedEvent;
@@ -77,8 +74,8 @@ namespace TelegramQueueBot.Services.Background
                     var chat = await _chatRepository.GetByTelegramIdAsync(queue.ChatId);
 
                     var msg = new MessageBuilder(chat);
-
-                    await msg.AppendModeTitle(chat, _textRepository);
+                    
+                    msg.AppendModeTitle(chat);
 
                     msg
                         .AppendText(TextResources.GetValue(TextKeys.CurrentQueue))

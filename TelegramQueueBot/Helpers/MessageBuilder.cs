@@ -1,9 +1,7 @@
 ﻿using System.Text;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using TelegramQueueBot.Common;
 using TelegramQueueBot.Models;
-using TelegramQueueBot.Repository.Interfaces;
 
 namespace TelegramQueueBot.Helpers
 {
@@ -17,23 +15,6 @@ namespace TelegramQueueBot.Helpers
         public List<List<InlineKeyboardButton>> Buttons = new();
         public InlineKeyboardMarkup ButtonsMarkup => new InlineKeyboardMarkup(Buttons);
         public ParseMode ParseMode { get; set; } = ParseMode.Html;
-
-        public static async Task<MessageBuilder> CreateAsync(Chat chat, ITextRepository textRepository)
-        {
-            var builder = new MessageBuilder(chat);
-            await builder.AppendModeTitle(chat, textRepository);
-            return builder;
-        }
-
-        public async Task<MessageBuilder> AppendModeTitle(Chat chat, ITextRepository textRepository)
-        {
-            if (chat.Mode is Models.Enums.ChatMode.CallingUsers)
-            {
-                AppendTextLine(await textRepository.GetValueAsync(TextKeys.QueueIsCallingUsers));
-                AppendTextLine();
-            }
-            return this;
-        }
 
         public MessageBuilder() { }
         public MessageBuilder(Chat chat)

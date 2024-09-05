@@ -14,7 +14,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
     public class ConfirmDeletionActionHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
-        public ConfirmDeletionActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ConfirmDeletionActionHandler> logger, ITextRepository textRepository, QueueService queueService) : base(bot, scope, logger, textRepository)
+        public ConfirmDeletionActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ConfirmDeletionActionHandler> logger,  QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

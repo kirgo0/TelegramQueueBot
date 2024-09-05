@@ -13,18 +13,16 @@ namespace TelegramQueueBot.UpdateHandlers.Others
     {
         private readonly IChatRepository _chatRepository;
         private readonly ITelegramBotClient _bot;
-        private readonly ITextRepository _textRepository;
         private readonly IUserRepository _userRepository;
         private readonly QueueService _queueService;
         private readonly ILogger _log;
-        public ScheduledQueueJobHandler(IChatRepository chatRepository, QueueService queueService, ILogger<ScheduledQueueJobHandler> log, IUserRepository userRepository, ITextRepository textRepository, ITelegramBotClient bot)
+        public ScheduledQueueJobHandler(IChatRepository chatRepository, QueueService queueService, ILogger<ScheduledQueueJobHandler> log, IUserRepository userRepository,  ITelegramBotClient bot)
         {
             _bot = bot;
             _log = log;
             _chatRepository = chatRepository;
             _queueService = queueService;
             _userRepository = userRepository;
-            _textRepository = textRepository;
         }
 
         public async Task<bool> Handle(ChatJob job)
@@ -54,6 +52,7 @@ namespace TelegramQueueBot.UpdateHandlers.Others
                     _log.LogDebug("The passed queue identifier {queueId} was not found in the repository", job.QueueId);
                     job.QueueId = null;
                 }
+                return true;
             }
             else
             {

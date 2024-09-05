@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
     public class LineupCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public LineupCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<LineupCommandHandler> logger, ITextRepository textRepository, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger, textRepository)
+        public LineupCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<LineupCommandHandler> logger,  QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -35,7 +35,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
             var operationResult = await _queueService.RemoveBlankSpacesAsync(chat.CurrentQueueId, false);
             if (operationResult)
             {
-                await msg.AppendModeTitle(chat, _textRepository);
+                msg.AppendModeTitle(chat);
                 msg
                     .AppendTextLine(TextResources.GetValue(TextKeys.RemovedAllBlankSpaces))
                     .AppendTextLine()

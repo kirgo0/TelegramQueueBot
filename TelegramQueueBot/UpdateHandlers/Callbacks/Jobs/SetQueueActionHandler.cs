@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     public class SetQueueActionHandler : UpdateHandler
     {
         private readonly JobService _jobService;
-        public SetQueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetQueueActionHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
+        public SetQueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetQueueActionHandler> logger,  JobService jobService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -42,8 +42,8 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
 
-            await msg.AddJobMenuCaption(job);
-            await msg.AddJobMenuMarkup(job);
+            msg.AddJobMenuCaption(job);
+            msg.AddJobMenuMarkup(job);
 
             await _bot.BuildAndEditAsync(msg);
         }

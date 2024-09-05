@@ -13,7 +13,7 @@ namespace TelegramQueueBot.UpdateHandlers
     [HandlerMetadata(Metatags.HandleType, UpdateType.CallbackQuery)]
     public class CallbackUpdateHandler : UpdateHandler
     {
-        public CallbackUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CallbackUpdateHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        public CallbackUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CallbackUpdateHandler> logger ) : base(bot, scope, logger)
         {
         }
 

@@ -23,7 +23,6 @@ namespace TelegramQueueBot.Extensions
                     provider.GetRequiredService<QueueService>(),
                     provider.GetRequiredService<IUserRepository>(),
                     provider.GetRequiredService<IChatRepository>(),
-                    provider.GetRequiredService<ITextRepository>(),
                     provider.GetRequiredService<ICachedQueueRepository>(),
                     delay,
                     provider.GetRequiredService<ILogger<TelegramQueueRenderBackgroundService>>()

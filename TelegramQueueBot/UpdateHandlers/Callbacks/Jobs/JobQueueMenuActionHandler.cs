@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     public class JobQueueMenuActionHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
-        public JobQueueMenuActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobMenuActionHandler> logger, ITextRepository textRepository, QueueService queueService) : base(bot, scope, logger, textRepository)
+        public JobQueueMenuActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobMenuActionHandler> logger,  QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

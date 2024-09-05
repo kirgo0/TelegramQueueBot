@@ -21,7 +21,6 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
         protected readonly ILogger _log;
         protected IUserRepository _userRepository;
         protected IChatRepository _chatRepository;
-        protected ITextRepository _textRepository;
         public bool GroupsOnly { get; set; } = false;
         protected bool _isGroup;
         protected long _chatId;
@@ -63,11 +62,10 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 _chatTask = value;
             }
         }
-        protected UpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger logger, ITextRepository textRepository)
+        protected UpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger logger)
         {
             _bot = bot;
             _scope = scope;
-            _textRepository = textRepository;
             _log = logger;
         }
 

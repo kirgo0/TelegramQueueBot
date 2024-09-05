@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     public class SaveCommandHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
-        public SaveCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SaveCommandHandler> logger, ITextRepository textRepository, QueueService queueService) : base(bot, scope, logger, textRepository)
+        public SaveCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SaveCommandHandler> logger,  QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

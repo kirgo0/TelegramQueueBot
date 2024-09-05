@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
     public class DequeueActionHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public DequeueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueActionHandler> logger, QueueService queueService, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        public DequeueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueActionHandler> logger, QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsUser = true;

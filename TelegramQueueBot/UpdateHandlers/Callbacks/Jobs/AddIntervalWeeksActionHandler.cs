@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     public class AddIntervalWeeksActionHandler : UpdateHandler
     {
         private readonly JobService _jobService;
-        public AddIntervalWeeksActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddIntervalWeeksActionHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
+        public AddIntervalWeeksActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddIntervalWeeksActionHandler> logger,  JobService jobService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -52,8 +52,8 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             await _jobService.UpdateJobAsync(job);
 
             var chat = await chatTask;
-            var msg = await new MessageBuilder(chat).AddJobMenuMarkup(job);
-            await msg.AddJobMenuCaption(job);
+            var msg = new MessageBuilder(chat).AddJobMenuMarkup(job);
+            msg.AddJobMenuCaption(job);
 
             await _bot.BuildAndEditAsync(msg);
         }

@@ -15,7 +15,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
     public class ModeCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public ModeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ModeCommandHandler> logger, ITextRepository textRepository, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger, textRepository)
+        public ModeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ModeCommandHandler> logger,  QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -44,7 +44,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 
             chat.Mode = chat.Mode.Next();
 
-            await msg.AppendModeTitle(chat, _textRepository);
+            msg.AppendModeTitle(chat);
             msg.AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
 
             await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>

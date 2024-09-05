@@ -16,7 +16,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
     public class SkipFirstCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public SkipFirstCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SkipFirstCommandHandler> logger, QueueService queueSrevice, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
+        public SkipFirstCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SkipFirstCommandHandler> logger, QueueService queueSrevice ) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

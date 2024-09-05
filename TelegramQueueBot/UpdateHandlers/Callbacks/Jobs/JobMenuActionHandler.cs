@@ -15,22 +15,34 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     public class JobMenuActionHandler : UpdateHandler
     {
         private readonly JobService _jobService;
-        public JobMenuActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobMenuActionHandler> logger, ITextRepository textRepository, JobService jobService) : base(bot, scope, logger, textRepository)
+        private readonly QueueService _queueService;
+        public JobMenuActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobMenuActionHandler> logger,  JobService jobService, QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
             _jobService = jobService;
+            _queueService = queueService;
         }
 
         public override async Task Handle(Update update)
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
-            var data = GetAction(update).Replace(Actions.JobMenu, "");
+            var data = GetAction(update).Replace(Actions.JobMenu, string.Empty);
             var job = await _jobService.GetAsync(data);
 
-            await msg.AddJobMenuCaption(job);
-            await msg.AddJobMenuMarkup(job);
+            if(job.QueueId is not null)
+            {
+                var queue = await _queueService.GetByIdAsync(job.QueueId);
+                if(queue is null)
+                {
+                    job.QueueId = null;
+                    await _jobService.UpdateJobAsync(job);
+                }
+            }
+
+            msg.AddJobMenuCaption(job);
+            msg.AddJobMenuMarkup(job);
 
             await _bot.BuildAndEditAsync(msg);
         }
