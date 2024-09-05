@@ -17,7 +17,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
         public DeleteJobActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DeleteJobActionHandler> logger, ITextRepository textRepository) : base(bot, scope, logger, textRepository)
         {
             GroupsOnly = true;
-            NeedsChat = true;           
+            NeedsChat = true;
         }
 
         public override async Task Handle(Update update)

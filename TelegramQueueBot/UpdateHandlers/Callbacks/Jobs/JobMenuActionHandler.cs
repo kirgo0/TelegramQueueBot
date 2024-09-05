@@ -1,9 +1,5 @@
 ﻿using Autofac;
-using CronExpressionDescriptor;
-using Cronos;
-using Hangfire;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
@@ -31,7 +27,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
             var data = GetAction(update).Replace(Actions.JobMenu, "");
-            var job = await _jobService.GetAsync(data); 
+            var job = await _jobService.GetAsync(data);
 
             await msg.AddJobMenuCaption(job, _textRepository);
             await msg.AddJobMenuMarkup(job, _textRepository);

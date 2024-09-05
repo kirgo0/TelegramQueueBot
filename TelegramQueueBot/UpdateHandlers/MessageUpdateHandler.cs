@@ -23,7 +23,7 @@ namespace TelegramQueueBot.UpdateHandlers
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,
-                (update, value, item) => 
+                (update, value, item) =>
                 update.Message.Text.Split(' ')[0]
                     .Replace(sufix, "")
                     .Equals(value.ToString()),

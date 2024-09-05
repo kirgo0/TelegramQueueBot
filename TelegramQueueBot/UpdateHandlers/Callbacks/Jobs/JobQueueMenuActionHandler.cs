@@ -1,10 +1,5 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
@@ -32,7 +27,8 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
 
-            if (!chat.SavedQueuesIds.Any()) {
+            if (!chat.SavedQueuesIds.Any())
+            {
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoSavedQueues));
                 await _bot.BuildAndSendAsync(msg);
                 return;
@@ -40,7 +36,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 
             var queues = await _queueService.GetByIdsAsync(chat.SavedQueuesIds);
 
-            if(!queues.Any())
+            if (!queues.Any())
             {
                 chat.SavedQueuesIds = new List<string>();
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoSavedQueues));

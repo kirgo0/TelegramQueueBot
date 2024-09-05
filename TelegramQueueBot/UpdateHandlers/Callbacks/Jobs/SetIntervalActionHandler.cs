@@ -40,7 +40,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             var jobId = arguments[1];
 
             var job = await _jobService.GetAsync(jobId);
-            if(job.Interval == interval)
+            if (job.Interval == interval)
             {
                 return;
             }

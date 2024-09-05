@@ -1,12 +1,5 @@
 ﻿using Autofac;
-using Cronos;
-using Hangfire.Mongo;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
@@ -34,7 +27,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
 
-            if(string.IsNullOrEmpty(chat.CurrentQueueId))
+            if (string.IsNullOrEmpty(chat.CurrentQueueId))
             {
                 msg.AppendText(await _textRepository.GetValueAsync(TextKeys.NoCreatedQueue));
                 await _bot.BuildAndSendAsync(msg);

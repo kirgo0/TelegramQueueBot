@@ -1,6 +1,5 @@
 ﻿using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Driver;
 
 namespace TelegramQueueBot.Helpers
 {

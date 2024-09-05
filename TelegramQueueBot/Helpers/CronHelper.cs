@@ -1,11 +1,4 @@
 ﻿using Cronos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using TelegramQueueBot.Extensions;
 
 namespace TelegramQueueBot.Helpers
 {
@@ -17,10 +10,10 @@ namespace TelegramQueueBot.Helpers
             var parts = cronExpression.Split(' ');
 
             if (parts.Length != 5)
-            throw new ArgumentException("Invalid cron expression. It should have 5 parts.");
+                throw new ArgumentException("Invalid cron expression. It should have 5 parts.");
 
             var nextOccurence = CronExpression.Parse(cronExpression).GetNextOccurrence(DateTime.UtcNow);
-            if(!nextOccurence.HasValue)
+            if (!nextOccurence.HasValue)
             {
                 throw new Exception();
             }
@@ -30,7 +23,7 @@ namespace TelegramQueueBot.Helpers
             int minute = timeToOccure.Minute;
             int hour = timeToOccure.Hour;
             int dayOfWeek = (int)timeToOccure.DayOfWeek;
-                
+
             return $"{minute} {hour} {parts[2]} {parts[3]} {dayOfWeek}";
         }
 

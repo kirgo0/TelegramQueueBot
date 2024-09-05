@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Hangfire;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -25,7 +24,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 
         public override async Task Handle(Update update)
         {
-            var arguments = 
+            var arguments =
                 GetAction(update).
                 Replace(Actions.AddDays, string.Empty).
                 Split("/");

@@ -1,16 +1,6 @@
-﻿using Autofac;
-using Cronos;
+﻿using Cronos;
 using Hangfire;
-using Hangfire.Common;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver.Linq;
-using System;
-using Telegram.Bot;
-using Telegram.Bot.Types;
-using TelegramQueueBot.Common;
-using TelegramQueueBot.Extensions;
-using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Others;

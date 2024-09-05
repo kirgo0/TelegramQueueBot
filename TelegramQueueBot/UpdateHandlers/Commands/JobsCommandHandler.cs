@@ -51,9 +51,11 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                     msg.AddButtonNextRow(job.JobName, $"{Actions.JobMenu}{job.Id}");
                 }
             }
-            if(update.CallbackQuery is not null) {
+            if (update.CallbackQuery is not null)
+            {
                 await _bot.BuildAndEditAsync(msg);
-            } else
+            }
+            else
             {
                 await DeleteLastMessageAsync(chat);
                 await SendAndUpdateChatAsync(chat, msg);
