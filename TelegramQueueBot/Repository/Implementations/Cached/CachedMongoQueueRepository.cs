@@ -11,9 +11,9 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
     public class CachedMongoQueueRepository : CachedMongoRepository<MongoQueueRepository, Queue>, ICachedQueueRepository
     {
         public IQueueRepository InnerRepository => _innerRepository;
-        public event EventHandler<QueueUpdatedEventArgs> QueueUpdateEvent;
+        public event EventHandler<QueueUpdatedEventArgs>? QueueUpdateEvent;
 
-        public CachedMongoQueueRepository(MongoQueueRepository innerRepository, ILogger<CachedMongoQueueRepository> log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions = null) : base(innerRepository, log, cache, cacheOptions)
+        public CachedMongoQueueRepository(MongoQueueRepository innerRepository, ILogger<CachedMongoQueueRepository> log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions) : base(innerRepository, log, cache, cacheOptions)
         {
         }
 
@@ -30,7 +30,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
             var missingIds = new List<string>();
             foreach (var id in queueIds)
             {
-                if (!_cache.TryGetValue(GetKey(id), out var queue))
+                if (!_cache.TryGetValue(GetKey(id), out Queue? queue))
                 {
                     missingIds.Add(id);
                 }
@@ -47,13 +47,13 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                     }
                     foreach (var queue in dbQueues)
                     {
-                        _cache.Set(GetKey(queue.Id), queue, _cacheOptions);
+                        AddOrUpdateCache(queue);
                         _log.LogDebug("Queue with Id {id} added to cache", queue.Id);
                     }
                 }
                 foreach (var id in queueIds)
                 {
-                    if (_cache.TryGetValue(GetKey(id), out Queue queue))
+                    if (_cache.TryGetValue(GetKey(id), out Queue? queue))
                     {
                         resultQueues.Add(queue);
                     }
@@ -74,38 +74,33 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
 
         public async Task<Queue> CreateAsync(long chatId, int size)
         {
-            try
+            _log.LogDebug("Repository {name} hash code: {InstanceHashCode}", GetType().Name, GetHashCode());
+            var queue = await InnerRepository.CreateAsync(chatId, size);
+            if (queue is not null)
             {
-                var queue = await InnerRepository.CreateAsync(chatId, size);
-                if (queue is not null)
-                {
-                    _cache.Set(GetKey(queue.Id), queue, _cacheOptions);
-                    _log.LogDebug("{name} with Id {id} added to cache", nameof(Queue), queue.Id);
-                }
-                return queue;
+                AddOrUpdateCache(queue);
+                _log.LogDebug("{name} with Id {id} added to cache", nameof(Queue), queue.Id);
             }
-            catch (Exception ex)
-            {
-                _log.LogError("An error occured while creating an object of type {type}", GetType().Name);
-                return null;
-            }
+            return queue;
         }
 
         public override Task<bool> UpdateAsync(Queue item)
         {
+            _log.LogDebug("Repository {name} hash code: {InstanceHashCode}", GetType().Name, GetHashCode());
             OnQueueUpdatedEvent(new QueueUpdatedEventArgs(item));
-            _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", item.Id, nameof(QueueUpdateEvent));
-            _cache.Set(GetKey(item.Id), item, _cacheOptions);
+            _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", nameof(QueueUpdateEvent), item.Id);
+            AddOrUpdateCache(item);
             return Task.FromResult(true);
         }
 
         public async Task<bool> UpdateAsync(Queue item, bool doRender)
         {
+            _log.LogDebug("Repository {name} hash code: {InstanceHashCode}", GetType().Name, GetHashCode());
             if (doRender)
             {
                 OnQueueUpdatedEvent(new QueueUpdatedEventArgs(item));
-                _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", item.Id, nameof(QueueUpdateEvent));
-                _cache.Set(GetKey(item.Id), item, _cacheOptions);
+                _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", nameof(QueueUpdateEvent), item.Id);
+                AddOrUpdateCache(item);
                 return true;
             }
             else
@@ -113,7 +108,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                 var result = await InnerRepository.UpdateAsync(item);
                 if (result)
                 {
-                    _cache.Set(GetKey(item.Id), item, _cacheOptions);
+                    AddOrUpdateCache(item);
                     _log.LogDebug("{name} with Id {id} updated in cache", typeof(Queue).Name, item.Id);
                 }
                 return result;

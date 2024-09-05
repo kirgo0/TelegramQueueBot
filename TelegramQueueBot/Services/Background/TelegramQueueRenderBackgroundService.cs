@@ -8,7 +8,7 @@ using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 
-namespace TelegramQueueBot.Services
+namespace TelegramQueueBot.Services.Background
 {
     public class TelegramQueueRenderBackgroundService : BackgroundService
     {
@@ -37,13 +37,13 @@ namespace TelegramQueueBot.Services
             )
         {
             _bot = bot;
+            _log = log;
             _queueService = queueService;
-            _userRepository = userRepository;
             _chatRepository = chatRepository;
+            _userRepository = userRepository;
             _textRepository = textRepository;
             _cachedQueueRepository = cachedQueueRepository;
             _delay = delay;
-            _log = log;
             _cachedQueueRepository.QueueUpdateEvent += OnQueueUpdatedEvent;
         }
 

@@ -7,6 +7,7 @@ using TelegramQueueBot.Data.Repository;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
+using TelegramQueueBot.Services.Background;
 
 namespace TelegramQueueBot.Extensions
 {
@@ -58,7 +59,7 @@ namespace TelegramQueueBot.Extensions
         where IRepository : class
         {
             // Register the MongoRepository by its interface
-            services.AddTransient<TRepository>();
+            services.AddSingleton<TRepository>();
 
             // Register the CachedMongoRepository by its interface
             services.AddSingleton<IRepository>(provider =>
@@ -90,7 +91,7 @@ namespace TelegramQueueBot.Extensions
         where IRepository : class
         {
             // Register the MongoRepository by its interface
-            services.AddTransient<TRepository>();
+            services.AddSingleton<TRepository>();
 
             // Register the CachedMongoRepository by its interface
             services.AddSingleton<IRepository>(provider =>
@@ -102,7 +103,7 @@ namespace TelegramQueueBot.Extensions
                 {
                     AbsoluteExpirationRelativeToNow = cacheDuration
                 };
-                
+
                 // Instantiate and return the cached repository
                 return (TCachedRepository)Activator.CreateInstance(
                     typeof(TCachedRepository),

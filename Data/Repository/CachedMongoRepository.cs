@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 using TelegramQueueBot.Data.Abstraction;
 using TelegramQueueBot.Models;
 
@@ -17,13 +15,13 @@ namespace Data.Repository
         protected readonly string _cacheKeyPrefix;
         protected readonly MemoryCacheEntryOptions _cacheOptions;
 
-        public CachedMongoRepository(TRepository innerRepository, ILogger log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions = null)
+        public CachedMongoRepository(TRepository innerRepository, ILogger log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions)
         {
             _innerRepository = innerRepository;
             _log = log;
             _cache = cache;
             _cacheKeyPrefix = typeof(TEntity).Name;
-            _cacheOptions = cacheOptions ?? new MemoryCacheEntryOptions(); 
+            _cacheOptions = cacheOptions;
         }
 
         public virtual async Task<TEntity> GetAsync(string id)

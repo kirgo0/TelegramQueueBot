@@ -5,7 +5,7 @@ using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 
-namespace TelegramQueueBot.Services
+namespace TelegramQueueBot.Services.Background
 {
     public class MongoQueueSaveBackgroundService : BackgroundService
     {

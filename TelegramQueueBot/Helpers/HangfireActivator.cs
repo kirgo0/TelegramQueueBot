@@ -1,19 +1,26 @@
 ﻿using Hangfire;
+using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 
 namespace TelegramQueueBot.Helpers
 {
     public class HangfireActivator : JobActivator
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _container;
 
-        public HangfireActivator(IServiceProvider serviceProvider)
+        public HangfireActivator(IServiceScopeFactory container)
         {
-            _serviceProvider = serviceProvider;
+            _container = container;
         }
 
-        public override object ActivateJob(Type jobType)
+        public override object ActivateJob(Type type)
         {
-            return _serviceProvider.GetService(jobType);
+            using var scope = _container.CreateScope();
+
+            var b = scope.ServiceProvider.GetRequiredService(type);
+
+            return scope.ServiceProvider.GetRequiredService(type);
+
         }
     }
 

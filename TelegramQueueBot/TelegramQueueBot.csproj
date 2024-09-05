@@ -16,6 +16,8 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="8.0.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Autofac.Extras.DynamicProxy" Version="7.1.0" />
+    <PackageReference Include="Castle.Core" Version="5.1.1" />
     <PackageReference Include="CronExpressionDescriptor" Version="2.36.0" />
     <PackageReference Include="Cronos" Version="0.8.4" />
     <PackageReference Include="Hangfire" Version="1.8.14" />

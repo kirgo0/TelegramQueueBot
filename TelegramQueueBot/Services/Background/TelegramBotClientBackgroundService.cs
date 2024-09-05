@@ -7,14 +7,13 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using DefaultUpdateHandler = TelegramQueueBot.UpdateHandlers.DefaultUpdateHandler;
 
-namespace TelegramQueueBot.Services
+namespace TelegramQueueBot.Services.Background
 {
     public class TelegramBotClientBackgroundService : BackgroundService
     {
         private ITelegramBotClient _bot;
         private ReceiverOptions _receiverOptions;
         private ILogger<TelegramBotClientBackgroundService> _logger;
-        private ILifetimeScope _scope;
         private DefaultUpdateHandler _defaultUpdateHandler;
 
 
@@ -26,7 +25,6 @@ namespace TelegramQueueBot.Services
                 AllowedUpdates = new[] { UpdateType.Message, UpdateType.CallbackQuery }
             };
             _logger = logger;
-            _scope = scope;
             _defaultUpdateHandler = defaultUpdateHandler;
         }
 

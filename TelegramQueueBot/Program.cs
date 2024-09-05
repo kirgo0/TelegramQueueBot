@@ -21,6 +21,8 @@ using TelegramQueueBot.Repository.Implementations;
 using TelegramQueueBot.Repository.Implementations.Cached;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
+using TelegramQueueBot.Services.Background;
+using TelegramQueueBot.UpdateHandlers.Others;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -44,7 +46,6 @@ try
         .ConfigureServices((context, services) =>
         {
             services.AddMemoryCache();
-            services.AddSingleton<ICacheService, CacheService>();
 
             var mongoConnectionString = context.Configuration["MongoSettings:Connection"];
             var mongoDatabaseName = context.Configuration["MongoSettings:DatabaseName"];
@@ -64,7 +65,9 @@ try
                 opt.SlidingExpiration = null;
             });
             services.AddMongoRepositoryWithCaching<MongoQueueRepository, CachedMongoQueueRepository, Queue, ICachedQueueRepository>(TimeSpan.FromMinutes(10));
-            services.AddScoped<IChatJobRepository, MongoChatJobRepository>();
+            services.AddSingleton<IChatJobRepository, MongoChatJobRepository>();
+            // test service
+            services.AddSingleton<ScheduledQueueJobHandler>();
 
             services.AddMongoQueueSaveBackgroundService(TimeSpan.FromSeconds(1));
             services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromMilliseconds(1000));
@@ -72,7 +75,7 @@ try
             services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(context.Configuration.GetSection("TelegramBotOptions")["Token"]));
             services.AddHostedService<TelegramBotClientBackgroundService>();
 
-            services.AddHangfire(config =>
+            services.AddHangfire((provider, config) =>
             {
                 config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                       .UseSimpleAssemblyNameTypeSerializer()
@@ -88,7 +91,7 @@ try
                           CheckConnection = true,
                           CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
                       })
-                      .UseActivator(new HangfireActivator(services.BuildServiceProvider()));
+                      .UseActivator(new HangfireActivator(provider.GetRequiredService<IServiceScopeFactory>()));
             });
 
             services.AddHangfireServer();
@@ -96,6 +99,7 @@ try
         .ConfigureContainer<ContainerBuilder>((context, containerBuilder) =>
         {
             containerBuilder.RegisterModule<HandlersModule>();
+
         });
 
     using IHost host = builder.Build();

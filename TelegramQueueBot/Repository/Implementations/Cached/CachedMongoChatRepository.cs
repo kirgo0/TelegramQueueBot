@@ -9,7 +9,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
 {
     public class CachedMongoChatRepository : CachedMongoRepository<MongoChatRepository, Chat>, IChatRepository
     {
-        public CachedMongoChatRepository(MongoChatRepository innerRepository, ILogger log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions = null) : base(innerRepository, log, cache, cacheOptions)
+        public CachedMongoChatRepository(MongoChatRepository innerRepository, ILogger log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions) : base(innerRepository, log, cache, cacheOptions)
         {
         }
 

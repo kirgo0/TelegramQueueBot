@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TelegramQueueBot.Services
+namespace Data
 {
+
     public class CacheService : ICacheService
     {
         private readonly IMemoryCache _memoryCache;
@@ -36,13 +37,25 @@ namespace TelegramQueueBot.Services
         {
             _memoryCache.Remove(key);
         }
+
+        public bool TryGetValue<T>(string key, out T? item)
+        {
+            return _memoryCache.TryGetValue(key, out item);
+        }
+
+        public void Set<T>(string key, T value, MemoryCacheEntryOptions entryOptions)
+        {
+            _memoryCache.Set(key, value, entryOptions);
+        }
     }
 
 
     public interface ICacheService
     {
         T Get<T>(string key);
+        bool TryGetValue<T>(string key, out T? item);
         void Set<T>(string key, T value, TimeSpan? expiration = null);
+        void Set<T>(string key, T value, MemoryCacheEntryOptions entryOptions);
         void Remove(string key);
     }
 }

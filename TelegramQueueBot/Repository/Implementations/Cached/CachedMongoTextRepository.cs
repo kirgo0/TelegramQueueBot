@@ -10,7 +10,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
 {
     public class CachedMongoTextRepository : CachedMongoRepository<MongoTextRepository, Text>, ITextRepository
     {
-        public CachedMongoTextRepository(MongoTextRepository innerRepository, ILogger log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions = null) : base(innerRepository, log, cache, cacheOptions)
+        public CachedMongoTextRepository(MongoTextRepository innerRepository, ILogger<CachedMongoTextRepository> log, IMemoryCache cache, MemoryCacheEntryOptions cacheOptions) : base(innerRepository, log, cache, cacheOptions)
         {
         }
 
@@ -18,7 +18,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
         {
             try
             {
-                if (_cache.TryGetValue(GetKey(key), out Text cachedItem))
+                if (_cache.TryGetValue(GetKey(key), out Text? cachedItem))
                 {
                     _log.LogDebug("Text with Key {id} retrieved from cache", cachedItem.Key);
                     return cachedItem;
@@ -27,7 +27,7 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
                 var item = await _innerRepository.GetByKeyAsync(key);
                 if (item != null && !item.Equals(MongoTextRepository.NotFoundText))
                 {
-                    _cache.Set(GetKey(item.Key), item, _cacheOptions);
+                    AddOrUpdateCache(item);
                     _log.LogDebug("Text with Key {id} added to cache", item.Key);
                 }
 
@@ -46,5 +46,14 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
             return text is not null ? text.Value : string.Empty;
         }
 
+        protected override void AddOrUpdateCache(Text item)
+        {
+            _cache.Set(GetKey(item.Key), item, _cacheOptions);
+        }
+
+        protected override void RemoveFromCache(Text item)
+        {
+            _cache.Remove(GetKey(item.Key));
+        }
     }
 }
