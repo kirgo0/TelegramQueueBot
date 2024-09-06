@@ -5,6 +5,7 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -13,7 +14,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     [HandlesCommand(Command.Start)]
     public class StartCommandHandler : UpdateHandler
     {
-        public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users ) : base(bot, scope, logger)
+        public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users) : base(bot, scope, logger)
         {
             NeedsChat = true;
             NeedsUser = true;

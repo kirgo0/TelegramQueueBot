@@ -4,8 +4,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramQueueBot.Common;
-using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers
@@ -13,7 +12,7 @@ namespace TelegramQueueBot.UpdateHandlers
     [HandlerMetadata(Metatags.HandleType, UpdateType.CallbackQuery)]
     public class CallbackUpdateHandler : UpdateHandler
     {
-        public CallbackUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CallbackUpdateHandler> logger ) : base(bot, scope, logger)
+        public CallbackUpdateHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CallbackUpdateHandler> logger) : base(bot, scope, logger)
         {
         }
 

@@ -3,7 +3,6 @@ using TelegramQueueBot.Common;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Models.Enums;
-using TelegramQueueBot.Repository.Interfaces;
 
 namespace TelegramQueueBot.Extensions
 {
@@ -138,12 +137,12 @@ namespace TelegramQueueBot.Extensions
             return builder;
         }
 
-        public static MessageBuilder AddJobMenuMarkup(this MessageBuilder builder, ChatJob job)
+        public static MessageBuilder AddJobMenuMarkup(this MessageBuilder builder, ChatJob job, string? queueName = null)
         {
 
             builder
                 .AddButton(TextResources.GetValue(TextKeys.BackBtn), Actions.Jobs)
-                .AddButton($"_{job.QueueId}", $"{Actions.JobQueueMenu}{job.Id}")
+                .AddButton($"{(string.IsNullOrEmpty(queueName) ? "_" : queueName)}", $"{Actions.JobQueueMenu}{job.Id}")
                 .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Actions.DeleteJob}{job.Id}")
 
                 .AddJobMenuMinutes(job, 5, 15, 60)

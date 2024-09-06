@@ -74,7 +74,7 @@ namespace TelegramQueueBot.Services.Background
                     var chat = await _chatRepository.GetByTelegramIdAsync(queue.ChatId);
 
                     var msg = new MessageBuilder(chat);
-                    
+
                     msg.AppendModeTitle(chat);
 
                     msg

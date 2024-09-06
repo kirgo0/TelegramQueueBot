@@ -1,4 +1,4 @@
-﻿namespace TelegramQueueBot.Helpers
+﻿namespace TelegramQueueBot.Helpers.Attributes
 {
     public class HandlerMetadataAttribute : Attribute
     {

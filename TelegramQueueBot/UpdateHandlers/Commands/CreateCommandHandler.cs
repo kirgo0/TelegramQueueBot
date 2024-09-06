@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -16,7 +16,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
     {
         private QueueService _queueService;
 
-        public CreateCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CreateCommandHandler> logger, QueueService queueService ) : base(bot, scope, logger)
+        public CreateCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<CreateCommandHandler> logger, QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -26,7 +26,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         public override async Task Handle(Update update)
         {
             var chat = await chatTask;
-            if (!string.IsNullOrEmpty(chat.CurrentQueueId))
+            if (chat.LastMessageId != 0)
                 await DeleteLastMessageAsync(chat);
 
             var queue = await _queueService.CreateQueueAsync(chat.TelegramId, chat.DefaultQueueSize);

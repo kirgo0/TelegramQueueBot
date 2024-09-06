@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using System.Reflection;
-using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.UpdateHandlers;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 

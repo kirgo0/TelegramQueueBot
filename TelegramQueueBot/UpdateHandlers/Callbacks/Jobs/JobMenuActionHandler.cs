@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -16,7 +16,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     {
         private readonly JobService _jobService;
         private readonly QueueService _queueService;
-        public JobMenuActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobMenuActionHandler> logger,  JobService jobService, QueueService queueService) : base(bot, scope, logger)
+        public JobMenuActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobMenuActionHandler> logger, JobService jobService, QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
@@ -29,10 +29,10 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             var data = GetAction(update).Replace(Actions.JobMenu, string.Empty);
             var job = await _jobService.GetAsync(data);
 
-            if(job.QueueId is not null)
+            if (job.QueueId is not null)
             {
                 var queue = await _queueService.GetByIdAsync(job.QueueId);
-                if(queue is null)
+                if (queue is null)
                 {
                     job.QueueId = null;
                     await _jobService.UpdateJobAsync(job);
@@ -40,9 +40,14 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             }
 
             var chat = await chatTask;
+            string queueName = string.Empty;
+            if (job.QueueId is not null)
+            {
+                queueName = (await _queueService.GetByIdAsync(job.QueueId)).Name;
+            }
             var msg = new MessageBuilder(chat)
                 .AddJobMenuCaption(job)
-                .AddJobMenuMarkup(job);
+                .AddJobMenuMarkup(job, queueName);
 
             await _bot.BuildAndEditAsync(msg);
         }

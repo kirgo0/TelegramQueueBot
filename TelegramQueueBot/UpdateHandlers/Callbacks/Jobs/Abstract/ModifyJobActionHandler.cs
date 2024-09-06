@@ -1,16 +1,10 @@
 ﻿using Autofac;
-using Hangfire.Common;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
@@ -20,11 +14,13 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract
     public abstract class ModifyJobActionHandler<T> : UpdateHandler
     {
         private readonly JobService _jobService;
-        public ModifyJobActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger logger, JobService jobService) : base(bot, scope, logger)
+        private readonly QueueService _queueService;
+        public ModifyJobActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger logger, JobService jobService, QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
             _jobService = jobService;
+            _queueService = queueService;
         }
 
         public virtual string GetAction()
@@ -52,7 +48,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract
                 return;
             }
 
-            if(!ParseActionParameter(arguments[0], out T actionData))
+            if (!ParseActionParameter(arguments[0], out T actionData))
             {
                 return;
             }
@@ -62,14 +58,19 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract
 
             var result = ActionWithJob(job, actionData);
 
-            if(!result) { return; }
+            if (!result) { return; }
 
             await _jobService.UpdateJobAsync(job);
 
             var chat = await chatTask;
+            string queueName = string.Empty;
+            if (job.QueueId is not null)
+            {
+                queueName = (await _queueService.GetByIdAsync(job.QueueId)).Name;
+            }
             var msg = new MessageBuilder(chat)
                 .AddJobMenuCaption(job)
-                .AddJobMenuMarkup(job);
+                .AddJobMenuMarkup(job, queueName);
 
             await _bot.BuildAndEditAsync(msg);
         }

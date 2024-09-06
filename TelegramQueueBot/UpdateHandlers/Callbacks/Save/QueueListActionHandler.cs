@@ -3,8 +3,7 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
-using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
@@ -12,7 +11,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
     [HandleAction(Actions.QueueList)]
     public class QueueListActionHandler : UpdateHandler
     {
-        public QueueListActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<QueueListActionHandler> logger ) : base(bot, scope, logger)
+        public QueueListActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<QueueListActionHandler> logger) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

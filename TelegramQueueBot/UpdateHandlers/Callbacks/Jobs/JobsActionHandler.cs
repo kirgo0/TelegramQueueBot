@@ -3,8 +3,7 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
-using TelegramQueueBot.Helpers;
-using TelegramQueueBot.Repository.Interfaces;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
@@ -12,7 +11,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     [HandleAction(Actions.Jobs)]
     public class JobsActionHandler : UpdateHandler
     {
-        public JobsActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsActionHandler> logger ) : base(bot, scope, logger)
+        public JobsActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsActionHandler> logger) : base(bot, scope, logger)
         {
         }
 

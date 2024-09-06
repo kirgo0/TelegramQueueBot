@@ -16,7 +16,7 @@ namespace TelegramQueueBot.UpdateHandlers.Others
         private readonly IUserRepository _userRepository;
         private readonly QueueService _queueService;
         private readonly ILogger _log;
-        public ScheduledQueueJobHandler(IChatRepository chatRepository, QueueService queueService, ILogger<ScheduledQueueJobHandler> log, IUserRepository userRepository,  ITelegramBotClient bot)
+        public ScheduledQueueJobHandler(IChatRepository chatRepository, QueueService queueService, ILogger<ScheduledQueueJobHandler> log, IUserRepository userRepository, ITelegramBotClient bot)
         {
             _bot = bot;
             _log = log;

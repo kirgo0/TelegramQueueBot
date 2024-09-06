@@ -1,17 +1,11 @@
 ﻿using Autofac;
-using Cronos;
-using Hangfire;
 using Microsoft.Extensions.Logging;
-using System.Linq.Expressions;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
-using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.Models;
-using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
-using TelegramQueueBot.UpdateHandlers.Abstractions;
 using TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
@@ -20,7 +14,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     public class AddDaysActionHandler : ModifyJobActionHandler<int>
     {
 
-        public AddDaysActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddDaysActionHandler> logger, JobService jobService) : base(bot, scope, logger, jobService)
+        public AddDaysActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddDaysActionHandler> logger, JobService jobService, QueueService queueService) : base(bot, scope, logger, jobService, queueService)
         {
         }
 

@@ -5,8 +5,8 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.Models.Enums;
-using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands.Features
@@ -14,7 +14,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
     [HandlesCommand(Command.View)]
     public class ViewCommandHandler : UpdateHandler
     {
-        public ViewCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ViewCommandHandler> logger ) : base(bot, scope, logger)
+        public ViewCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ViewCommandHandler> logger) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

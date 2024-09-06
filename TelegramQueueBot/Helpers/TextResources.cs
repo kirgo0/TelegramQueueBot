@@ -42,10 +42,10 @@ namespace TelegramQueueBot.Helpers
                 texts.Add(key, text);
             }
 
-            log.LogInformation("Loaded {texts}/{keys} text values from {repositoryName}",texts.Count, keys.Count, repository.GetType().Name);
+            log.LogInformation("Loaded {texts}/{keys} text values from {repositoryName}", texts.Count, keys.Count, repository.GetType().Name);
             if (missingKeys.Count > 0)
             {
-                log.LogWarning("Missing value/s for {list} key/s",string.Join(",", missingKeys));
+                log.LogWarning("Missing value/s for {list} key/s", string.Join(",", missingKeys));
             }
         }
 

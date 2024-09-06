@@ -1,6 +1,6 @@
 ﻿using TelegramQueueBot.Common;
 
-namespace TelegramQueueBot.Helpers
+namespace TelegramQueueBot.Helpers.Attributes
 {
     public class HandleActionAttribute : HandlerMetadataAttribute
     {

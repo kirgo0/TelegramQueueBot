@@ -5,8 +5,8 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.Models.Enums;
-using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -16,7 +16,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
     public class SkipFirstCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
-        public SkipFirstCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SkipFirstCommandHandler> logger, QueueService queueSrevice ) : base(bot, scope, logger)
+        public SkipFirstCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SkipFirstCommandHandler> logger, QueueService queueSrevice) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
