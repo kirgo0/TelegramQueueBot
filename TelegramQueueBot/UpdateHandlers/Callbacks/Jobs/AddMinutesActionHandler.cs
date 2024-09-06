@@ -5,51 +5,75 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
+using TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
     [HandleAction(Actions.AddMinutes)]
-    public class AddMinutesActionHandler : UpdateHandler
+    public class AddMinutesActionHandler : ModifyJobActionHandler<int>
     {
-        private readonly JobService _jobService;
-        public AddMinutesActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddMinutesActionHandler> logger,  JobService jobService) : base(bot, scope, logger)
+        public AddMinutesActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddMinutesActionHandler> logger, JobService jobService) : base(bot, scope, logger, jobService)
         {
-            GroupsOnly = true;
-            NeedsChat = true;
-            _jobService = jobService;
         }
 
-        public override async Task Handle(Update update)
+        //private readonly JobService _jobService;
+        //public AddMinutesActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddMinutesActionHandler> logger,  JobService jobService) : base(bot, scope, logger)
+        //{
+        //    GroupsOnly = true;
+        //    NeedsChat = true;
+        //    _jobService = jobService;
+        //}
+
+        //public override async Task Handle(Update update)
+        //{
+        //    var arguments =
+        //        GetAction(update).
+        //        Replace(Actions.AddMinutes, string.Empty).
+        //        Split("/");
+        //    if (arguments.Length != 2)
+        //    {
+        //        return;
+        //    }
+        //    var jobId = arguments[1];
+        //    if (!int.TryParse(arguments[0], out int minutes))
+        //    {
+        //        return;
+        //    }
+
+        //    var job = await _jobService.GetAsync(jobId);
+
+        //    job.CronExpression = CronHelper.AddMinutes(job.CronExpression, minutes);
+        //    await _jobService.UpdateJobAsync(job);
+
+        //    var chat = await chatTask;
+        //    var msg = new MessageBuilder(chat)
+        //        .AddJobMenuMarkup(job)
+        //        .AddJobMenuCaption(job);
+
+        //    await _bot.BuildAndEditAsync(msg);
+
+        //}
+        public override bool ActionWithJob(ChatJob job, int data)
         {
-            var arguments =
-                GetAction(update).
-                Replace(Actions.AddMinutes, string.Empty).
-                Split("/");
-            if (arguments.Length != 2)
+            try
             {
-                return;
+                job.CronExpression = CronHelper.AddMinutes(job.CronExpression, data);
+                return true;
             }
-            var jobId = arguments[1];
-            if (!int.TryParse(arguments[0], out int minutes))
+            catch (Exception ex)
             {
-                return;
+                _log.LogError(ex, "An error ocured while adding minutes {minutes} to the cron expression {cronExpression}", data, job.CronExpression);
+                return false;
             }
+        }
 
-            var job = await _jobService.GetAsync(jobId);
-
-            job.CronExpression = CronHelper.AddMinutes(job.CronExpression, minutes);
-
-            await _jobService.UpdateJobAsync(job);
-
-            var chat = await chatTask;
-            var msg = new MessageBuilder(chat).AddJobMenuMarkup(job);
-            msg.AddJobMenuCaption(job);
-
-            await _bot.BuildAndEditAsync(msg);
-
+        public override bool ParseActionParameter(string parameter, out int data)
+        {
+            return int.TryParse(parameter, out data);
         }
     }
 }

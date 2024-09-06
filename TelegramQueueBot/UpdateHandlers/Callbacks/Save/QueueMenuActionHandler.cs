@@ -44,7 +44,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
             }
             catch (Exception ex)
             {
-                _log.LogError("An error ocured when creating a menu for a queue with id {queueId}", queueId);
+                _log.LogError(ex, "An error ocured when creating a menu for a queue with id {queueId}", queueId);
             }
         }
     }

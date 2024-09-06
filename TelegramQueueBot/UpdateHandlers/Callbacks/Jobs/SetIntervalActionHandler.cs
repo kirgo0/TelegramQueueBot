@@ -5,56 +5,37 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
+using TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
     [HandleAction(Actions.SetInterval)]
-    public class SetIntervalActionHandler : UpdateHandler
+    public class SetIntervalActionHandler : ModifyJobActionHandler<int>
     {
-        private readonly JobService _jobService;
-        public SetIntervalActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetIntervalActionHandler> logger,  JobService jobService) : base(bot, scope, logger)
+        public SetIntervalActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetIntervalActionHandler> logger, JobService jobService) : base(bot, scope, logger, jobService)
         {
-            GroupsOnly = true;
-            NeedsChat = true;
-            _jobService = jobService;
+        }
+        public override bool ActionWithJob(ChatJob job, int data)
+        {
+            if (job.Interval == data)
+            {
+                return false;
+            }
+            job.Interval = data;
+            if (job.LastInterval > job.Interval)
+            {
+                job.LastInterval = job.Interval;
+            }
+            return true;
         }
 
-        public override async Task Handle(Update update)
+        public override bool ParseActionParameter(string parameter, out int data)
         {
-            var arguments =
-                GetAction(update).
-                Replace(Actions.SetInterval, string.Empty).
-                Split("/");
-
-            if (arguments.Length != 2)
-            {
-                return;
-            }
-            if (!int.TryParse(arguments[0], out var interval))
-            {
-                return;
-            }
-            var jobId = arguments[1];
-
-            var job = await _jobService.GetAsync(jobId);
-            if (job.Interval == interval)
-            {
-                return;
-            }
-            job.Interval = interval;
-            if (job.LastInterval > job.Interval) job.LastInterval = job.Interval;
-            await _jobService.UpdateJobAsync(job);
-
-            var chat = await chatTask;
-            var msg = new MessageBuilder(chat);
-
-            msg.AddJobMenuCaption(job);
-            msg.AddJobMenuMarkup(job);
-
-            await _bot.BuildAndEditAsync(msg);
+            return int.TryParse(parameter, out data);
         }
     }
 }

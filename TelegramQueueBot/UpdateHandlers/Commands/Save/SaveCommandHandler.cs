@@ -9,13 +9,13 @@ using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Commands
+namespace TelegramQueueBot.UpdateHandlers.Commands.Save
 {
     [HandlesCommand(Command.Save)]
     public class SaveCommandHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
-        public SaveCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SaveCommandHandler> logger,  QueueService queueService) : base(bot, scope, logger)
+        public SaveCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SaveCommandHandler> logger, QueueService queueService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

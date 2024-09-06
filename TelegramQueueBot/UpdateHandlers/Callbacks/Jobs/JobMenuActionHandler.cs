@@ -26,8 +26,6 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 
         public override async Task Handle(Update update)
         {
-            var chat = await chatTask;
-            var msg = new MessageBuilder(chat);
             var data = GetAction(update).Replace(Actions.JobMenu, string.Empty);
             var job = await _jobService.GetAsync(data);
 
@@ -41,8 +39,10 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
                 }
             }
 
-            msg.AddJobMenuCaption(job);
-            msg.AddJobMenuMarkup(job);
+            var chat = await chatTask;
+            var msg = new MessageBuilder(chat)
+                .AddJobMenuCaption(job)
+                .AddJobMenuMarkup(job);
 
             await _bot.BuildAndEditAsync(msg);
         }

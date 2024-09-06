@@ -5,47 +5,31 @@ using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
+using TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
     [HandleAction(Actions.SetQueue)]
-    public class SetQueueActionHandler : UpdateHandler
+    public class SetQueueActionHandler : ModifyJobActionHandler<string>
     {
-        private readonly JobService _jobService;
-        public SetQueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetQueueActionHandler> logger,  JobService jobService) : base(bot, scope, logger)
+        public SetQueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetQueueActionHandler> logger, JobService jobService) : base(bot, scope, logger, jobService)
         {
-            GroupsOnly = true;
-            NeedsChat = true;
-            _jobService = jobService;
+        }
+        public override bool ActionWithJob(ChatJob job, string data)
+        {
+            if (job.QueueId is not null && job.QueueId.Equals(data)) return false;
+            job.QueueId = string.IsNullOrEmpty(data) ? null : data;
+            return true;
         }
 
-        public override async Task Handle(Update update)
+        public override bool ParseActionParameter(string parameter, out string data)
         {
-            var arguments =
-                GetAction(update).
-                Replace(Actions.SetQueue, string.Empty).
-                Split("/");
-            if (arguments.Length != 2)
-            {
-                return;
-            }
-            var queueId = arguments[0];
-            var jobId = arguments[1];
-
-            var job = await _jobService.GetAsync(jobId);
-            job.QueueId = string.IsNullOrEmpty(queueId) ? null : queueId;
-            await _jobService.UpdateJobAsync(job);
-
-            var chat = await chatTask;
-            var msg = new MessageBuilder(chat);
-
-            msg.AddJobMenuCaption(job);
-            msg.AddJobMenuMarkup(job);
-
-            await _bot.BuildAndEditAsync(msg);
+            data = parameter;
+            return true;
         }
     }
 }

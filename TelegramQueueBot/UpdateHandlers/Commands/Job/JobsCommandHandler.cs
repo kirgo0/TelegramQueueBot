@@ -10,13 +10,13 @@ using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
-namespace TelegramQueueBot.UpdateHandlers.Commands
+namespace TelegramQueueBot.UpdateHandlers.Commands.Job
 {
     [HandlesCommand(Command.Jobs)]
     public class JobsCommandHandler : UpdateHandler
     {
         private IChatJobRepository _jobRepository;
-        public JobsCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsCommandHandler> logger,  IChatJobRepository jobRepository) : base(bot, scope, logger)
+        public JobsCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobsCommandHandler> logger, IChatJobRepository jobRepository) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;

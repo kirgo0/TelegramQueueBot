@@ -1,52 +1,46 @@
 ﻿using Autofac;
+using Cronos;
+using Hangfire;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
+using TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
     [HandleAction(Actions.AddDays)]
-    public class AddDaysActionHandler : UpdateHandler
+    public class AddDaysActionHandler : ModifyJobActionHandler<int>
     {
-        private readonly JobService _jobService;
-        public AddDaysActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddDaysActionHandler> logger,  JobService jobService) : base(bot, scope, logger)
+
+        public AddDaysActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddDaysActionHandler> logger, JobService jobService) : base(bot, scope, logger, jobService)
         {
-            GroupsOnly = true;
-            NeedsChat = true;
-            _jobService = jobService;
         }
 
-        public override async Task Handle(Update update)
+        public override bool ActionWithJob(ChatJob job, int data)
         {
-            var arguments =
-                GetAction(update).
-                Replace(Actions.AddDays, string.Empty).
-                Split("/");
-
-            if (arguments.Length != 2)
+            try
             {
-                return;
+                job.CronExpression = CronHelper.AddDays(job.CronExpression, data);
+                return true;
             }
-            if (!int.TryParse(arguments[0], out int days))
+            catch (Exception ex)
             {
-                return;
+                _log.LogError(ex, "An error ocured while adding days {days} to the cron expression {cronExpression}", data, job.CronExpression);
+                return false;
             }
-            var jobId = arguments[1];
-            var job = await _jobService.GetAsync(jobId);
-            job.CronExpression = CronHelper.AddDays(job.CronExpression, days);
-            await _jobService.UpdateJobAsync(job);
+        }
 
-            var chat = await chatTask;
-            var msg = new MessageBuilder(chat).AddJobMenuMarkup(job);
-            msg.AddJobMenuCaption(job);
-
-            await _bot.BuildAndEditAsync(msg);
+        public override bool ParseActionParameter(string parameter, out int data)
+        {
+            return int.TryParse(parameter, out data);
         }
     }
 }

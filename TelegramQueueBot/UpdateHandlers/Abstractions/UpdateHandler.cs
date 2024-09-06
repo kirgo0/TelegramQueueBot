@@ -165,6 +165,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             if (update?.CallbackQuery?.Data is null)
             {
                 _log.LogWarning("Update has no callback data in {type}", GetType());
+                return string.Empty;
             }
             return update.CallbackQuery.Data;
         }
@@ -173,12 +174,12 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
         {
             try
             {
-                var parts = update.Message.Text.Split(' ');
-                return parts.Skip(1);
+                var parts = update?.Message?.Text?.Split(' ');
+                return parts?.Skip(1) ?? new List<string>();
             }
             catch (Exception ex)
             {
-                _log.LogWarning("An error occured while getting params for update {update}", update.ToString());
+                _log.LogWarning(ex, "An error occured while getting params for update {update}", update.ToString());
                 return new List<string>();
             }
         }
