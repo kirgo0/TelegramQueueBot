@@ -12,7 +12,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
     [HandleAction(Actions.Dequeue)]
-    public class DequeueActionHandler : UpdateHandler
+    public class DequeueActionHandler : UserNotifyingUpdateHandler
     {
         private QueueService _queueService;
         public DequeueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueActionHandler> logger, QueueService queueService) : base(bot, scope, logger)
@@ -41,7 +41,14 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                 // dequeing user
                 if (user.TelegramId == actionUserId)
                 {
-                    if (await _queueService.GetQueueCountAsync(chat.CurrentQueueId) != 1 || chat.Mode == Models.Enums.ChatMode.Open)
+                    if (await _queueService.GetQueueCountAsync(chat.CurrentQueueId) != 1 && chat.Mode is Models.Enums.ChatMode.CallingUsers)
+                    {
+                        var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
+                        await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
+                        var nextfirstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
+                        await NotifyUsersIfOrderChanged(firstTwoUsers, nextfirstTwoUsers);
+                        return;
+                    } else if (chat.Mode is Models.Enums.ChatMode.Open)
                     {
                         await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
                         return;

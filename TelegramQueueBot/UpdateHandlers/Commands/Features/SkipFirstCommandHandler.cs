@@ -6,6 +6,7 @@ using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Helpers.Attributes;
+using TelegramQueueBot.Models;
 using TelegramQueueBot.Models.Enums;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
@@ -13,7 +14,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 {
     [HandlesCommand(Command.SkipFirst)]
-    public class SkipFirstCommandHandler : UpdateHandler
+    public class SkipFirstCommandHandler : UserNotifyingUpdateHandler
     {
         private QueueService _queueService;
         public SkipFirstCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SkipFirstCommandHandler> logger, QueueService queueSrevice) : base(bot, scope, logger)
@@ -50,7 +51,10 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
                 return;
             }
 
+            var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
             await _queueService.DequeueFirstAsync(chat.CurrentQueueId, false);
+            var nextfirstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
+            await NotifyUsersIfOrderChanged(firstTwoUsers, nextfirstTwoUsers);
 
             await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
             {
@@ -67,14 +71,14 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
                         .AppendTextLine(TextResources.GetValue(TextKeys.FirstUserDequeued));
                 }
                 var names = await _userRepository.GetByTelegramIdsAsync(queue.List);
-                msg
-                    .AppendTextLine()
-                    .AppendText(TextResources.GetValue(TextKeys.CurrentQueue))
-                    .AddDefaultQueueMarkup(names, chat.View);
-
-                await DeleteLastMessageAsync(chat);
-                await SendAndUpdateChatAsync(chat, msg, true);
+                msg.AddDefaultQueueMarkup(names, chat.View);
             });
+            msg
+                .AppendTextLine()
+                .AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
+
+            await DeleteLastMessageAsync(chat);
+            await SendAndUpdateChatAsync(chat, msg, true);
         }
     }
 }
