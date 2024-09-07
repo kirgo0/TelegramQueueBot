@@ -18,7 +18,7 @@ namespace TelegramQueueBot.UpdateHandlers
 
         public override async Task Handle(Update update)
         {
-            var sufix = Common.Command.BotSuffix;
+            var sufix = Command.BotSuffix;
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,

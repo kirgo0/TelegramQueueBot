@@ -13,6 +13,10 @@
         public const string QueueIsCallingUsers = "queue_is_calling_users";
         public const string QueueEndedCallingUsers = "queue_ended_calling_users";
         public const string NeedToTurnOnCallingMode = "need_to_turn_on_calling_mode";
+        public const string FirstUserInQueue = "first_user_in_queue";
+        public const string NextUserInQueue = "next_user_in_queue";
+        public const string UserRecievingNotifications = "user_recieving_notifications";
+        public const string UserNotRecievingNotifications = "user_not_recieving_notifications";
 
         public const string QueueIsEmpty = "queue_is_empty";
         public const string FirstUserDequeued = "first_user_dequeued";
@@ -47,9 +51,7 @@
         public const string JobNextTime = "job_next_time";
 
         public const string ConfirmJobDeletion = "confirm_job_deletion";
-
         public const string SelectJobQueueMenu = "select_job_queue_menu";
-
         public const string ScheduledQueue = "scheduled_queue";
 
     }

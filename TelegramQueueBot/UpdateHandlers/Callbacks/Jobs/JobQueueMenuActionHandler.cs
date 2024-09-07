@@ -15,11 +15,13 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
     public class JobQueueMenuActionHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
-        public JobQueueMenuActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobMenuActionHandler> logger, QueueService queueService) : base(bot, scope, logger)
+        private readonly JobService _jobService;
+        public JobQueueMenuActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<JobMenuActionHandler> logger, QueueService queueService, JobService jobService) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsChat = true;
             _queueService = queueService;
+            _jobService = jobService;
         }
 
         public override async Task Handle(Update update)
@@ -45,12 +47,20 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             }
 
             var jobId = GetAction(update).Replace(Actions.JobQueueMenu, string.Empty);
-            msg.AppendText(TextResources.GetValue(TextKeys.SelectJobQueueMenu));
-
-            msg.AddButtonNextRow("Пуста черга", $"{Actions.SetQueue}/{jobId}");
+            var job = await _jobService.GetAsync(jobId);
+            msg
+                .AppendText(TextResources.GetValue(TextKeys.SelectJobQueueMenu))
+                .AddButtonNextRow("Пуста черга", $"{Actions.SetQueue}/{jobId}");
             foreach (var queue in queues)
             {
-                msg.AddButtonNextRow(queue.Name, $"{Actions.SetQueue}{queue.Id}/{jobId}");
+                if (job?.QueueId is not null && job.QueueId.Equals(queue.Id))
+                {
+                    msg.AddButtonNextRow($"🔵 {queue.Name}", $"{Actions.JobMenu}{jobId}");
+                }
+                else
+                {
+                    msg.AddButtonNextRow(queue.Name, $"{Actions.SetQueue}{queue.Id}/{jobId}");
+                }
             }
 
             await _bot.BuildAndEditAsync(msg);

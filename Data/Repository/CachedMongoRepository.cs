@@ -69,7 +69,7 @@ namespace Data.Repository
             if (result)
             {
                 RemoveFromCache(item);
-                _log.LogInformation("{name} with Id {id} removed from cache", typeof(TEntity).Name, id);
+                _log.LogDebug("{name} with Id {id} removed from cache", typeof(TEntity).Name, id);
             }
             return result;
         }

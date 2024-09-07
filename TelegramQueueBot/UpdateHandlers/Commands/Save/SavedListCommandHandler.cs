@@ -29,8 +29,13 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Save
 
             if (!chat.SavedQueuesIds.Any())
             {
+                // handling redirection from QueueListActionHandler
                 if (update.CallbackQuery is not null)
+                {
                     await DeleteLastMessageAsync(chat);
+                    chat.LastMessageId = 0;
+                    await _chatRepository.UpdateAsync(chat);
+                }
                 msg.AppendText(TextResources.GetValue(TextKeys.NoSavedQueues));
                 await _bot.BuildAndSendAsync(msg);
                 return;
@@ -49,6 +54,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Save
                 msg.AddButtonNextRow(queue.Name, $"{Actions.QueueMenu}{queue.Id}");
             }
 
+            // handling redirection from QueueListActionHandler
             if (update.CallbackQuery is not null)
             {
                 await _bot.BuildAndEditAsync(msg);

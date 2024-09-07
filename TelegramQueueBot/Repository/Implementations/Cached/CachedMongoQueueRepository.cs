@@ -74,7 +74,6 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
 
         public async Task<Queue> CreateAsync(long chatId, int size)
         {
-            _log.LogDebug("Repository {name} hash code: {InstanceHashCode}", GetType().Name, GetHashCode());
             var queue = await InnerRepository.CreateAsync(chatId, size);
             if (queue is not null)
             {
@@ -86,7 +85,6 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
 
         public override Task<bool> UpdateAsync(Queue item)
         {
-            _log.LogDebug("Repository {name} hash code: {InstanceHashCode}", GetType().Name, GetHashCode());
             OnQueueUpdatedEvent(new QueueUpdatedEventArgs(item));
             _log.LogDebug("An {event} has been triggered in the queue with identifier {id}", nameof(QueueUpdateEvent), item.Id);
             AddOrUpdateCache(item);
@@ -95,7 +93,6 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
 
         public async Task<bool> UpdateAsync(Queue item, bool doRender)
         {
-            _log.LogDebug("Repository {name} hash code: {InstanceHashCode}", GetType().Name, GetHashCode());
             if (doRender)
             {
                 OnQueueUpdatedEvent(new QueueUpdatedEventArgs(item));

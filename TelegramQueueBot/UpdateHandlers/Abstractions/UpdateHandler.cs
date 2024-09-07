@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using System.Globalization;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
@@ -257,7 +259,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             }
         }
 
-        protected async Task NotifyUsersAsync(MessageBuilder messageTemplate, params int[] userIds)
+        protected async Task NotifyUsersAsync(MessageBuilder messageTemplate, params long[] userIds)
         {
             var tasks = new List<Task>();
             foreach (var userId in userIds)
@@ -274,6 +276,22 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 tasks.Add(t);
             }
             await Task.WhenAll(tasks);
+        }
+
+        protected async Task NotifyUserAsync(string message, long userId, ParseMode parseMode = ParseMode.Html, InlineKeyboardMarkup markup = null)
+        {
+            if (_userRepository is null)
+            {
+                _userRepository = _scope.Resolve<IUserRepository>();
+            }
+            if (!(await _userRepository.GetByTelegramIdAsync(userId)).SendNotifications) return;
+
+            await _bot.SendTextMessageAsync(
+                userId,
+                message,
+                parseMode: parseMode,
+                replyMarkup: markup
+            );
         }
     }
 

@@ -24,7 +24,7 @@ namespace TelegramQueueBot.Data.Repository
                 await _items.InsertOneAsync(item);
                 if (item is not null)
                 {
-                    _log.LogDebug("Successfuly inserted new {type}", typeof(TEntity).Name);
+                    _log.LogInformation("Successfuly inserted new {type}", typeof(TEntity).Name);
                 }
                 return item;
             }
@@ -40,7 +40,7 @@ namespace TelegramQueueBot.Data.Repository
             try
             {
                 var item = await _items.FindAsync(Builders<TEntity>.Filter.Eq(e => e.Id, id));
-                return item.Single();
+                return item.SingleOrDefault();
             }
             catch (Exception ex)
             {
@@ -55,7 +55,7 @@ namespace TelegramQueueBot.Data.Repository
             {
                 var operationResult = await _items.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, item.Id), item);
                 var result = operationResult.IsAcknowledged && operationResult.ModifiedCount > 0;
-                if (result) _log.LogDebug("Successfuly updated {type} with id {id}", typeof(TEntity).Name, item.Id);
+                if (result) _log.LogInformation("Successfuly updated {type} with id {id}", typeof(TEntity).Name, item.Id);
                 return result;
             }
             catch (Exception ex)
@@ -71,7 +71,7 @@ namespace TelegramQueueBot.Data.Repository
             {
                 var operationResult = await _items.DeleteOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, id));
                 var result = operationResult.IsAcknowledged && operationResult.DeletedCount > 0;
-                if (result) _log.LogDebug("Successufy deleted {type} with id {id}", typeof(TEntity).Name, id);
+                if (result) _log.LogInformation("Successfuly deleted {type} with id {id}", typeof(TEntity).Name, id);
                 return result;
             }
             catch (Exception ex)

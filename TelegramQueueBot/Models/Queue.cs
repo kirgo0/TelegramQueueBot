@@ -48,14 +48,6 @@ namespace TelegramQueueBot.Models
         {
 
         }
-
-        public Queue(int size)
-        {
-            if (size < 0) { throw new ArgumentOutOfRangeException("Size can't be less than zero"); }
-            Size = size;
-            List = new List<long>(new long[size]);
-        }
-
         public Queue(long chatId, int size)
         {
             if (size < 0) { throw new ArgumentOutOfRangeException("Size can't be less than zero"); }

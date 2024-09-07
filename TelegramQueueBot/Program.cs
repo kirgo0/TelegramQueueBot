@@ -51,10 +51,7 @@ try
             var mongoDatabaseName = context.Configuration["MongoSettings:DatabaseName"];
 
             services.AddScoped<IMongoContext, MongoContext>();
-            services.AddSingleton(provider =>
-            {
-                return new QueueService(provider.GetRequiredService<ICachedQueueRepository>());
-            });
+            services.AddSingleton<QueueService>();
             services.AddScoped<JobService>();
 
             services.AddMongoRepositoryWithCaching<MongoUserRepository, CachedMongoUserRepository, User, IUserRepository>(TimeSpan.FromMinutes(10));

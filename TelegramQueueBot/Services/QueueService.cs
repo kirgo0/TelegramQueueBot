@@ -40,6 +40,23 @@ namespace TelegramQueueBot.Services
             return result;
         }
 
+        public async Task<List<long>> GetRangeAsync(string queueId, int range)
+        {
+            if(range < 0) throw new ArgumentOutOfRangeException(nameof(range));
+            var result = new List<long>(range);
+            await AccessQueueAsync(queueId, (queue) =>
+            {
+                for (int i = 0; i < queue.List.Count && range > 0; i++)
+                {
+                    if (queue.List[i] == EmptyQueueMember) continue;
+                    result.Add(queue.List[i]);
+                    range--;
+                }
+                return false;
+            });
+            return result;
+        }
+
         public async Task<Queue> GetByIdAsync(string queueId)
         {
             if (string.IsNullOrEmpty(queueId))
