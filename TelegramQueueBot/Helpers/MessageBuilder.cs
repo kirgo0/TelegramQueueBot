@@ -45,6 +45,12 @@ namespace TelegramQueueBot.Helpers
             return this;
         }
 
+        public MessageBuilder AppendTextFormat(string text, params object[] arguments)
+        {
+            _messageText.AppendFormat(text, arguments);
+            return this;
+        }
+
         public MessageBuilder AppendTextLine(string text)
         {
             _messageText.AppendLine(text);

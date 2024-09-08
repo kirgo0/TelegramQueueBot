@@ -20,7 +20,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,
-                (update, value, item) => value.Equals(Command.Jobs),
+                (value) => value.Equals(Command.Jobs),
                 "An error ocured while redirecting from {from} action handler to the {to} command handler",
                 Actions.Jobs, Command.Jobs
                 );

@@ -119,7 +119,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
         public virtual async Task RedirectHandle(
             Update update,
             string serviceMetaTag,
-            Func<Update, object, Meta<UpdateHandler>, bool> comparator,
+            Func<object, bool> comparator,
             string resolvingErrorMessage,
             params object[] resolveErrorParams
             )
@@ -133,7 +133,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 {
                     if (!item.Metadata.TryGetValue(serviceMetaTag, out value))
                         continue;
-                    if (comparator.Invoke(update, value, item))
+                    if (comparator.Invoke(value))
                     {
                         handler = item.Value;
                         break;
@@ -200,14 +200,14 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             return id < 0;
         }
 
-        private async Task<Chat> TryGetOrCreateChat(long chatId)
+        protected async Task<Chat> TryGetOrCreateChat(long chatId)
         {
             var chat = await _chatRepository.GetByTelegramIdAsync(chatId);
             if (chat is null) chat = await _chatRepository.CreateAsync(new Chat(chatId));
             return chat;
         }
 
-        private async Task<User> TryGetOrCreateUser(Update update)
+        protected async Task<User> TryGetOrCreateUser(Update update)
         {
             Telegram.Bot.Types.User from = null;
             if (update?.Message?.From is not null)
@@ -276,22 +276,6 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 tasks.Add(t);
             }
             await Task.WhenAll(tasks);
-        }
-
-        protected async Task NotifyUserAsync(string message, long userId, ParseMode parseMode = ParseMode.Html, InlineKeyboardMarkup markup = null)
-        {
-            if (_userRepository is null)
-            {
-                _userRepository = _scope.Resolve<IUserRepository>();
-            }
-            if (!(await _userRepository.GetByTelegramIdAsync(userId)).SendNotifications) return;
-
-            await _bot.SendTextMessageAsync(
-                userId,
-                message,
-                parseMode: parseMode,
-                replyMarkup: markup
-            );
         }
     }
 

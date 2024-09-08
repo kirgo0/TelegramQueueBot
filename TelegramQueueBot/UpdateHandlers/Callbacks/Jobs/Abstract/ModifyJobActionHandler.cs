@@ -45,11 +45,13 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract
 
             if (arguments.Length != 2)
             {
+                _log.LogError("Action {action} data for the {name} handler must have two arguments",GetAction(update), GetType().Name);
                 return;
             }
 
             if (!ParseActionParameter(arguments[0], out T actionData))
             {
+                _log.LogError("Can't parse action data {data} for {name} action handler", arguments[0], GetType().Name);
                 return;
             }
 

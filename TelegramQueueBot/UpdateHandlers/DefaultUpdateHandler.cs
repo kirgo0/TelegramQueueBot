@@ -20,7 +20,7 @@ namespace TelegramQueueBot.UpdateHandlers
             await RedirectHandle(
                 update,
                 Metatags.HandleType,
-                (udpate, type, item) => (UpdateType)type == update.Type,
+                (type) => (UpdateType)type == update.Type,
                 "An error occured while resolving update handler for type {type}",
                 update.Type
             );

@@ -103,7 +103,7 @@ try
     var textRepository = host.Services.GetRequiredService<ITextRepository>();
     await TextResources.Load(logger, textRepository, typeof(TextKeys));
 
-    await hostTask;
+    await Task.WhenAny(hostTask, ListenConsoleCommands(host.Services));
 
 }
 catch (Exception ex)
@@ -116,3 +116,14 @@ finally
     Log.CloseAndFlush();
 }
 
+async Task ListenConsoleCommands(IServiceProvider container)
+{
+    while(true)
+    {
+        var command = Console.ReadLine();
+        if (command.Equals("TextReload"))
+        {
+            await TextResources.ReloadFromPreviousContext(typeof(TextKeys));
+        }
+    }
+}

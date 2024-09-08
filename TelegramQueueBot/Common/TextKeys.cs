@@ -28,11 +28,7 @@
         public const string NoSavedQueues = "no_saved_queues";
 
         public const string QueueMenu = "queue_menu";
-        public const string LoadQueueBtn = "load_queue_btn";
-        public const string DeleteQueueBtn = "delete_queue_btn";
         public const string ConfirmDeletion = "confirm_deletion";
-        public const string ConfirmDeletionBtn = "confirm_deletion_btn";
-        public const string BackBtn = "back_btn";
 
         public const string RemovedAllBlankSpaces = "removed_all_blank_spaces";
         public const string NoBlankSpacesToRemove = "no_blank_spaces_to_remove";
@@ -49,10 +45,25 @@
 
         public const string JobMenu = "job_menu";
         public const string JobNextTime = "job_next_time";
+        public const string SetInterval = "set_interval";
 
         public const string ConfirmJobDeletion = "confirm_job_deletion";
         public const string SelectJobQueueMenu = "select_job_queue_menu";
         public const string ScheduledQueue = "scheduled_queue";
 
+        public const string EnableChatNotifications = "enable_chat_notifications";
+        public const string DisableChatNotifications = "disable_chat_notifications";
+
+        // buttons
+        public const string LoadQueueBtn = "load_queue_btn";
+        public const string DeleteQueueBtn = "delete_queue_btn";
+        public const string ConfirmDeletionBtn = "confirm_deletion_btn";
+        public const string BackBtn = "back_btn";
+        public const string EmptyJobQueueBtn = "emtpy_job_queue_btn";
+        public const string LoadJobWithQueueBtn = "load_job_with_queue_btn";
+        public const string SelectedBtn = "selected_btn";
+        public const string DoneBtn = "done_btn";
+        public const string MoveLeftBtn = "move_left_btn";
+        public const string MoveRightBtn = "move_right_btn";
     }
 }

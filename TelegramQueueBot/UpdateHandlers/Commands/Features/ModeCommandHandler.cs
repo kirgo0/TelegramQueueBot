@@ -55,9 +55,11 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
                 msg.AddDefaultQueueMarkup(users, chat.View);
             });
 
-            var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-            await NotifyUsersIfOrderChanged(new List<long>(), firstTwoUsers);
-
+            if(chat.Mode is Models.Enums.ChatMode.CallingUsers)
+            {
+                var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
+                await NotifyUsersIfOrderChanged(chat.TelegramId, new List<long>(), firstTwoUsers);
+            }
 
             await DeleteLastMessageAsync(chat);
             await SendAndUpdateChatAsync(chat, msg, true);

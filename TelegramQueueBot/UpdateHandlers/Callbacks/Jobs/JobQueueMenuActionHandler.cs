@@ -50,7 +50,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
             var job = await _jobService.GetAsync(jobId);
             msg
                 .AppendText(TextResources.GetValue(TextKeys.SelectJobQueueMenu))
-                .AddButtonNextRow("Пуста черга", $"{Actions.SetQueue}/{jobId}");
+                .AddButtonNextRow(TextResources.GetValue(TextKeys.EmptyJobQueueBtn), $"{Actions.SetQueue}/{jobId}");
             foreach (var queue in queues)
             {
                 if (job?.QueueId is not null && job.QueueId.Equals(queue.Id))

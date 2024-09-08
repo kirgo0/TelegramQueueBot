@@ -19,16 +19,34 @@ namespace TelegramQueueBot.UpdateHandlers
         public override async Task Handle(Update update)
         {
             var sufix = Command.BotSuffix;
-            await RedirectHandle(
-                update,
-                Metatags.HandleCommand,
-                (update, value, item) =>
-                update.Message.Text.Split(' ')[0]
-                    .Replace(sufix, "")
-                    .Equals(value.ToString()),
-                "An error occurred while resolving the command handler for {text}",
-                update.Message.Text
+            if(update?.Message?.Text is null && update?.Message is not null)
+            {
+                await RedirectHandle(
+                    update,
+                    Metatags.HandleMessageEvent,
+                    (value) =>
+                    {
+                        var property = update.Message.GetType().GetProperty(value.ToString());
+                        if(property is not null)
+                            return property.GetValue(update.Message) is not null;
+                        return false;
+                    },
+                    "An error occured while resolving message event handler for {update}",
+                    update
                 );
+            } else
+            {
+                await RedirectHandle(
+                    update,
+                    Metatags.HandleCommand,
+                    (value) =>
+                    update.Message.Text.Split(' ')[0]
+                        .Replace(sufix, "")
+                        .Equals(value.ToString()),
+                    "An error occurred while resolving the command handler for {text}",
+                    update.Message.Text
+                );
+            }
         }
     }
 }

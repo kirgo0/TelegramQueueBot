@@ -7,6 +7,8 @@
         public bool IsAuthorized { get; set; } = false;
         public bool SendNotifications { get; set; } = false;
 
+        public List<long> AllowedNotificationChatIds = new List<long>();
+
         public User(long telegramId, string userName)
         {
             TelegramId = telegramId;

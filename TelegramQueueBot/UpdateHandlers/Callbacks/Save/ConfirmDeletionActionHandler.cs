@@ -39,7 +39,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,
-                (update, value, item) => value.Equals(Command.SavedList),
+                (value) => value.Equals(Command.SavedList),
                 "An error ocured while redirecting from {from} to {to}",
                 Actions.ConfirmDeletion, Command.SavedList
                 );

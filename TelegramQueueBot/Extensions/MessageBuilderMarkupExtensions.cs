@@ -38,7 +38,7 @@ namespace TelegramQueueBot.Extensions
 
         public static MessageBuilder AddEmptyQueueMarkup(this MessageBuilder builder, int queueSize, ViewType view)
         {
-            if (queueSize < 2 || queueSize > 100) throw new ArgumentOutOfRangeException(nameof(queueSize), "Range for queue size param is [2;100]");
+            if (queueSize < 2 || queueSize > 100) throw new ArgumentOutOfRangeException(nameof(queueSize), "Size must be in range [2;100]");
 
             var list = new List<User>(new User[queueSize]);
             builder.AddDefaultQueueMarkup(list, view);
@@ -130,8 +130,6 @@ namespace TelegramQueueBot.Extensions
         {
             builder
                 .AppendText(TextResources.GetValue(TextKeys.JobMenu)).AppendTextLine(job.JobName)
-                .AppendText("[DEBUG lastInterval] ").AppendTextLine(job.LastInterval.ToString())
-                .AppendText("[DEBUG next] ").AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString())
                 .AppendText(TextResources.GetValue(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString("dd.MM.yyyy"));
 
             return builder;
@@ -142,7 +140,7 @@ namespace TelegramQueueBot.Extensions
 
             builder
                 .AddButton(TextResources.GetValue(TextKeys.BackBtn), Actions.Jobs)
-                .AddButton($"{(string.IsNullOrEmpty(queueName) ? "_" : queueName)}", $"{Actions.JobQueueMenu}{job.Id}")
+                .AddButton($"{(string.IsNullOrEmpty(queueName) ? TextResources.GetValue(TextKeys.LoadJobWithQueueBtn) : queueName)}", $"{Actions.JobQueueMenu}{job.Id}")
                 .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Actions.DeleteJob}{job.Id}")
 
                 .AddJobMenuMinutes(job, 5, 15, 60)
@@ -177,13 +175,14 @@ namespace TelegramQueueBot.Extensions
         private static MessageBuilder AddJobMenuIntervals(this MessageBuilder builder, ChatJob job, int maxInterval)
         {
             builder
-                .AddButton("◀️", $"{Actions.AddIntervalWeeks}{1}/{job.Id}")
-                .AddButton("Інтервал в тижнях", "_")
-                .AddButtonNextRow("▶️", $"{Actions.AddIntervalWeeks}{-1}/{job.Id}");
+                .AddButton(TextResources.GetValue(TextKeys.MoveLeftBtn), $"{Actions.AddIntervalWeeks}{1}/{job.Id}")
+                .AddButton(TextResources.GetValue(TextKeys.SetInterval), "_")
+                .AddButtonNextRow(TextResources.GetValue(TextKeys.MoveRightBtn), $"{Actions.AddIntervalWeeks}{-1}/{job.Id}");
+
             for (int i = 1; i <= maxInterval; i++)
             {
                 builder.AddButton(
-                    i == job.Interval ? $"{i} ✅" : i.ToString(),
+                    i == job.Interval ? $"{i} {TextResources.GetValue(TextKeys.SelectedBtn)}" : i.ToString(),
                     $"{Actions.SetInterval}{i}/{job.Id}"
                     );
             }
@@ -195,9 +194,9 @@ namespace TelegramQueueBot.Extensions
         {
             var culture = new CultureInfo("uk-UA");
             return builder
-                .AddButton("◀️", $"{Actions.AddDays}{-shift}/{job.Id}")
+                .AddButton(TextResources.GetValue(TextKeys.MoveLeftBtn), $"{Actions.AddDays}{-shift}/{job.Id}")
                 .AddButton(culture.DateTimeFormat.GetDayName(job.NextRunTimeUtc.ToLocalTime().DayOfWeek), "_")
-                .AddButtonNextRow("▶️", $"{Actions.AddDays}{shift}/{job.Id}");
+                .AddButtonNextRow(TextResources.GetValue(TextKeys.MoveRightBtn), $"{Actions.AddDays}{shift}/{job.Id}");
         }
 
 
