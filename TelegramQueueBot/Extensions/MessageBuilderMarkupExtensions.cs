@@ -139,9 +139,9 @@ namespace TelegramQueueBot.Extensions
         {
 
             builder
-                .AddButton(TextResources.GetValue(TextKeys.BackBtn), Action.Jobs)
-                .AddButton($"{(string.IsNullOrEmpty(queueName) ? TextResources.GetValue(TextKeys.LoadJobWithQueueBtn) : queueName)}", $"{Action.JobQueueMenu}{job.Id}")
-                .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Action.DeleteJob}{job.Id}")
+                .AddButton(TextResources.GetValue(TextKeys.BackBtn), Common.Action.Jobs)
+                .AddButton($"{(string.IsNullOrEmpty(queueName) ? TextResources.GetValue(TextKeys.LoadJobWithQueueBtn) : queueName)}", $"{Common.Action.JobQueueMenu}{job.Id}")
+                .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Common.Action.DeleteJob}{job.Id}")
 
                 .AddJobMenuMinutes(job, 5, 15, 60)
 

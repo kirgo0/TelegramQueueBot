@@ -36,9 +36,9 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 
                 msg
                     .AppendText($"{TextResources.GetValue(TextKeys.QueueMenu)}{queue.Name}")
-                    .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Action.QueueList}")
-                    .AddButton(TextResources.GetValue(TextKeys.LoadQueueBtn), $"{Action.Load}{queueId}")
-                    .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Action.Delete}{queueId}")
+                    .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Common.Action.QueueList}")
+                    .AddButton(TextResources.GetValue(TextKeys.LoadQueueBtn), $"{Common.Action.Load}{queueId}")
+                    .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Common.Action.Delete}{queueId}")
                     .AddSavedQueueMarkup(users);
 
                 await _bot.BuildAndEditAsync(msg);
