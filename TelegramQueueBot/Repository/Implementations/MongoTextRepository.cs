@@ -9,7 +9,6 @@ namespace TelegramQueueBot.Repository.Implementations
 {
     public class MongoTextRepository : MongoRepository<Text>, ITextRepository
     {
-        public static Text NotFoundText = new Text() { Value = "Text is not found" };
         public MongoTextRepository(IMongoContext mongoContext, ILogger<MongoTextRepository> logger) : base(mongoContext, logger)
         {
         }
@@ -23,12 +22,8 @@ namespace TelegramQueueBot.Repository.Implementations
                 if (result is null)
                 {
                     _log.LogWarning("Text not found for the specified key value {key}", key);
-                    return NotFoundText;
                 }
-                else
-                {
-                    return result;
-                }
+                return result;
             }
             catch (Exception ex)
             {

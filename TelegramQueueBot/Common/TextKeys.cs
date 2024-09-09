@@ -2,6 +2,10 @@
 {
     public static class TextKeys
     {
+        public const string DefaultHelp = "default_help";
+        public const string Features_Help = "features_help";
+        public const string CallingModeHelp = "calling_mode_help";
+
         public const string Start = "start";
         public const string SetSize = "set_size";
         public const string WrongSize = "wrong_size";
@@ -42,6 +46,7 @@
         public const string JobsList = "jobs_list";
         public const string JobsListIsEmpty = "jobs_list_is_empty";
         public const string JobCreatedQueue = "job_created_queue";
+        public const string NeedToSpecifyJobName = "need_to_specify_job_name";
 
         public const string JobMenu = "job_menu";
         public const string JobNextTime = "job_next_time";
@@ -65,5 +70,9 @@
         public const string DoneBtn = "done_btn";
         public const string MoveLeftBtn = "move_left_btn";
         public const string MoveRightBtn = "move_right_btn";
+
+        public const string DefaultHelpBtn = "default_help_btn";
+        public const string CallingModeHelpBtn = "calling_mode_btn";
+        public const string FeaturesHelpBtn = "features_help_btn";
     }
 }

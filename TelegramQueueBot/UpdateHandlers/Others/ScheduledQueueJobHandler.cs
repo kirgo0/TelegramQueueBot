@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Autofac;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
@@ -6,17 +7,18 @@ using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
+using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Others
 {
-    public class ScheduledQueueJobHandler
+    public class ScheduledQueueJobHandler : UserNotifyingUpdateHandler
     {
         private readonly IChatRepository _chatRepository;
         private readonly ITelegramBotClient _bot;
         private readonly IUserRepository _userRepository;
         private readonly QueueService _queueService;
         private readonly ILogger _log;
-        public ScheduledQueueJobHandler(IChatRepository chatRepository, QueueService queueService, ILogger<ScheduledQueueJobHandler> log, IUserRepository userRepository, ITelegramBotClient bot)
+        public ScheduledQueueJobHandler(IChatRepository chatRepository, QueueService queueService, ILogger<ScheduledQueueJobHandler> log, IUserRepository userRepository, ITelegramBotClient bot, ILifetimeScope scope) : base(bot, scope, log)
         {
             _bot = bot;
             _log = log;
@@ -116,6 +118,11 @@ namespace TelegramQueueBot.UpdateHandlers.Others
                 chat.LastMessageId = result.MessageId;
             }
             var a = await _chatRepository.UpdateAsync(chat);
+        }
+
+        public override Task Handle(Telegram.Bot.Types.Update update)
+        {
+            throw new NotImplementedException();
         }
     }
 }

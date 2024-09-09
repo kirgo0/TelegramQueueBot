@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 {
-    [HandlesCommand(Command.View)]
+    [HandleCommand(Command.View)]
     public class ViewCommandHandler : UpdateHandler
     {
         public ViewCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ViewCommandHandler> logger) : base(bot, scope, logger)

@@ -12,7 +12,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 {
-    [HandleAction(Actions.Load)]
+    [HandleAction(Common.Action.Load)]
     public class LoadActionHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
@@ -28,7 +28,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
-            var queueId = GetAction(update).Replace(Actions.Load, string.Empty);
+            var queueId = GetAction(update).Replace(Common.Action.Load, string.Empty);
 
             chat.CurrentQueueId = queueId;
             chat.Mode = Models.Enums.ChatMode.Open;

@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands.Job
 {
-    [HandlesCommand(Command.Job)]
+    [HandleCommand(Command.Job)]
     public class JobCommandHandler : UpdateHandler
     {
         private readonly JobService _jobService;
@@ -26,10 +26,17 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Job
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
+            var name = GetParams(update).FirstOrDefault();
 
+            if(string.IsNullOrEmpty(name)) 
+            {
+                msg.AppendText(TextResources.GetValue(TextKeys.NeedToSpecifyJobName));
+                await _bot.BuildAndSendAsync(msg);
+                return;
+            }
             var nextOccurence = RoundUpToNextFiveMinutes(DateTime.UtcNow);
             var cron = $"{nextOccurence.Minute} {nextOccurence.Hour} * * {(int)nextOccurence.DayOfWeek}";
-            var job = await _jobService.CreateJobAsync(chat.TelegramId, "New job", cron);
+            var job = await _jobService.CreateJobAsync(chat.TelegramId, name, cron);
 
             msg.AddJobMenuCaption(job);
             msg.AddJobMenuMarkup(job);

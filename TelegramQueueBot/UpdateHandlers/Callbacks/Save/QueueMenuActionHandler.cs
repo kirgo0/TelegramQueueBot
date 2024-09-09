@@ -12,7 +12,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 {
-    [HandleAction(Actions.QueueMenu)]
+    [HandleAction(Common.Action.QueueMenu)]
     public class QueueMenuActionHandler : UpdateHandler
     {
         QueueService _queueService;
@@ -28,7 +28,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
-            var queueId = GetAction(update).Replace(Actions.QueueMenu, string.Empty);
+            var queueId = GetAction(update).Replace(Common.Action.QueueMenu, string.Empty);
             try
             {
                 var queue = await _queueService.GetByIdAsync(queueId);
@@ -36,9 +36,9 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 
                 msg
                     .AppendText($"{TextResources.GetValue(TextKeys.QueueMenu)}{queue.Name}")
-                    .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Actions.QueueList}")
-                    .AddButton(TextResources.GetValue(TextKeys.LoadQueueBtn), $"{Actions.Load}{queueId}")
-                    .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Actions.Delete}{queueId}")
+                    .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Action.QueueList}")
+                    .AddButton(TextResources.GetValue(TextKeys.LoadQueueBtn), $"{Action.Load}{queueId}")
+                    .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Action.Delete}{queueId}")
                     .AddSavedQueueMarkup(users);
 
                 await _bot.BuildAndEditAsync(msg);

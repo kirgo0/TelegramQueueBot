@@ -9,7 +9,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 {
-    [HandleAction(Actions.ConfirmDeletion)]
+    [HandleAction(Common.Action.ConfirmDeletion)]
     public class ConfirmDeletionActionHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
@@ -23,7 +23,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
         public override async Task Handle(Update update)
         {
             var chat = await chatTask;
-            var queueId = GetAction(update).Replace(Actions.ConfirmDeletion, string.Empty);
+            var queueId = GetAction(update).Replace(Common.Action.ConfirmDeletion, string.Empty);
 
             var result = await _queueService.DeleteQueueAsync(queueId);
             if (!result)
@@ -36,12 +36,12 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
             if (chat.CurrentQueueId.Equals(queueId)) chat.CurrentQueueId = string.Empty;
             await _chatRepository.UpdateAsync(chat);
 
-            await RedirectHandle(
+            await base.RedirectHandle(
                 update,
                 Metatags.HandleCommand,
                 (value) => value.Equals(Command.SavedList),
                 "An error ocured while redirecting from {from} to {to}",
-                Actions.ConfirmDeletion, Command.SavedList
+                Common.Action.ConfirmDeletion, Command.SavedList
                 );
         }
     }

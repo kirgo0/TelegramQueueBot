@@ -9,7 +9,7 @@ using TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
-    [HandleAction(Actions.AddIntervalWeeks)]
+    [HandleAction(Common.Action.AddIntervalWeeks)]
     public class AddIntervalWeeksActionHandler : ModifyJobActionHandler<int>
     {
         public AddIntervalWeeksActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddIntervalWeeksActionHandler> logger, JobService jobService, QueueService queueService) : base(bot, scope, logger, jobService, queueService)

@@ -1,6 +1,6 @@
 ﻿namespace TelegramQueueBot.Common
 {
-    public class Actions
+    public class Action
     {
         public const string Enqueue = "Enqueue";
         public const string Dequeue = "Dequeue";
@@ -10,6 +10,7 @@
         public const string Delete = "Delete";
         public const string ConfirmDeletion = "ConfirmDeletion";
         public const string DenyDeletion = "DenyDeletion";
+        public const string Help = "Help";
         // Jobs
         public const string Jobs = "Jobs";
         public const string JobMenu = "JobMenu";

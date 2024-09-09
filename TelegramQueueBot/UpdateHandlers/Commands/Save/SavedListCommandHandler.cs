@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands.Save
 {
-    [HandlesCommand(Command.SavedList)]
+    [HandleCommand(Command.SavedList)]
     public class SavedListCommandHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
@@ -51,7 +51,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Save
 
             foreach (var queue in queues)
             {
-                msg.AddButtonNextRow(queue.Name, $"{Actions.QueueMenu}{queue.Id}");
+                msg.AddButtonNextRow(queue.Name, $"{Common.Action.QueueMenu}{queue.Id}");
             }
 
             // handling redirection from QueueListActionHandler

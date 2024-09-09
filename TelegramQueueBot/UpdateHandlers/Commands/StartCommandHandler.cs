@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands
 {
-    [HandlesCommand(Command.Start)]
+    [HandleCommand(Command.Start)]
     public class StartCommandHandler : UpdateHandler
     {
         public StartCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<StartCommandHandler> logger, IUserRepository users) : base(bot, scope, logger)

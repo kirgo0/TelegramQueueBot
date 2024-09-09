@@ -9,7 +9,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
-    [HandleAction(Actions.ConfirmJobDeletion)]
+    [HandleAction(Common.Action.ConfirmJobDeletion)]
     public class ConfirmJobDeletionActionHandler : UpdateHandler
     {
         private readonly JobService _jobService;
@@ -22,14 +22,14 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 
         public override async Task Handle(Update update)
         {
-            var jobId = GetAction(update).Replace(Actions.ConfirmJobDeletion, string.Empty);
+            var jobId = GetAction(update).Replace(Common.Action.ConfirmJobDeletion, string.Empty);
             await _jobService.DeleteJobAsync(jobId);
-            await RedirectHandle(
+            await base.RedirectHandle(
                 update,
                 Metatags.HandleCommand,
                 (value) => value.Equals(Command.Jobs),
                 "An error ocured while redirecting from {from} action handler to the {to} command handler",
-                Actions.ConfirmJobDeletion, Command.Jobs
+                Common.Action.ConfirmJobDeletion, Command.Jobs
                 );
         }
     }

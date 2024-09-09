@@ -10,7 +10,7 @@ using TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
-    [HandleAction(Actions.AddMinutes)]
+    [HandleAction(Common.Action.AddMinutes)]
     public class AddMinutesActionHandler : ModifyJobActionHandler<int>
     {
         public AddMinutesActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<AddMinutesActionHandler> logger, JobService jobService, QueueService queueService) : base(bot, scope, logger, jobService, queueService)

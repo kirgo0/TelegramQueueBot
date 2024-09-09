@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
-    [HandleAction(Actions.JobMenu)]
+    [HandleAction(Common.Action.JobMenu)]
     public class JobMenuActionHandler : UpdateHandler
     {
         private readonly JobService _jobService;
@@ -26,7 +26,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 
         public override async Task Handle(Update update)
         {
-            var data = GetAction(update).Replace(Actions.JobMenu, string.Empty);
+            var data = GetAction(update).Replace(Common.Action.JobMenu, string.Empty);
             var job = await _jobService.GetAsync(data);
 
             if (job.QueueId is not null)

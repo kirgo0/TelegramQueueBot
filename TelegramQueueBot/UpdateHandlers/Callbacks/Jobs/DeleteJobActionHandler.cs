@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
 
-    [HandleAction(Actions.DeleteJob)]
+    [HandleAction(Common.Action.DeleteJob)]
     public class DeleteJobActionHandler : UpdateHandler
     {
         public DeleteJobActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DeleteJobActionHandler> logger) : base(bot, scope, logger)
@@ -22,12 +22,12 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 
         public override async Task Handle(Update update)
         {
-            var jobId = GetAction(update).Replace(Actions.DeleteJob, string.Empty);
+            var jobId = GetAction(update).Replace(Common.Action.DeleteJob, string.Empty);
             var chat = await chatTask;
             var msg = new MessageBuilder(chat)
                 .AppendText($"{TextResources.GetValue(TextKeys.ConfirmJobDeletion)}")
-                .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Actions.JobMenu}{jobId}")
-                .AddButton(TextResources.GetValue(TextKeys.ConfirmDeletionBtn), $"{Actions.ConfirmJobDeletion}{jobId}");
+                .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Common.Action.JobMenu}{jobId}")
+                .AddButton(TextResources.GetValue(TextKeys.ConfirmDeletionBtn), $"{Common.Action.ConfirmJobDeletion}{jobId}");
 
             await _bot.BuildAndEditAsync(msg);
         }

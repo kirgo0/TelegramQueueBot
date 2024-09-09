@@ -15,7 +15,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 {
-    [HandlesCommand(Command.Notify)]
+    [HandleCommand(Command.Notify)]
     public class NotifyCommandHandler : UpdateHandler
     {
         public NotifyCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<NotifyCommandHandler> logger) : base(bot, scope, logger)

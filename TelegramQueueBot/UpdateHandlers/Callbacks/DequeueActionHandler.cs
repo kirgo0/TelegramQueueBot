@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
-    [HandleAction(Actions.Dequeue)]
+    [HandleAction(Common.Action.Dequeue)]
     public class DequeueActionHandler : UserNotifyingUpdateHandler
     {
         private QueueService _queueService;
@@ -29,7 +29,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             var user = await userTask;
             var action = GetAction(update);
             _log.LogInformation("User {id} requested {data}", user.TelegramId, action);
-            var actionData = action.Replace(Actions.Dequeue, string.Empty);
+            var actionData = action.Replace(Common.Action.Dequeue, string.Empty);
 
             if (!int.TryParse(actionData, out int actionUserId))
             {

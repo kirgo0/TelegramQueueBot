@@ -9,7 +9,7 @@ using TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
-    [HandleAction(Actions.SetQueue)]
+    [HandleAction(Common.Action.SetQueue)]
     public class SetQueueActionHandler : ModifyJobActionHandler<string>
     {
         public SetQueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<SetQueueActionHandler> logger, JobService jobService, QueueService queueService) : base(bot, scope, logger, jobService, queueService)

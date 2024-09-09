@@ -17,5 +17,6 @@
         public const string Job = "/job";
         public const string Jobs = "/jobs";
         public const string Notify = "/notify";
+        public const string Help = "/help";
     }
 }

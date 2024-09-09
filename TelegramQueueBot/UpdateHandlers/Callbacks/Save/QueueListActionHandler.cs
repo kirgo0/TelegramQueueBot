@@ -8,7 +8,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 {
-    [HandleAction(Actions.QueueList)]
+    [HandleAction(Common.Action.QueueList)]
     public class QueueListActionHandler : UpdateHandler
     {
         public QueueListActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<QueueListActionHandler> logger) : base(bot, scope, logger)
@@ -19,12 +19,12 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 
         public override async Task Handle(Update update)
         {
-            await RedirectHandle(
+            await base.RedirectHandle(
                 update,
                 Metatags.HandleCommand,
                 (value) => value.Equals(Command.SavedList),
                 "An error ocured while redirecting from {from} to {to}",
-                Actions.QueueList, Command.SavedList
+                Common.Action.QueueList, Command.SavedList
                 );
 
         }

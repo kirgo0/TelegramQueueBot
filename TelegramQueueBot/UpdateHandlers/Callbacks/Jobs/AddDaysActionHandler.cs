@@ -10,7 +10,7 @@ using TelegramQueueBot.UpdateHandlers.Callbacks.Jobs.Abstract;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
-    [HandleAction(Actions.AddDays)]
+    [HandleAction(Common.Action.AddDays)]
     public class AddDaysActionHandler : ModifyJobActionHandler<int>
     {
 

@@ -13,7 +13,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Commands.Job
 {
-    [HandlesCommand(Command.Jobs)]
+    [HandleCommand(Command.Jobs)]
     public class JobsCommandHandler : UpdateHandler
     {
         private IChatJobRepository _jobRepository;
@@ -49,7 +49,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Job
                 msg.AppendText(TextResources.GetValue(TextKeys.JobsList));
                 foreach (var job in jobs)
                 {
-                    msg.AddButtonNextRow(job.JobName, $"{Actions.JobMenu}{job.Id}");
+                    msg.AddButtonNextRow(job.JobName, $"{Common.Action.JobMenu}{job.Id}");
                 }
             }
             if (update.CallbackQuery is not null)

@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
-    [HandleAction(Actions.Enqueue)]
+    [HandleAction(Common.Action.Enqueue)]
     public class EnqueueActionHandler : UserNotifyingUpdateHandler
     {
         private QueueService _queueService;
@@ -30,7 +30,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             var action = GetAction(update);
             _log.LogInformation("User {id} from chat {chatId} requested {data}", user.TelegramId, chat.TelegramId, action);
 
-            var actionData = action.Replace(Actions.Enqueue, string.Empty);
+            var actionData = action.Replace(Common.Action.Enqueue, string.Empty);
             if (!int.TryParse(actionData, out int pos))
             {
                 _log.LogError("The position {pos} in the chat {id} is not parsed", actionData, chat.TelegramId);

@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
 {
-    [HandleAction(Actions.Delete)]
+    [HandleAction(Common.Action.Delete)]
     public class DeleteActionHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
@@ -26,7 +26,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
-            var queueId = GetAction(update).Replace(Actions.Delete, string.Empty);
+            var queueId = GetAction(update).Replace(Common.Action.Delete, string.Empty);
             var queue = await _queueService.GetByIdAsync(queueId);
             if(queue is null)
             {
@@ -36,8 +36,8 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
             var queueName = queue.Name;
             msg
                 .AppendTextFormat(TextResources.GetValue(TextKeys.ConfirmDeletion), queueName)
-                .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Actions.QueueMenu}{queueId}")
-                .AddButton(TextResources.GetValue(TextKeys.ConfirmDeletionBtn), $"{Actions.ConfirmDeletion}{queueId}");
+                .AddButton(TextResources.GetValue(TextKeys.BackBtn), $"{Common.Action.QueueMenu}{queueId}")
+                .AddButton(TextResources.GetValue(TextKeys.ConfirmDeletionBtn), $"{Common.Action.ConfirmDeletion}{queueId}");
 
             await _bot.BuildAndEditAsync(msg);
         }

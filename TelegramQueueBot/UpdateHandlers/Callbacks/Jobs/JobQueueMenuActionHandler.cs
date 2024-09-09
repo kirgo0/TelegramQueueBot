@@ -11,7 +11,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
 {
-    [HandleAction(Actions.JobQueueMenu)]
+    [HandleAction(Common.Action.JobQueueMenu)]
     public class JobQueueMenuActionHandler : UpdateHandler
     {
         private readonly QueueService _queueService;
@@ -46,20 +46,20 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Jobs
                 return;
             }
 
-            var jobId = GetAction(update).Replace(Actions.JobQueueMenu, string.Empty);
+            var jobId = GetAction(update).Replace(Common.Action.JobQueueMenu, string.Empty);
             var job = await _jobService.GetAsync(jobId);
             msg
                 .AppendText(TextResources.GetValue(TextKeys.SelectJobQueueMenu))
-                .AddButtonNextRow(TextResources.GetValue(TextKeys.EmptyJobQueueBtn), $"{Actions.SetQueue}/{jobId}");
+                .AddButtonNextRow(TextResources.GetValue(TextKeys.EmptyJobQueueBtn), $"{Common.Action.SetQueue}/{jobId}");
             foreach (var queue in queues)
             {
                 if (job?.QueueId is not null && job.QueueId.Equals(queue.Id))
                 {
-                    msg.AddButtonNextRow($"🔵 {queue.Name}", $"{Actions.JobMenu}{jobId}");
+                    msg.AddButtonNextRow($"🔵 {queue.Name}", $"{Common.Action.JobMenu}{jobId}");
                 }
                 else
                 {
-                    msg.AddButtonNextRow(queue.Name, $"{Actions.SetQueue}{queue.Id}/{jobId}");
+                    msg.AddButtonNextRow(queue.Name, $"{Common.Action.SetQueue}{queue.Id}/{jobId}");
                 }
             }
 
