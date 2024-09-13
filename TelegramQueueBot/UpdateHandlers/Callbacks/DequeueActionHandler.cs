@@ -46,7 +46,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                         var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
                         await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
                         var nextfirstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-                        await NotifyUsersIfOrderChanged(chat.TelegramId, firstTwoUsers, nextfirstTwoUsers);
+                        await NotifyUsersIfOrderChanged(chat, firstTwoUsers, nextfirstTwoUsers);
                         return;
                     } else if (chat.Mode is Models.Enums.ChatMode.Open)
                     {
@@ -56,6 +56,8 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
 
                     var msg = new MessageBuilder(chat);
                     var result = await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId, false);
+
+                    if (!result) return;
 
                     chat.Mode = Models.Enums.ChatMode.Open;
 

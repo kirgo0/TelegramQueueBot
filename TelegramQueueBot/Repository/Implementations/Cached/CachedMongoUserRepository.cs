@@ -88,6 +88,11 @@ namespace TelegramQueueBot.Repository.Implementations.Cached
             return resultUsers;
         }
 
+        public async Task<List<User>> GetUsersWithAllowedNotificationsAsync(string chatId)
+        {
+            return await _innerRepository.GetUsersWithAllowedNotificationsAsync(chatId);
+        }
+
         protected override void AddOrUpdateCache(User item)
         {
             _cache.Set(GetKey(item.Id), item, _cacheOptions);

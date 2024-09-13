@@ -7,5 +7,6 @@ namespace TelegramQueueBot.Repository.Interfaces
     {
         Task<User> GetByTelegramIdAsync(long id);
         Task<List<User>> GetByTelegramIdsAsync(List<long> telegramIds);
+        Task<List<User>> GetUsersWithAllowedNotificationsAsync(string chatId);
     }
 }

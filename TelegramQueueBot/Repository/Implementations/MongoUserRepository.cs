@@ -44,7 +44,27 @@ namespace TelegramQueueBot.Repository.Implementations
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "An error occurred when retrieving usernames for users with specified Telegram IDs.");
+                _log.LogError(ex, "An error occurred when retrieving users with specified Telegram IDs.");
+                return new List<User>();
+            }
+        }
+
+        public async Task<List<User>> GetUsersWithAllowedNotificationsAsync(string chatId)
+        {
+            try
+            {
+                var filter = Builders<User>
+                    .Filter
+                    .And(
+                        Builders<User>.Filter.Eq(u => u.SendNotifications, true),
+                        Builders<User>.Filter.Where(u => u.ChatIds.ContainsKey(chatId))
+                    );
+                var users = await _items.Find(filter).ToListAsync();
+                return users;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "An error occurred when retrieving users from chat {chatId}.", chatId);
                 return new List<User>();
             }
         }

@@ -41,15 +41,15 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
             {
                 // enable/disable notifications for chat
                 var chatNameTask = _bot.GetChatAsync(chat.TelegramId);
-                var isEnabled = user.AllowedNotificationChatIds.Contains(chat.TelegramId);
+                user.ChatIds.TryGetValue(chat.Id, out bool isEnabled);
                 if (isEnabled)
                 {
-                    user.AllowedNotificationChatIds.Remove(chat.TelegramId);
+                    user.ChatIds[chat.Id] = false;
                     msg.AppendTextFormat(TextResources.GetValue(TextKeys.DisableChatNotifications), (await chatNameTask).Title);
                 }
                 else
                 {
-                    user.AllowedNotificationChatIds.Add(chat.TelegramId);
+                    user.ChatIds[chat.Id] = true;
                     msg.AppendTextFormat(TextResources.GetValue(TextKeys.EnableChatNotifications), (await chatNameTask).Title);
                 }
             }

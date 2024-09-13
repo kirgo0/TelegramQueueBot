@@ -112,7 +112,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                     _chatTask = Task.FromResult<Chat>(null);
                 }
             }
-
+                 
             await Handle(update);
         }
 
@@ -221,7 +221,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
 
             if (user is null)
             {
-                user = await _userRepository.CreateAsync(new User(from.Id, from.Username));
+                user = await _userRepository.CreateAsync(new User(from.Id, $"{from.FirstName}{from.LastName}"));
             }
             return user;
         }

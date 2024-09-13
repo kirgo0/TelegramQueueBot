@@ -54,7 +54,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
             var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
             await _queueService.DequeueFirstAsync(chat.CurrentQueueId, false);
             var nextfirstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-            await NotifyUsersIfOrderChanged(chat.TelegramId, firstTwoUsers, nextfirstTwoUsers);
+            await NotifyUsersIfOrderChanged(chat, firstTwoUsers, nextfirstTwoUsers);
 
             await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
             {

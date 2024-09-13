@@ -9,7 +9,9 @@ using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
+using TelegramQueueBot.Models;
 using TelegramQueueBot.Repository.Interfaces;
 
 namespace TelegramQueueBot.UpdateHandlers.Abstractions
@@ -20,7 +22,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
         {
             NeedsUser = true;
         }
-        protected async Task NotifyUsersIfOrderChanged(long chatId, List<long> previousOrder, List<long> currentOrder)
+        protected async Task NotifyUsersIfOrderChanged(Chat chat, List<long> previousOrder, List<long> currentOrder)
         {
 
             var notifyTasks = new List<Task>();
@@ -32,16 +34,21 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                     : 0;
                 if (i == 0 && userId != 0)
                 {
+                    var leaveBtn = new InlineKeyboardButton(TextResources.GetValue(TextKeys.LeaveBtn));
+                    leaveBtn.CallbackData = $"{Common.Action.Leave}{chat.TelegramId}";
                     notifyTasks.Add(NotifyUserAsync(
-                        $"{TextResources.GetValue(TextKeys.QueueIsCallingUsers)}\n\n{TextResources.GetValue(TextKeys.FirstUserInQueue)}"
-                        , chatId, userId));
+                        $"{TextResources.GetValue(TextKeys.QueueIsCallingUsers)}\n\n{TextResources.GetValue(TextKeys.FirstUserInQueue)}", 
+                        chat.Id, 
+                        userId, 
+                        markup: new InlineKeyboardMarkup(leaveBtn)
+                        ));
                 }
                 else if (userId != 0)
                 {
                     notifyTasks.Add(
                         NotifyUserAsync(
                             $"{TextResources.GetValue(TextKeys.QueueIsCallingUsers)}\n\n{string.Format(TextResources.GetValue(TextKeys.NextUserInQueue), i + 1)}",
-                            chatId, userId)
+                            chat.Id, userId)
                     );
                 }
             }
@@ -49,11 +56,11 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
 
         }
 
-        protected async Task NotifyUserAsync(string message, long chatId, long userId, ParseMode parseMode = ParseMode.Html, InlineKeyboardMarkup markup = null)
+        protected async Task NotifyUserAsync(string message, string chatId, long userId, ParseMode parseMode = ParseMode.Html, InlineKeyboardMarkup markup = null)
         {
             var user = await _userRepository.GetByTelegramIdAsync(userId);
             if (!(user).SendNotifications) return;
-            if (!user.AllowedNotificationChatIds.Contains(chatId)) return;
+            if (!user.ChatIds.TryGetValue(chatId, out bool enabled) || !enabled) return;
 
             await _bot.SendTextMessageAsync(
                 userId,
@@ -61,6 +68,12 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 parseMode: parseMode,
                 replyMarkup: markup
             );
+        }
+
+        protected async Task SendUserMessageAsync(long userId, MessageBuilder messageTemplate)
+        {
+            messageTemplate.SetChatId(userId);
+            await _bot.BuildAndSendAsync(messageTemplate);
         }
 
     }

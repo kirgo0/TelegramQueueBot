@@ -27,6 +27,11 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
         {
             var chat = await chatTask;
             var user = await userTask;
+            if(!user.ChatIds.ContainsKey(chat.Id))
+            {
+                user.ChatIds.Add(chat.Id, true);
+                await _userRepository.UpdateAsync(user);
+            }
             var action = GetAction(update);
             _log.LogInformation("User {id} from chat {chatId} requested {data}", user.TelegramId, chat.TelegramId, action);
 
@@ -47,7 +52,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                     var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
                     await _queueService.EnqueueAsync(chat.CurrentQueueId, pos, user.TelegramId);
                     var nextfirstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-                    await NotifyUsersIfOrderChanged(chat.TelegramId, firstTwoUsers, nextfirstTwoUsers);
+                    await NotifyUsersIfOrderChanged(chat, firstTwoUsers, nextfirstTwoUsers);
                 }
             }
             catch (Exception e)

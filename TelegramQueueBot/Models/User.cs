@@ -5,9 +5,9 @@
         public long TelegramId { get; set; }
         public string UserName { get; set; } = string.Empty;
         public bool IsAuthorized { get; set; } = false;
-        public bool SendNotifications { get; set; } = false;
+        public bool SendNotifications { get; set; } = true;
 
-        public List<long> AllowedNotificationChatIds = new List<long>();
+        public Dictionary<string, bool> ChatIds = new Dictionary<string, bool>();
 
         public User(long telegramId, string userName)
         {

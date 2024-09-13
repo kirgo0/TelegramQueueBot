@@ -227,6 +227,26 @@ namespace TelegramQueueBot.Services
             }, doRender);
         }
 
+        public async Task<bool> DequeueIfFirstAsync(string queueId, long userId, bool doRender = true)
+        {
+
+            return await AccessQueueAsync(queueId, (queue) =>
+            {
+                try
+                {
+                    var firstUserId = queue.List.First(u => u != EmptyQueueMember);
+                    if (firstUserId != userId) return false;
+                    queue.List.Remove(firstUserId);
+                    queue.List.Add(EmptyQueueMember);
+                    return true;
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+            }, doRender);
+        }
+
         public async Task<bool> MoveUserUpAsync(string queueId, long userId, bool doRender = true)
         {
             if (userId < 0)

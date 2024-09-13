@@ -38,10 +38,24 @@ namespace TelegramQueueBot.UpdateHandlers.Others
                 return false;
             }
 
+            var usersToNotify = await _userRepository.GetUsersWithAllowedNotificationsAsync(chat.Id);
+            var usersTasks = new List<Task>();
+
+            if (usersToNotify.Any())
+            {
+                var chatName = (await _bot.GetChatAsync(chat.TelegramId)).Title;
+                var msg = new MessageBuilder().AppendTextFormat(TextResources.GetValue(TextKeys.ScheduledQueueAppeared), chatName, job.JobName);
+                foreach (var user in usersToNotify)
+                {
+                    usersTasks.Add(SendUserMessageAsync(user.TelegramId, msg));
+                }
+            }
+
             // checking for an outdated queue id
             if (job.QueueId is null)
             {
                 await CreateNewQueueJob(chat);
+                await Task.WhenAll(usersTasks);
                 return true;
             }
 
@@ -54,12 +68,12 @@ namespace TelegramQueueBot.UpdateHandlers.Others
                     _log.LogDebug("The passed queue identifier {queueId} was not found in the repository", job.QueueId);
                     job.QueueId = null;
                 }
-                return true;
             }
             else
             {
                 await LoadSavedQueueJob(chat, queue.Id);
             }
+            await Task.WhenAll(usersTasks);
             return true;
         }
 

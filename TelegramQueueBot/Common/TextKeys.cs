@@ -55,9 +55,12 @@
         public const string ConfirmJobDeletion = "confirm_job_deletion";
         public const string SelectJobQueueMenu = "select_job_queue_menu";
         public const string ScheduledQueue = "scheduled_queue";
+        public const string ScheduledQueueAppeared = "scheduled_queue_appeared";
 
         public const string EnableChatNotifications = "enable_chat_notifications";
         public const string DisableChatNotifications = "disable_chat_notifications";
+
+        public const string LeaveActionOutdated = "leave_action_outdated";
 
         // buttons
         public const string LoadQueueBtn = "load_queue_btn";
@@ -70,6 +73,7 @@
         public const string DoneBtn = "done_btn";
         public const string MoveLeftBtn = "move_left_btn";
         public const string MoveRightBtn = "move_right_btn";
+        public const string LeaveBtn = "leave_btn";
 
         public const string DefaultHelpBtn = "default_help_btn";
         public const string CallingModeHelpBtn = "calling_mode_btn";

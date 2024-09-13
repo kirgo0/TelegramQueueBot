@@ -58,7 +58,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
             if(chat.Mode is Models.Enums.ChatMode.CallingUsers)
             {
                 var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-                await NotifyUsersIfOrderChanged(chat.TelegramId, new List<long>(), firstTwoUsers);
+                await NotifyUsersIfOrderChanged(chat, new List<long>(), firstTwoUsers);
             }
 
             await DeleteLastMessageAsync(chat);
