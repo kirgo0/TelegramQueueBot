@@ -46,10 +46,10 @@ namespace TelegramQueueBot.Services.Background
                         saveOperationCounter++;
                         await _queueService.DoThreadSafeWorkOnQueueAsync(key, async (queue) =>
                         {
-                            _log.LogInformation("[SAVE:{saveOperationCounter}] Start processing for {key}", saveOperationCounter, key);
+                            _log.LogInformation("Start processing save operation #{saveOperationCounter} for {key}", saveOperationCounter, key);
                             var staticCounter = saveOperationCounter;
                             var result = await _cachedQueueRepository.InnerRepository.UpdateAsync(value);
-                            _log.LogInformation("[SAVE:{staticCounter}] Processing result: {result}", staticCounter, result);
+                            _log.LogInformation("Operation {staticCounter} processing result: {result}", staticCounter, result);
                         });
                     }
                 }

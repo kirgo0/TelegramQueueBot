@@ -18,6 +18,7 @@ namespace TelegramQueueBot.UpdateHandlers
 
         public override async Task Handle(Update update)
         {
+            if (GetAction(update).Equals("_")) return;
             await RedirectHandle(
                 update,
                 Metatags.HandleAction,

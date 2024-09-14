@@ -37,11 +37,9 @@ try
         {
             config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         })
-        .ConfigureLogging((context, logging) =>
+        .UseSerilog((hostingContext, loggerConfiguration) =>
         {
-            logging.ClearProviders();
-            //logging.AddConfiguration(context.Configuration);
-            logging.AddSerilog(Log.Logger, dispose: true);
+            loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
         })
         .ConfigureServices((context, services) =>
         {
