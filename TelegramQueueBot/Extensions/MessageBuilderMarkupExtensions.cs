@@ -143,7 +143,7 @@ namespace TelegramQueueBot.Extensions
                 .AddButton($"{(string.IsNullOrEmpty(queueName) ? TextResources.GetValue(TextKeys.LoadJobWithQueueBtn) : queueName)}", $"{Common.Action.JobQueueMenu}{job.Id}")
                 .AddButtonNextRow(TextResources.GetValue(TextKeys.DeleteQueueBtn), $"{Common.Action.DeleteJob}{job.Id}")
 
-                .AddJobMenuMinutes(job, 5, 15, 60)
+                .AddJobMenuMinutes(job, 1, 5, 60)
 
                 .AddJobMenuWeeks(job, 1)
 

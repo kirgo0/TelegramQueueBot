@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "TelegramQueueBot Dev": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "NETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "TelegramQueueBot Prod": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "NETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}

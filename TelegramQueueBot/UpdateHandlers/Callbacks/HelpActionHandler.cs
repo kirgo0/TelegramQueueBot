@@ -17,6 +17,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
         public HelpActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<HelpActionHandler> logger) : base(bot, scope, logger)
         {
             NeedsChat = true;
+            NeedsUser = true;
         }
 
         public override async Task Handle(Update update)
@@ -33,11 +34,22 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                 return;
             }
             var chat = await chatTask;
-            var msg = new MessageBuilder(chat);
+            MessageBuilder msg;
+            if(chat is null)
+            {
+                var user = await userTask;
+                msg = new MessageBuilder()
+                    .SetChatId(user.TelegramId)
+                    .SetLastMessageId(update.CallbackQuery.Message.MessageId);
+
+            } else
+            {
+                msg = new MessageBuilder(chat);
+            }
+
             msg.AppendText(TextResources.GetValue(dataValue));
             helpTextKeys.Remove(data);
-
-            foreach(var btnKey in helpTextKeys.Keys)
+            foreach (var btnKey in helpTextKeys.Keys)
             {
                 msg.AddButton(TextResources.GetValue(btnKey), $"{Common.Action.Help}{btnKey}");
             }

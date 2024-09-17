@@ -34,7 +34,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Job
                 //    RecurringJob.RemoveIfExists(recurringJob.Id);
                 //}
                 _log.LogDebug("Jobs available: {count}", recurringJobs.Count);
-            }
+             }
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
 

@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,14 +17,16 @@ namespace TelegramQueueBot.UpdateHandlers.MessageEvents
     [HandlerMetadata(Metatags.HandleMessageEvent, nameof(Update.Message.LeftChatMember))]
     public class ChatLeaveEventHandler : UpdateHandler
     {
-        public ChatLeaveEventHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ChatLeaveEventHandler> logger) : base(bot, scope, logger)
+        private readonly IConfiguration _configuration;
+        public ChatLeaveEventHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ChatLeaveEventHandler> logger, IConfiguration configuration) : base(bot, scope, logger)
         {
+            _configuration = configuration;
         }
 
         public override async Task Handle(Update update)
         {
             var userName = update.Message.LeftChatMember.Username;
-            if (!userName.Equals(Command.BotSuffix.Replace("@", string.Empty)))
+            if (!userName.Equals(_configuration.GetSection("TelegramBotOptions")["BotName"]))
             {
                 return;
             }

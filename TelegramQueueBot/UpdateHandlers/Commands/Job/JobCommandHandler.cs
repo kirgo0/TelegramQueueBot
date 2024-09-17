@@ -26,8 +26,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Job
         {
             var chat = await chatTask;
             var msg = new MessageBuilder(chat);
-            var name = GetParams(update).FirstOrDefault();
-
+            var nameParams = GetParams(update);
+            var name = string.Join(' ', nameParams).Trim();
             if(string.IsNullOrEmpty(name)) 
             {
                 msg.AppendText(TextResources.GetValue(TextKeys.NeedToSpecifyJobName));

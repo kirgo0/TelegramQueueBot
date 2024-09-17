@@ -2,8 +2,6 @@
 {
     public class Command
     {
-        public const string BotSuffix = "@kirgo_sbot";
-
         public const string Start = "/start";
         public const string Get = "/get";
         public const string Create = "/create";

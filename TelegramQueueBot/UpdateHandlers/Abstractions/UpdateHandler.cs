@@ -119,7 +119,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
         public virtual async Task RedirectHandle(
             Update update,
             string serviceMetaTag,
-            Func<object, bool> comparator,
+            Predicate<object> comparator,
             string resolvingErrorMessage,
             params object[] resolveErrorParams
             )
@@ -133,7 +133,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 {
                     if (!item.Metadata.TryGetValue(serviceMetaTag, out value))
                         continue;
-                    if (comparator.Invoke(value))
+                    if (comparator(value))
                     {
                         handler = item.Value;
                         break;
@@ -142,7 +142,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 }
                 if (handler is null)
                 {
-                    _log.LogWarning(resolvingErrorMessage, resolveErrorParams);
+                    _log.LogDebug("No handler found for {params}", resolveErrorParams);
                     return;
                 }
             }
@@ -158,7 +158,6 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             catch (Exception ex)
             {
                 _log.LogError(ex, "An error occurred while handling a request with the {handler}", handler);
-                return;
             }
         }
 

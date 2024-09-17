@@ -1,10 +1,5 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
@@ -21,18 +16,35 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
         public HelpCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<HelpCommandHandler> logger) : base(bot, scope, logger)
         {
             NeedsChat = true;
+            NeedsUser = true;
         }
 
         public override async Task Handle(Update update)
         {
             var chat = await chatTask;
-            var msg = new MessageBuilder(chat);
-            msg
+            if (chat is null)
+            {
+                var user = await userTask;
+                var msg = new MessageBuilder().SetChatId(user.TelegramId);
+                AddHelpmenu(msg);
+                await _bot.BuildAndSendAsync(msg);
+
+            }
+            else
+            {
+                var msg = new MessageBuilder(chat);
+                AddHelpmenu(msg);
+                await DeleteLastMessageAsync(chat);
+                await SendAndUpdateChatAsync(chat, msg);
+            }
+        }
+
+        public MessageBuilder AddHelpmenu(MessageBuilder msg)
+        {
+            return msg
                 .AppendText(TextResources.GetValue(TextKeys.DefaultHelp))
                 .AddButton(TextResources.GetValue(TextKeys.FeaturesHelpBtn), $"{Common.Action.Help}{TextKeys.FeaturesHelpBtn}")
                 .AddButton(TextResources.GetValue(TextKeys.CallingModeHelpBtn), $"{Common.Action.Help}{TextKeys.CallingModeHelpBtn}");
-            await DeleteLastMessageAsync(chat);
-            await SendAndUpdateChatAsync(chat, msg);
         }
     }
 }
