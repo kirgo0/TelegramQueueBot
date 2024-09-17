@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using TelegramQueueBot.Data.Abstraction;
 
@@ -9,10 +10,12 @@ namespace TelegramQueueBot.Data.Context
         private IMongoDatabase Database { get; set; }
         public MongoClient MongoClient { get; set; }
         private readonly IConfiguration _configuration;
+        private ILogger<MongoContext> _log;
 
-        public MongoContext(IConfiguration configuration)
+        public MongoContext(IConfiguration configuration, ILogger<MongoContext> log)
         {
             _configuration = configuration;
+            _log = log;
         }
 
         private void ConfigureMongo()
@@ -23,7 +26,14 @@ namespace TelegramQueueBot.Data.Context
             }
 
             // Initialize the MongoClient
-            MongoClient = new MongoClient(_configuration["MongoSettings:Connection"]);
+            try
+            {
+                MongoClient = new MongoClient(_configuration["MongoSettings:Connection"]);
+            } catch(Exception)
+            {
+                _log.LogCritical("Can't connect to the database {connection}", _configuration["MongoSettings:Connection"]);
+                throw;
+            }
 
             // Check if the database exists
             var dbName = _configuration["MongoSettings:DatabaseName"];

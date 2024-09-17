@@ -1,5 +1,8 @@
 {
   "profiles": {
+    "TelegramQueueBot": {
+      "commandName": "Project"
+    },
     "TelegramQueueBot Dev": {
       "commandName": "Project",
       "environmentVariables": {

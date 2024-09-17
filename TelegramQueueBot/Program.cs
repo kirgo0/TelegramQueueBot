@@ -36,8 +36,8 @@ try
         .UseServiceProviderFactory(new AutofacServiceProviderFactory())
         .ConfigureAppConfiguration((context, config) =>
         {
-            config.AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true);
-            config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT")}.json", optional: false, reloadOnChange: true);
+            config.AddJsonFile($"appsettings.json", optional: false);
+            config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT")}.json", optional: true);
         })
         .UseSerilog((hostingContext, loggerConfiguration) =>
         {
@@ -99,8 +99,8 @@ try
 
     var hostTask = host.RunAsync();
 
-    var logger = host.Services.GetRequiredService<ILogger<TextResources>>();
     var textRepository = host.Services.GetRequiredService<ITextRepository>();
+    var logger = host.Services.GetRequiredService<ILogger<TextResources>>();
     await TextResources.Load(logger, textRepository, typeof(TextKeys));
 
     await Task.WhenAny(hostTask, ListenConsoleCommands(host.Services));
