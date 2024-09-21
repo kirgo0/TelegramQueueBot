@@ -17,7 +17,6 @@ namespace TelegramQueueBot.Services.Background
         private ILogger<TelegramBotClientBackgroundService> _log;
         private DefaultUpdateHandler _defaultUpdateHandler;
 
-
         public TelegramBotClientBackgroundService(ITelegramBotClient bot, ILogger<TelegramBotClientBackgroundService> logger, ILifetimeScope scope, DefaultUpdateHandler defaultUpdateHandler)
         {
             _bot = bot;
@@ -25,6 +24,7 @@ namespace TelegramQueueBot.Services.Background
             {
                 AllowedUpdates = new[] { UpdateType.Message, UpdateType.CallbackQuery }
             };
+            _receiverOptions = receiverOptions;
             _log = logger;
             _defaultUpdateHandler = defaultUpdateHandler;
         }

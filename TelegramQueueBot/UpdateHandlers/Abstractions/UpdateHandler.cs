@@ -19,6 +19,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
         protected readonly CultureInfo _culture = new CultureInfo("uk-UA");
 
         protected readonly ITelegramBotClient _bot;
+        protected readonly string botName = Environment.GetEnvironmentVariable("BOT_NAME");
         protected readonly ILifetimeScope _scope;
         protected readonly ILogger _log;
         protected IUserRepository _userRepository;

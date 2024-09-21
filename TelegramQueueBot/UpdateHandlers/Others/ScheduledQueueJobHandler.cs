@@ -13,15 +13,9 @@ namespace TelegramQueueBot.UpdateHandlers.Others
 {
     public class ScheduledQueueJobHandler : UserNotifyingUpdateHandler
     {
-        private readonly IChatRepository _chatRepository;
-        private readonly ITelegramBotClient _bot;
-        private readonly IUserRepository _userRepository;
         private readonly QueueService _queueService;
-        private readonly ILogger _log;
         public ScheduledQueueJobHandler(IChatRepository chatRepository, QueueService queueService, ILogger<ScheduledQueueJobHandler> log, IUserRepository userRepository, ITelegramBotClient bot, ILifetimeScope scope) : base(bot, scope, log)
         {
-            _bot = bot;
-            _log = log;
             _chatRepository = chatRepository;
             _queueService = queueService;
             _userRepository = userRepository;
@@ -41,7 +35,7 @@ namespace TelegramQueueBot.UpdateHandlers.Others
             var usersToNotify = await _userRepository.GetUsersWithAllowedNotificationsAsync(chat.Id);
             var usersTasks = new List<Task>();
 
-            if (usersToNotify.Any())
+            if (usersToNotify.Count != 0)
             {
                 var chatName = (await _bot.GetChatAsync(chat.TelegramId)).Title;
                 var msg = new MessageBuilder().AppendTextFormat(TextResources.GetValue(TextKeys.ScheduledQueueAppeared), chatName, job.JobName);
@@ -131,7 +125,7 @@ namespace TelegramQueueBot.UpdateHandlers.Others
             {
                 chat.LastMessageId = result.MessageId;
             }
-            var a = await _chatRepository.UpdateAsync(chat);
+            await _chatRepository.UpdateAsync(chat);
         }
 
         public override Task Handle(Telegram.Bot.Types.Update update)

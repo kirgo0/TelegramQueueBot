@@ -12,7 +12,7 @@ using Serilog;
 using Telegram.Bot;
 using TelegramQueueBot.Common;
 using TelegramQueueBot.Data.Abstraction;
-using TelegramQueueBot.Data.Context;
+using Data.Context;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;
@@ -23,12 +23,12 @@ using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.Services.Background;
 using TelegramQueueBot.UpdateHandlers.Others;
+using DotNetEnv;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.Console()
     .CreateLogger();
-
 
 try
 {
@@ -37,7 +37,7 @@ try
         .ConfigureAppConfiguration((context, config) =>
         {
             config.AddJsonFile($"appsettings.json", optional: false);
-            config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT")}.json", optional: true);
+            config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}.json", optional: true);
         })
         .UseSerilog((hostingContext, loggerConfiguration) =>
         {
@@ -47,8 +47,22 @@ try
         {
             services.AddMemoryCache();
 
-            var mongoConnectionString = context.Configuration["MongoSettings:Connection"];
-            var mongoDatabaseName = context.Configuration["MongoSettings:DatabaseName"];
+            Env.Load();
+            var envVariables = new Dictionary<string, string>
+            {
+                { "MONGO_CONNECTION", Environment.GetEnvironmentVariable("MONGO_CONNECTION") },
+                { "MONGO_DATABASE", Environment.GetEnvironmentVariable("MONGO_DATABASE") },
+                { "BOT_TOKEN", Environment.GetEnvironmentVariable("BOT_TOKEN") },
+                { "BOT_NAME", Environment.GetEnvironmentVariable("BOT_NAME") }
+            };
+
+            foreach (var envVariable in envVariables)
+            {
+                if (string.IsNullOrEmpty(envVariable.Value))
+                {
+                    throw new ArgumentNullException(envVariable.Key, $"Environment variable '{envVariable.Key}' is null or empty.");
+                }
+            }
 
             services.AddScoped<IMongoContext, MongoContext>();
             services.AddSingleton<QueueService>();
@@ -65,7 +79,7 @@ try
             services.AddMongoQueueSaveBackgroundService(TimeSpan.FromSeconds(1));
             services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromMilliseconds(1000));
 
-            services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(context.Configuration.GetSection("TelegramBotOptions")["Token"]));
+            services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(envVariables["BOT_TOKEN"]));
             services.AddHostedService<TelegramBotClientBackgroundService>();
 
             services.AddHangfire((provider, config) =>
@@ -73,7 +87,7 @@ try
                 config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                       .UseSimpleAssemblyNameTypeSerializer()
                       .UseDefaultTypeSerializer()
-                      .UseMongoStorage(mongoConnectionString, mongoDatabaseName, new MongoStorageOptions
+                      .UseMongoStorage(envVariables["MONGO_CONNECTION"], envVariables["MONGO_DATABASE"], new MongoStorageOptions
                       {
                           MigrationOptions = new MongoMigrationOptions
                           {
@@ -95,30 +109,27 @@ try
 
         });
 
-    using IHost host = builder.Build();
+    IHost host = builder.Build();
 
-    var hostTask = host.RunAsync();
-
+    var hostTask = host.StartAsync(CancellationToken.None);
     var textRepository = host.Services.GetRequiredService<ITextRepository>();
     var logger = host.Services.GetRequiredService<ILogger<TextResources>>();
     await TextResources.Load(logger, textRepository, typeof(TextKeys));
-
     await Task.WhenAny(hostTask, ListenConsoleCommands(host.Services));
 
 }
 catch (Exception ex)
 {
     Log.Fatal(ex, "Bot initialization error");
-    throw;
 }
 finally
 {
     Log.CloseAndFlush();
 }
 
-async Task ListenConsoleCommands(IServiceProvider container)
+async static Task ListenConsoleCommands(IServiceProvider container)
 {
-    while(true)
+    while (true)
     {
         var command = Console.ReadLine();
         if (command.Equals("TextReload"))

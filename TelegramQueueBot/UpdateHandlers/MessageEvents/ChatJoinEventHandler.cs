@@ -17,16 +17,14 @@ namespace TelegramQueueBot.UpdateHandlers.MessageEvents
     [HandlerMetadata(Metatags.HandleMessageEvent, nameof(Update.Message.NewChatMembers))]
     public class ChatJoinEventHandler : UpdateHandler
     {
-        private IConfiguration _configuration;
-        public ChatJoinEventHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ChatJoinEventHandler> logger, IConfiguration configuration) : base(bot, scope, logger)
+        public ChatJoinEventHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ChatJoinEventHandler> logger) : base(bot, scope, logger)
         {
-            _configuration = configuration;
         }
 
         public override async Task Handle(Update update)
         {
             var userName = update.Message.NewChatMembers[0].Username;
-            if (!userName.Equals(_configuration.GetSection("TelegramBotOptions")["BotName"]))
+            if (!userName.Equals(botName))
             {
                 return;
             }

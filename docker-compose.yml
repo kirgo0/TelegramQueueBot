@@ -1,0 +1,50 @@
+services:
+  telegramqueuebot:
+    container_name: bot
+    image: ${DOCKER_REGISTRY-}telegramqueuebot
+    build:
+      context: .
+      dockerfile: TelegramQueueBot/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+      - MONGO_CONNECTION=${MONGO_CONNECTION}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - BOT_NAME=${BOT_NAME}
+    depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
+    networks:
+      - app_net
+    stdin_open: true
+    tty: true
+  mongo:
+    container_name: botdb
+    image: mongo:latest
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER} 
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+    networks:
+      - app_net
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 120s
+      timeout: 5s
+      retries: 3
+      start_period: 4s
+    ports:
+      - "27000:27017"
+volumes: 
+  mongo_data:
+    external: true
+  mongo_config:
+    external: true
+networks:
+  app_net:
+   driver: bridge
+   
