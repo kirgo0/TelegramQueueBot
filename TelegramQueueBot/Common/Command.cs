@@ -16,5 +16,6 @@
         public const string Jobs = "/jobs";
         public const string Notify = "/notify";
         public const string Help = "/help";
+        public const string Reload = "/reload";
     }
 }

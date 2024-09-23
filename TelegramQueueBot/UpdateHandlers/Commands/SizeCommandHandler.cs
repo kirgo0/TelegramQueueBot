@@ -46,44 +46,32 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 return;
             }
 
-            try
+            msg
+                .AppendTextLine($"{TextResources.GetValue(TextKeys.SetSize)}{size}")
+                .AppendTextLine();
+
+            if (!string.IsNullOrEmpty(chat.CurrentQueueId))
             {
-                msg
-                    .AppendTextLine($"{TextResources.GetValue(TextKeys.SetSize)}{size}")
-                    .AppendTextLine();
-
-                if (!string.IsNullOrEmpty(chat.CurrentQueueId))
+                var result = await _queueService.SetQueueSizeAsync(chat.CurrentQueueId, size, false);
+                if (!result)
                 {
-                    var result = await _queueService.SetQueueSizeAsync(chat.CurrentQueueId, size, false);
-                    if (!result) return;
-                    // TODO: review logic
+                    _log.LogError("Can't set the queue size {size} fot he queue with id {id}", size, chat.CurrentQueueId);
+                    return;
+                }
 
-                    var queue = await _queueService.GetQueueSnapshotAsync(chat.CurrentQueueId);
-                    if (queue is null)
-                    {
-                        _log.LogError("An error occurred while retrieving a queue from the repository for chat {id}", chat.TelegramId);
-                        return;
-                    }
+                await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
+                {
                     var names = await _userRepository.GetByTelegramIdsAsync(queue.List);
-                    msg
-                        .AppendText(TextResources.GetValue(TextKeys.CurrentQueue))
-                        .AddDefaultQueueMarkup(names, chat.View);
-                    await DeleteLastMessageAsync(chat);
-                }
+                    msg.AddDefaultQueueMarkup(names, chat.View);
+                });
 
-                var response = await _bot.BuildAndSendAsync(msg);
-                chat.DefaultQueueSize = size;
-                if (response is not null && !string.IsNullOrEmpty(chat.CurrentQueueId))
-                {
-                    chat.LastMessageId = response.MessageId;
-                }
-                await _chatRepository.UpdateAsync(chat);
+                msg.AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
+            }
 
-            }
-            catch (Exception ex)
-            {
-                _log.LogError(ex, "An error occured while changing queue {id} size to {size}", chat.CurrentQueueId, size);
-            }
+            chat.DefaultQueueSize = size;
+
+            await DeleteLastMessageAsync(chat);
+            await SendAndUpdateChatAsync(chat, msg, true);
         }
 
         private bool ValidateSize(IEnumerable<string> arguments, out int size)
@@ -93,6 +81,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
             {
                 return false;
             }
+            if (!int.TryParse(arguments.First(), out size))
             if (!int.TryParse(arguments.First(), out size))
             {
                 return false;

@@ -30,7 +30,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks.Save
             var queue = await _queueService.GetByIdAsync(queueId);
             if(queue is null)
             {
-                // TODO: Exception
+                _log.LogWarning("Chat with id {chatId} is trying to delete queue with id {queueId} that has already been deleted", chat.TelegramId, queueId);
                 return;
             }
             var queueName = queue.Name;

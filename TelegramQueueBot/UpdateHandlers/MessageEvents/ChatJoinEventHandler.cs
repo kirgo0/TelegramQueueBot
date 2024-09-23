@@ -28,6 +28,7 @@ namespace TelegramQueueBot.UpdateHandlers.MessageEvents
             {
                 return;
             }
+            _log.LogInformation("Bot has joined a chat with id {telegramid}", update.Message.Chat.Id);
             await RedirectHandle(
                 update,
                 Metatags.HandleCommand,

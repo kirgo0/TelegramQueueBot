@@ -76,7 +76,7 @@ try
 
             services.AddSingleton<ScheduledQueueJobHandler>();
 
-            services.AddMongoQueueSaveBackgroundService(TimeSpan.FromSeconds(1));
+            services.AddMongoQueueSaveBackgroundService(TimeSpan.FromMilliseconds(1000));
             services.AddTelegramQueueRenderBackgroundService(TimeSpan.FromMilliseconds(1000));
 
             services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(envVariables["BOT_TOKEN"]));
@@ -111,12 +111,12 @@ try
 
     IHost host = builder.Build();
 
-    var hostTask = host.StartAsync(CancellationToken.None);
+    
+    var hostTask = host.RunAsync();
     var textRepository = host.Services.GetRequiredService<ITextRepository>();
     var logger = host.Services.GetRequiredService<ILogger<TextResources>>();
     await TextResources.Load(logger, textRepository, typeof(TextKeys));
-    await Task.WhenAny(hostTask, ListenConsoleCommands(host.Services));
-
+    await hostTask;
 }
 catch (Exception ex)
 {
@@ -125,16 +125,4 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
-}
-
-async static Task ListenConsoleCommands(IServiceProvider container)
-{
-    while (true)
-    {
-        var command = Console.ReadLine();
-        if (command.Equals("TextReload"))
-        {
-            await TextResources.ReloadFromPreviousContext(typeof(TextKeys));
-        }
-    }
 }

@@ -27,7 +27,7 @@ namespace TelegramQueueBot.UpdateHandlers.Others
             var user = await userTask;
             await _bot.SendAnimationAsync(
                 user.TelegramId,
-                animation: new InputFileId("CgACAgQAAxkBAAIOgWbu28tF6x1_cmF1_LxIAAEwq-6cbwACMQMAAgVwBVPDr40Cb4pINDYE"),
+                animation: new InputFileId("https://media.tenor.com/1y8zDc-ll-EAAAAM/3d-saul-saul-goodman.gif"),
                 caption: "Як до цього взагалі можна було додуматись? \n\n<b><s>/solify</s> /notify</b>",
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Html,
                 duration: 6

@@ -28,8 +28,8 @@ namespace TelegramQueueBot.UpdateHandlers.MessageEvents
             {
                 return;
             }
-            _log.LogInformation("Leaved chat");
-            //var chat = await TryGetOrCreateChat(_chatId);
+            _log.LogInformation("Bot left chat with id {telegramid}", update.Message.Chat.Id);
+
             // TODO: delete all chat & users data
         }
     }
