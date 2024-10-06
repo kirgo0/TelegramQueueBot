@@ -37,11 +37,18 @@ namespace TelegramQueueBot.UpdateHandlers.Others
 
             if (usersToNotify.Count != 0)
             {
-                var chatName = (await _bot.GetChatAsync(chat.TelegramId)).Title;
-                var msg = new MessageBuilder().AppendTextFormat(TextResources.GetValue(TextKeys.ScheduledQueueAppeared), chatName, job.JobName);
-                foreach (var user in usersToNotify)
+                try
                 {
-                    usersTasks.Add(SendUserMessageAsync(user.TelegramId, msg));
+                    var chatName = (await _bot.GetChatAsync(chat.TelegramId)).Title;
+                    var msg = new MessageBuilder().AppendTextFormat(TextResources.GetValue(TextKeys.ScheduledQueueAppeared), chatName, job.JobName);
+                    foreach (var user in usersToNotify)
+                    {
+                        usersTasks.Add(SendUserMessageAsync(user.TelegramId, msg));
+                    }
+                } catch (Exception ex)
+                {
+                    _log.LogError(ex, "An error occured while getting a chat name of chat with id {id}", chat.TelegramId);
+                    return false;
                 }
             }
 

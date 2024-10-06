@@ -37,12 +37,15 @@
         public const string RemovedAllBlankSpaces = "removed_all_blank_spaces";
         public const string NoBlankSpacesToRemove = "no_blank_spaces_to_remove";
 
+        // chat veiw
+
         public const string ChangedChatView = "changed_chat_view";
         public const string ChatViewAuto = "chat_view_auto";
         public const string ChatViewTable = "chat_view_table";
         public const string ChatViewColumn = "chat_view_column";
 
-        //public const string Jobs = "jobs";
+        // jobs
+
         public const string JobsList = "jobs_list";
         public const string JobsListIsEmpty = "jobs_list_is_empty";
         public const string JobCreatedQueue = "job_created_queue";
@@ -62,7 +65,18 @@
 
         public const string LeaveActionOutdated = "leave_action_outdated";
 
+        // swap
+
+        public const string UserNotAuthorized = "user_not_authorized";
+        public const string SwapRequestCaption = "swap_request_caption";
+        public const string SwapRequestSendedFirstUser = "swap_request_sended_first_user";
+        public const string SwapRequestSendedSecondUser = "swap_request_sended_second_user";
+        public const string SwapRequestSuccess = "swap_request_success";
+        public const string SwapRequestDenied = "swap_request_denied";
+        public const string SwapRequestOutdated = "swap_request_outdated";
+
         // buttons
+
         public const string LoadQueueBtn = "load_queue_btn";
         public const string DeleteQueueBtn = "delete_queue_btn";
         public const string ConfirmDeletionBtn = "confirm_deletion_btn";
@@ -71,12 +85,13 @@
         public const string LoadJobWithQueueBtn = "load_job_with_queue_btn";
         public const string SelectedBtn = "selected_btn";
         public const string DoneBtn = "done_btn";
+        public const string DenyBtn = "deny_btn";
         public const string MoveLeftBtn = "move_left_btn";
         public const string MoveRightBtn = "move_right_btn";
         public const string LeaveBtn = "leave_btn";
-
         public const string DefaultHelpBtn = "default_help_btn";
         public const string CallingModeHelpBtn = "calling_mode_btn";
         public const string FeaturesHelpBtn = "features_help_btn";
+        public const string NeedToBeAuthorizedForSwap = "need_to_be_authorized_for_swap";
     }
 }

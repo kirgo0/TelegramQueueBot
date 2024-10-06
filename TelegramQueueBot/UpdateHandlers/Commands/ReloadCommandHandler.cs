@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramQueueBot.Common;
+using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Helpers.Attributes;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
@@ -32,6 +33,8 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
 
             _log.LogInformation("User {telegramId} has requested a text reload", user.TelegramId);
             await TextResources.ReloadFromPreviousContext(typeof(TextKeys));
+            var msg = new MessageBuilder().SetChatId(user.TelegramId).AppendText($"✅");
+            await _bot.BuildAndSendAsync(msg);
         }
     }
 }

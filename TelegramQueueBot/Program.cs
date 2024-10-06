@@ -73,6 +73,7 @@ try
             services.AddScoped<ITextRepository, MongoTextRepository>();
             services.AddMongoRepositoryWithCaching<MongoQueueRepository, CachedMongoQueueRepository, Queue, ICachedQueueRepository>(TimeSpan.FromMinutes(10));
             services.AddSingleton<IChatJobRepository, MongoChatJobRepository>();
+            services.AddSingleton<ISwapRequestRepository, MongoSwapRequestRepository>();
 
             services.AddSingleton<ScheduledQueueJobHandler>();
 

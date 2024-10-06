@@ -266,10 +266,13 @@ namespace TelegramQueueBot.Services
             }, doRender);
         }
 
-        public async Task<bool> SwapUsersAsync(string queueId, long firstUserId, long secondUserId, bool doRender = true)
+        public async Task<bool> SwapUsersInPositionsAsync(string queueId, long firstUserId, int firstUserPos, long secondUserId, int secondUserPos, bool doRender = true)
         {
             if (firstUserId < 0 || secondUserId < 0)
                 throw new ArgumentOutOfRangeException("The id value cannot be less than zero");
+
+            if (firstUserPos < 0 || secondUserPos < 0)
+                throw new ArgumentOutOfRangeException("The position value cannot be less than zero");
 
             if (firstUserId == secondUserId)
                 return false;
@@ -280,6 +283,9 @@ namespace TelegramQueueBot.Services
                 int secondIndex = queue.IndexOf(secondUserId);
 
                 if (firstIndex < 0 || secondIndex < 0)
+                    return false;
+
+                if (firstIndex != firstUserPos || secondIndex != secondUserPos) 
                     return false;
 
                 var temp = queue[firstIndex];

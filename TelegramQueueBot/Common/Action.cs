@@ -11,6 +11,9 @@
         public const string ConfirmDeletion = "ConfirmDeletion";
         public const string DenyDeletion = "DenyDeletion";
         public const string Help = "Help";
+        public const string Leave = "Leave";
+        public const string AcceptSwap = "AcceptSwap";
+        public const string DenySwap = "DenySwap";
         // Jobs
         public const string Jobs = "Jobs";
         public const string JobMenu = "JobMenu";
@@ -22,6 +25,5 @@
         public const string SetQueue = "SetQueue";
         public const string JobQueueMenu = "JobQueueMenu";
         public const string AddIntervalWeeks = "AddIntervalWeeks";
-        public const string Leave = "Leave";
     }
 }

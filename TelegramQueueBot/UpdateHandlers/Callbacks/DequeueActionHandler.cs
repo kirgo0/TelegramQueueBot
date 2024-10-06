@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -6,6 +7,8 @@ using TelegramQueueBot.Common;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Helpers.Attributes;
+using TelegramQueueBot.Models;
+using TelegramQueueBot.Repository.Interfaces;
 using TelegramQueueBot.Services;
 using TelegramQueueBot.UpdateHandlers.Abstractions;
 
@@ -15,12 +18,14 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
     public class DequeueActionHandler : UserNotifyingUpdateHandler
     {
         private QueueService _queueService;
-        public DequeueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueActionHandler> logger, QueueService queueService) : base(bot, scope, logger)
+        private ISwapRequestRepository _swapRequestRepository;
+        public DequeueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<DequeueActionHandler> logger, QueueService queueService, ISwapRequestRepository swapRequestRepository) : base(bot, scope, logger)
         {
             GroupsOnly = true;
             NeedsUser = true;
             NeedsChat = true;
             _queueService = queueService;
+            _swapRequestRepository = swapRequestRepository;
         }
 
         public override async Task Handle(Update update)
@@ -48,7 +53,8 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                         var nextfirstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
                         await NotifyUsersIfOrderChanged(chat, firstTwoUsers, nextfirstTwoUsers);
                         return;
-                    } else if (chat.Mode is Models.Enums.ChatMode.Open)
+                    }
+                    else if (chat.Mode is Models.Enums.ChatMode.Open)
                     {
                         await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
                         return;
@@ -77,20 +83,81 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                 // swaping two users
                 else
                 {
-                    await _bot.AnswerCallbackQueryAsync(update.CallbackQuery.Id, "Свапи не працюють, сасі", cacheTime: 3);
-                    //if (!user.IsAuthorized)
-                    //{
-                    //    await _bot.AnswerCallbackQueryAsync(update.CallbackQuery.Id, "Необхідно авторизуватись", cacheTime: 3);
-                    //    return;
-                    //}
-
-                    //await _queueService.SwapUsersAsync(chat.CurrentQueueId, user.TelegramId, actionUserId);
+                    if (!user.IsAuthorized)
+                    {
+                        await _bot.AnswerCallbackQueryAsync(update.CallbackQuery.Id, TextResources.GetValue(TextKeys.NeedToBeAuthorizedForSwap), cacheTime: 3);
+                        return;
+                    }
+                    await HandleSwapRequest(update, chat, user, actionUserId);
                 }
             }
             catch (Exception e)
             {
                 _log.LogError(e, "An error occured while dequeing user {userid} in chat {chatId}, queue {queueId}", user.TelegramId, chat.TelegramId, chat.CurrentQueueId);
             }
+        }
+
+        public async Task HandleSwapRequest(Update update, Models.Chat chat, Models.User firstUser, long secondUserId)
+        {
+            var secondUser = await _userRepository.GetByTelegramIdAsync(secondUserId);
+
+            if (secondUser is null || !secondUser.IsAuthorized)
+            {
+                var userMsg = new MessageBuilder()
+                    .SetChatId(firstUser.TelegramId)
+                    .AppendTextFormat(TextResources.GetValue(TextKeys.UserNotAuthorized), secondUser?.UserName);
+                await _bot.BuildAndSendAsync(userMsg);
+                return;
+            }
+
+
+            int[] userPositions = new int[2];
+            userPositions[0] = -1;
+            userPositions[1] = -1;
+
+            await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, (queue) =>
+            {
+                for (int i = 0; i < queue.Size; i++)
+                {
+                    if (userPositions[0] != -1 && userPositions[1] != -1) break;
+                    if (queue[i] == firstUser.TelegramId) userPositions[0] = i;
+                    if (queue[i] == secondUserId) userPositions[1] = i;
+                }
+            });
+
+            if (userPositions[0] == -1 || userPositions[1] == -1)
+            {
+                return;
+            }
+            
+            var swapRequest = new SwapRequest()
+            {
+                QueueId = chat.CurrentQueueId,
+                FirstTelegramId = firstUser.TelegramId,
+                FirstPosition = userPositions[0],
+                SecondTelegramId = secondUserId,
+                SecondPosition = userPositions[1]
+            };
+
+            await _swapRequestRepository.CreateOrReplaceAsync(swapRequest);
+
+            var firstMsg = new MessageBuilder()
+              .SetChatId(firstUser.TelegramId)
+              .AppendTextLine(TextResources.GetValue(TextKeys.SwapRequestCaption))
+              .AppendTextLine()
+              .AppendTextFormat(TextResources.GetValue(TextKeys.SwapRequestSendedFirstUser), secondUser.UserName)
+              .AddButton(TextResources.GetValue(TextKeys.DenyBtn), callbackData: $"{Common.Action.DenySwap}{swapRequest.Id}");
+
+            var secondMsg = new MessageBuilder()
+                .SetChatId(secondUserId)
+                .AppendTextLine(TextResources.GetValue(TextKeys.SwapRequestCaption))
+                .AppendTextLine()
+                .AppendTextFormat(TextResources.GetValue(TextKeys.SwapRequestSendedSecondUser), firstUser.UserName, userPositions[1], userPositions[0])
+                .AddButton(TextResources.GetValue(TextKeys.DoneBtn), callbackData: $"{Common.Action.AcceptSwap}{swapRequest.Id}")
+                .AddButton(TextResources.GetValue(TextKeys.DenyBtn), callbackData: $"{Common.Action.DenySwap}{swapRequest.Id}");
+
+          
+            await Task.WhenAll(_bot.BuildAndSendAsync(firstMsg), _bot.BuildAndSendAsync(secondMsg));
         }
     }
 }

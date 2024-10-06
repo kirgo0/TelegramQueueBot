@@ -36,7 +36,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 {
                     var leaveBtn = new InlineKeyboardButton(TextResources.GetValue(TextKeys.LeaveBtn));
                     leaveBtn.CallbackData = $"{Common.Action.Leave}{chat.TelegramId}";
-                    notifyTasks.Add(NotifyUserAsync(
+                    notifyTasks.Add(SendUserMessageAsync(
                         $"{TextResources.GetValue(TextKeys.QueueIsCallingUsers)}\n\n{TextResources.GetValue(TextKeys.FirstUserInQueue)}", 
                         chat.Id, 
                         userId, 
@@ -46,7 +46,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
                 else if (userId != 0)
                 {
                     notifyTasks.Add(
-                        NotifyUserAsync(
+                        SendUserMessageAsync(
                             $"{TextResources.GetValue(TextKeys.QueueIsCallingUsers)}\n\n{string.Format(TextResources.GetValue(TextKeys.NextUserInQueue), i + 1)}",
                             chat.Id, userId)
                     );
@@ -56,7 +56,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
 
         }
 
-        protected async Task NotifyUserAsync(string message, string chatId, long userId, ParseMode parseMode = ParseMode.Html, InlineKeyboardMarkup markup = null)
+        protected async Task SendUserMessageAsync(string message, string chatId, long userId, ParseMode parseMode = ParseMode.Html, InlineKeyboardMarkup markup = null)
         {
             var user = await _userRepository.GetByTelegramIdAsync(userId);
             if (!(user).SendNotifications) return;

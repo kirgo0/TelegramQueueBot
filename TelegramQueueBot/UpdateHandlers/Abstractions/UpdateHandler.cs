@@ -259,7 +259,7 @@ namespace TelegramQueueBot.UpdateHandlers.Abstractions
             }
         }
 
-        protected async Task NotifyUsersAsync(MessageBuilder messageTemplate, params long[] userIds)
+        protected async Task SendToManyUsersAsync(MessageBuilder messageTemplate, params long[] userIds)
         {
             var tasks = new List<Task>();
             foreach (var userId in userIds)
