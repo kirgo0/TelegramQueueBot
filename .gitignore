@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /TelegramQueueBot/appsettings.Production.json
 /TelegramQueueBot/appsettings.Development.json
 /TelegramQueueBot/.env
+/TelegramQueueBot/.env

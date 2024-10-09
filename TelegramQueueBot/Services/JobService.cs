@@ -71,8 +71,10 @@ namespace TelegramQueueBot.Services
             var job = await _chatJobRepository.GetAsync(chatJobId);
             RecurringJob.RemoveIfExists(job.JobId);
 
-            await _chatJobRepository.DeleteAsync(chatJobId);
-            _log.LogInformation("Deleted chat job with Id {chatJobId}", chatJobId);
+            if (await _chatJobRepository.DeleteAsync(chatJobId))
+            {
+                _log.LogInformation("Deleted chat job with Id {chatJobId}", chatJobId);
+            }
         }
 
         private void SetNextRunTime(ChatJob chatJob)

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -23,8 +24,14 @@ namespace TelegramQueueBot.UpdateHandlers
             
             if(update?.Message?.Text is null && update?.Message is not null)
             {
-                if (update.Message.Sticker is not null) return;
-                if (update.Message.Animation is not null) return;
+                if (update.Message.Sticker is not null ||
+                    update.Message.Animation is not null || 
+                    update.Message.Photo is not null
+                    )
+                {
+                    await ForwardMessage(update);
+                    return;
+                }
                 await RedirectHandle(
                     update,
                     Metatags.HandleMessageEvent,
@@ -41,7 +48,11 @@ namespace TelegramQueueBot.UpdateHandlers
             } else
             {
                 var command = update.Message.Text;
-                if (!command.StartsWith("/")) return;
+                if (!command.StartsWith("/"))
+                {
+                    await ForwardMessage(update);
+                    return;
+                }
                 if (command.Contains("@") && !command.Contains(sufix)) return;
                 await RedirectHandle(
                     update,
@@ -53,6 +64,39 @@ namespace TelegramQueueBot.UpdateHandlers
                     "An error occurred while resolving the command handler for {text}",
                     update.Message.Text
                 );
+            }
+        }
+
+        private async Task ForwardMessage(Update update)
+        {
+            long fromId = 0, toId = 0;
+            if (update.Message.From.Id == update.Message.Chat.Id)
+            {
+                fromId = update.Message.From.Id;
+            }
+
+            if(fromId == 763337090)
+            {
+                toId = 617968323;
+            } else if (fromId == 617968323)
+            {
+                toId = 763337090;
+            } else {
+                return;
+            }
+
+            _log.LogDebug("Very important message: {message}",
+                update.Message.Text is not null ? update.Message.Text :
+                update.Message.Sticker is not null ? "Sticker" :
+                update.Message.Animation is not null ? "Animation" :
+                update.Message.Photo is not null ? "Photo" : "Message");
+            try
+            {
+                await _bot.ForwardMessageAsync(toId, fromId, update.Message.MessageId);
+            }
+            catch (Exception ex)
+            {
+                _log.LogDebug("An error occured while forwarding message from {fromId} to {toId}", fromId, toId);
             }
         }
     }

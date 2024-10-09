@@ -72,8 +72,8 @@ try
             services.AddMongoRepositoryWithCaching<MongoChatRepository, CachedMongoChatRepository, Chat, IChatRepository>(TimeSpan.FromMinutes(10));
             services.AddScoped<ITextRepository, MongoTextRepository>();
             services.AddMongoRepositoryWithCaching<MongoQueueRepository, CachedMongoQueueRepository, Queue, ICachedQueueRepository>(TimeSpan.FromMinutes(10));
-            services.AddSingleton<IChatJobRepository, MongoChatJobRepository>();
-            services.AddSingleton<ISwapRequestRepository, MongoSwapRequestRepository>();
+            services.AddMongoRepositoryWithCaching<MongoChatJobRepository, CachedChatMongoJobRepository, ChatJob, IChatJobRepository>(TimeSpan.FromMinutes(10));
+            services.AddMongoRepositoryWithCaching<MongoSwapRequestRepository, CachedMongoSwapRequestRepository, SwapRequest, ISwapRequestRepository>(TimeSpan.FromMinutes(1));
 
             services.AddSingleton<ScheduledQueueJobHandler>();
 
