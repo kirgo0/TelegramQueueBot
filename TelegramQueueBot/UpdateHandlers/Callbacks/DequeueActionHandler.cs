@@ -15,7 +15,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
     [HandleAction(Common.Action.Dequeue)]
-    public class DequeueActionHandler : UserNotifyingUpdateHandler
+    public class DequeueActionHandler : UpdateHandler
     {
         private QueueService _queueService;
         private ISwapRequestRepository _swapRequestRepository;
@@ -46,39 +46,24 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                 // dequeing user
                 if (user.TelegramId == actionUserId)
                 {
-                    if (await _queueService.GetQueueCountAsync(chat.CurrentQueueId) != 1 && chat.Mode is Models.Enums.ChatMode.CallingUsers)
-                    {
-                        var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-                        await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
-                        var nextfirstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-                        await NotifyUsersIfOrderChanged(chat, firstTwoUsers, nextfirstTwoUsers);
-                        return;
-                    }
-                    else if (chat.Mode is Models.Enums.ChatMode.Open)
+                    if (await _queueService.GetQueueCountAsync(chat.CurrentQueueId) != 1)
                     {
                         await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
                         return;
                     }
 
+                    // dequeue last user and send ending calling user message to chat
+
                     var msg = new MessageBuilder(chat);
-                    var result = await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId, false);
+                    var result = await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
 
                     if (!result) return;
 
                     chat.Mode = Models.Enums.ChatMode.Open;
 
-                    await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, (queue) =>
-                    {
-                        msg.AddEmptyQueueMarkup(queue.Size, chat.View);
-                    });
+                    msg.AppendTextLine(TextResources.GetValue(TextKeys.QueueEndedCallingUsers));
+                    await _bot.BuildAndSendAsync(msg);
 
-                    msg
-                        .AppendTextLine(TextResources.GetValue(TextKeys.QueueEndedCallingUsers))
-                        .AppendTextLine()
-                        .AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
-
-                    await DeleteLastMessageAsync(chat);
-                    await SendAndUpdateChatAsync(chat, msg, true);
                 }
                 // swaping two users
                 else

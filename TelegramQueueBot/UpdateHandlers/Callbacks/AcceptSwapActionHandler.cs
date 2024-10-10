@@ -22,7 +22,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
     [HandleAction(Common.Action.AcceptSwap)]
-    public class AcceptSwapActionHandler : UserNotifyingUpdateHandler
+    public class AcceptSwapActionHandler : UpdateHandler
     {
         private ISwapRequestRepository _swapRequestRepository;
         private QueueService _queueService;

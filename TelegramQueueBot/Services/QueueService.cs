@@ -27,6 +27,11 @@ namespace TelegramQueueBot.Services
             _semaphoreDictionary.Remove(queueId, out _);
         }
 
+        public async Task RerenderQueue(string queueId)
+        {
+            await AccessQueueAsync(queueId, (queue) => true);
+        }
+
         public async Task<Queue> GetQueueSnapshotAsync(string queueId)
         {
             Queue result = null;
@@ -37,23 +42,6 @@ namespace TelegramQueueBot.Services
                 return false;
             });
 
-            return result;
-        }
-
-        public async Task<List<long>> GetRangeAsync(string queueId, int range)
-        {
-            if(range < 0) throw new ArgumentOutOfRangeException(nameof(range));
-            var result = new List<long>(range);
-            await AccessQueueAsync(queueId, (queue) =>
-            {
-                for (int i = 0; i < queue.List.Count && range > 0; i++)
-                {
-                    if (queue.List[i] == EmptyQueueMember) continue;
-                    result.Add(queue.List[i]);
-                    range--;
-                }
-                return false;
-            });
             return result;
         }
 

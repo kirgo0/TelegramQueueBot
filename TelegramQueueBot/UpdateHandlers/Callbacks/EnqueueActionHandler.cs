@@ -12,7 +12,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 namespace TelegramQueueBot.UpdateHandlers.Callbacks
 {
     [HandleAction(Common.Action.Enqueue)]
-    public class EnqueueActionHandler : UserNotifyingUpdateHandler
+    public class EnqueueActionHandler : UpdateHandler
     {
         private QueueService _queueService;
         public EnqueueActionHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<EnqueueActionHandler> logger, QueueService queueService) : base(bot, scope, logger)
@@ -43,17 +43,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
 
             try
             {
-                if (chat.Mode is not Models.Enums.ChatMode.CallingUsers)
-                {
-                    await _queueService.EnqueueAsync(chat.CurrentQueueId, pos, user.TelegramId);
-                }
-                else
-                {
-                    var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-                    await _queueService.EnqueueAsync(chat.CurrentQueueId, pos, user.TelegramId);
-                    var nextfirstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-                    await NotifyUsersIfOrderChanged(chat, firstTwoUsers, nextfirstTwoUsers);
-                }
+                await _queueService.EnqueueAsync(chat.CurrentQueueId, pos, user.TelegramId);
             }
             catch (Exception e)
             {

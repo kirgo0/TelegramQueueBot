@@ -14,7 +14,7 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 {
     [HandleCommand(Command.Mode)]
-    public class ModeCommandHandler : UserNotifyingUpdateHandler
+    public class ModeCommandHandler : UpdateHandler
     {
         private QueueService _queueService;
         public ModeCommandHandler(ITelegramBotClient bot, ILifetimeScope scope, ILogger<ModeCommandHandler> logger, QueueService queueService, IUserRepository userRepository) : base(bot, scope, logger)
@@ -46,23 +46,9 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
 
             chat.Mode = chat.Mode.Next();
 
-            msg.AppendModeTitle(chat);
-            msg.AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
-
-            await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
-            {
-                var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
-                msg.AddDefaultQueueMarkup(users, chat.View);
-            });
-
-            if(chat.Mode is Models.Enums.ChatMode.CallingUsers)
-            {
-                var firstTwoUsers = await _queueService.GetRangeAsync(chat.CurrentQueueId, 2);
-                await NotifyUsersIfOrderChanged(chat, new List<long>(), firstTwoUsers);
-            }
-
+            await _chatRepository.UpdateAsync(chat);
             await DeleteLastMessageAsync(chat);
-            await SendAndUpdateChatAsync(chat, msg, true);
+            await _queueService.RerenderQueue(chat.CurrentQueueId);
         }
     }
 }

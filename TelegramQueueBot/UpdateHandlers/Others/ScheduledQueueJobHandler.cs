@@ -11,14 +11,20 @@ using TelegramQueueBot.UpdateHandlers.Abstractions;
 
 namespace TelegramQueueBot.UpdateHandlers.Others
 {
-    public class ScheduledQueueJobHandler : UserNotifyingUpdateHandler
+    public class ScheduledQueueJobHandler
     {
         private readonly QueueService _queueService;
-        public ScheduledQueueJobHandler(IChatRepository chatRepository, QueueService queueService, ILogger<ScheduledQueueJobHandler> log, IUserRepository userRepository, ITelegramBotClient bot, ILifetimeScope scope) : base(bot, scope, log)
+        private readonly ILogger<ScheduledQueueJobHandler> _log;
+        private readonly IChatRepository _chatRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ITelegramBotClient _bot;
+        public ScheduledQueueJobHandler(IChatRepository chatRepository, QueueService queueService, ILogger<ScheduledQueueJobHandler> log, IUserRepository userRepository, ITelegramBotClient bot, ILifetimeScope scope)
         {
             _chatRepository = chatRepository;
             _queueService = queueService;
             _userRepository = userRepository;
+            _bot = bot;
+            _log = log;
         }
 
         public async Task<bool> Handle(ChatJob job)
@@ -45,7 +51,8 @@ namespace TelegramQueueBot.UpdateHandlers.Others
                     {
                         usersTasks.Add(SendUserMessageAsync(user.TelegramId, msg));
                     }
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     _log.LogError(ex, "An error occured while getting a chat name of chat with id {id}", chat.TelegramId);
                     return false;
@@ -134,10 +141,10 @@ namespace TelegramQueueBot.UpdateHandlers.Others
             }
             await _chatRepository.UpdateAsync(chat);
         }
-
-        public override Task Handle(Telegram.Bot.Types.Update update)
+        protected async Task SendUserMessageAsync(long userId, MessageBuilder messageTemplate)
         {
-            throw new NotImplementedException();
+            messageTemplate.SetChatId(userId);
+            await _bot.BuildAndSendAsync(messageTemplate);
         }
     }
 }

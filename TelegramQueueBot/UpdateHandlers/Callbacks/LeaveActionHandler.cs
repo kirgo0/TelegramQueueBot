@@ -43,6 +43,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             if(chat?.CurrentQueueId is null || chat.Mode is not Models.Enums.ChatMode.CallingUsers)
             {
                 userMsg.AppendText(TextResources.GetValue(TextKeys.LeaveActionOutdated));
+                await _bot.DeleteMessageAsync(user.TelegramId, update.CallbackQuery.Message.MessageId);
                 await _bot.BuildAndSendAsync(userMsg);
                 return;
             }
@@ -51,25 +52,14 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
             var msg = new MessageBuilder(chat);
             if (queueCount == 1)
             {
-                var result = await _queueService.DequeueIfFirstAsync(chat.CurrentQueueId, user.TelegramId, false);
+                var result = await _queueService.DequeueIfFirstAsync(chat.CurrentQueueId, user.TelegramId);
 
                 if (!result) return;
 
                 chat.Mode = Models.Enums.ChatMode.Open;
 
-                await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, (queue) =>
-                {
-                    msg.AddEmptyQueueMarkup(queue.Size, chat.View);
-                });
-
-                msg
-                    .AppendTextLine(TextResources.GetValue(TextKeys.QueueEndedCallingUsers))
-                    .AppendTextLine()
-                    .AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
-
-                await DeleteLastMessageAsync(chat);
-                await SendAndUpdateChatAsync(chat, msg, true);
-
+                msg.AppendTextLine(TextResources.GetValue(TextKeys.QueueEndedCallingUsers));
+                await _bot.BuildAndSendAsync(msg);
             } else 
             {
                 await _queueService.DequeueIfFirstAsync(chat.CurrentQueueId, user.TelegramId);

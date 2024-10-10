@@ -32,23 +32,13 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Features
             {
                 msg.AppendText(TextResources.GetValue(TextKeys.NoCreatedQueue));
                 await _bot.BuildAndSendAsync(msg);
+                return;
             }
-            var operationResult = await _queueService.RemoveBlankSpacesAsync(chat.CurrentQueueId, false);
+            var operationResult = await _queueService.RemoveBlankSpacesAsync(chat.CurrentQueueId);
             if (operationResult)
             {
-                msg.AppendModeTitle(chat);
-                msg
-                    .AppendTextLine(TextResources.GetValue(TextKeys.RemovedAllBlankSpaces))
-                    .AppendTextLine()
-                    .AppendTextLine(TextResources.GetValue(TextKeys.CurrentQueue));
-                await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
-                {
-                    var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
-                    msg.AddDefaultQueueMarkup(users, chat.View);
-                });
-
-                await DeleteLastMessageAsync(chat);
-                await SendAndUpdateChatAsync(chat, msg);
+                msg.AppendTextLine(TextResources.GetValue(TextKeys.RemovedAllBlankSpaces));
+                await _bot.BuildAndSendAsync(msg);
             }
             else
             {

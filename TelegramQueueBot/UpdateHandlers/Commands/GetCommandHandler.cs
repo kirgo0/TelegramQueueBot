@@ -34,22 +34,9 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 await _bot.BuildAndSendAsync(msg);
                 return;
             }
-            await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
-            {
-                if (queue.Count == 0)
-                {
-                    msg.AddEmptyQueueMarkup(queue.Size, chat.View);
-                    return;
-                }
-                var users = await _userRepository.GetByTelegramIdsAsync(queue.List);
-                msg.AddDefaultQueueMarkup(users, chat.View);
-            });
-
-            msg.AppendModeTitle(chat);
-            msg.AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
 
             await DeleteLastMessageAsync(chat);
-            await SendAndUpdateChatAsync(chat, msg);
+            await _queueService.RerenderQueue(chat.CurrentQueueId);
         }
     }
 }

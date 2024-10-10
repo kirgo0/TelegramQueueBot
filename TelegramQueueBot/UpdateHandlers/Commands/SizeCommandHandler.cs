@@ -46,32 +46,21 @@ namespace TelegramQueueBot.UpdateHandlers.Commands
                 return;
             }
 
-            msg
-                .AppendTextLine($"{TextResources.GetValue(TextKeys.SetSize)}{size}")
-                .AppendTextLine();
+            msg.AppendTextLine($"{TextResources.GetValue(TextKeys.SetSize)}{size}");
 
             if (!string.IsNullOrEmpty(chat.CurrentQueueId))
             {
-                var result = await _queueService.SetQueueSizeAsync(chat.CurrentQueueId, size, false);
+                var result = await _queueService.SetQueueSizeAsync(chat.CurrentQueueId, size);
                 if (!result)
                 {
                     _log.LogError("Can't set the queue size {size} fot he queue with id {id}", size, chat.CurrentQueueId);
                     return;
                 }
-
-                await _queueService.DoThreadSafeWorkOnQueueAsync(chat.CurrentQueueId, async (queue) =>
-                {
-                    var names = await _userRepository.GetByTelegramIdsAsync(queue.List);
-                    msg.AddDefaultQueueMarkup(names, chat.View);
-                });
-
-                msg.AppendText(TextResources.GetValue(TextKeys.CurrentQueue));
             }
 
             chat.DefaultQueueSize = size;
-
-            await DeleteLastMessageAsync(chat);
-            await SendAndUpdateChatAsync(chat, msg, true);
+            await _chatRepository.UpdateAsync(chat);
+            await _bot.BuildAndSendAsync(msg);
         }
 
         private bool ValidateSize(IEnumerable<string> arguments, out int size)
