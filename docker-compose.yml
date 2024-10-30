@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: TelegramQueueBot/Dockerfile
     environment:
-      - TZ=Europe/Helsinki
+      - TZ=Europe/Istanbul
       - DOTNET_ENVIRONMENT=Production
       - MONGO_CONNECTION=${MONGO_CONNECTION}
       - MONGO_DATABASE=${MONGO_DATABASE}
