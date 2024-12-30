@@ -38,6 +38,8 @@ namespace TelegramQueueBot.UpdateHandlers.Others
                 return false;
             }
 
+            chat.Mode = Models.Enums.ChatMode.Open;
+
             var usersToNotify = await _userRepository.GetUsersWithAllowedNotificationsAsync(chat.Id);
             var usersTasks = new List<Task>();
 
@@ -82,6 +84,7 @@ namespace TelegramQueueBot.UpdateHandlers.Others
                 await LoadSavedQueueJob(chat, queue.Id);
             }
             await Task.WhenAll(usersTasks);
+            await _chatRepository.UpdateAsync(chat);
             return true;
         }
 
@@ -141,6 +144,7 @@ namespace TelegramQueueBot.UpdateHandlers.Others
             }
             await _chatRepository.UpdateAsync(chat);
         }
+
         protected async Task SendUserMessageAsync(long userId, MessageBuilder messageTemplate)
         {
             messageTemplate.SetChatId(userId);

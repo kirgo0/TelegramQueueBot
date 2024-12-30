@@ -84,18 +84,35 @@ namespace TelegramQueueBot.Services.Background
                     msg
                         .AppendText(TextResources.GetValue(TextKeys.CurrentQueue))
                         .AddDefaultQueueMarkup(await usersTask, chat.View);
-                    try
+
+                    bool sendNewMessage = false;
+                    if (chat.Mode is Models.Enums.ChatMode.CallingUsers)
                     {
-                        await _bot.BuildAndEditAsync(msg);
-                    }
-                    catch(ApiRequestException ex)
-                    {
-                        if(ex.Message.Equals("Bad Request: message to edit not found"))
+                        try
                         {
-                            var message = await _bot.BuildAndSendAsync(msg);
-                            chat.LastMessageId = message.MessageId;
-                            await _chatRepository.UpdateAsync(chat);
+                            await _bot.DeleteMessageAsync(chat.TelegramId, chat.LastMessageId);
                         }
+                        catch (ApiRequestException ex) { }
+                        sendNewMessage = true;
+                    } else
+                    {
+                        try
+                        {
+                            await _bot.BuildAndEditAsync(msg);
+                        }
+                        catch(ApiRequestException ex)
+                        {
+                            if(ex.Message.Equals("Bad Request: message to edit not found"))
+                            {
+                                sendNewMessage = true;
+                            }
+                        }
+                    }
+                    if (sendNewMessage)
+                    {
+                        var message = await _bot.BuildAndSendAsync(msg);
+                        chat.LastMessageId = message.MessageId;
+                        await _chatRepository.UpdateAsync(chat);
                     }
                     await NotifyFirstUsersIfOrderChanged(chat, queue, usersTask.Result);
                 }
