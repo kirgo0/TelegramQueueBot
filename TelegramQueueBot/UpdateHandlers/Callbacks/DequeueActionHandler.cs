@@ -46,24 +46,25 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
                 // dequeing user
                 if (user.TelegramId == actionUserId)
                 {
-                    if (await _queueService.GetQueueCountAsync(chat.CurrentQueueId) != 1)
+                    if (await _queueService.GetQueueCountAsync(chat.CurrentQueueId) == 1 && chat.Mode == Models.Enums.ChatMode.CallingUsers)
+                    {
+                        // dequeue last user and send ending calling user message to chat
+
+                        var msg = new MessageBuilder(chat);
+                        var result = await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
+
+                        if (!result) return;
+
+                        chat.Mode = Models.Enums.ChatMode.Open;
+
+                        msg.AppendTextLine(TextResources.GetValue(TextKeys.QueueEndedCallingUsers));
+                        await _bot.BuildAndSendAsync(msg);
+                    }
+                    else
                     {
                         await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
                         return;
                     }
-
-                    // dequeue last user and send ending calling user message to chat
-
-                    var msg = new MessageBuilder(chat);
-                    var result = await _queueService.DequeueAsync(chat.CurrentQueueId, user.TelegramId);
-
-                    if (!result) return;
-
-                    chat.Mode = Models.Enums.ChatMode.Open;
-
-                    msg.AppendTextLine(TextResources.GetValue(TextKeys.QueueEndedCallingUsers));
-                    await _bot.BuildAndSendAsync(msg);
-
                 }
                 // swaping two users
                 else

@@ -2,12 +2,12 @@ services:
   telegramqueuebot:
     container_name: bot
     image: ${DOCKER_REGISTRY-}telegramqueuebot
-    restart: always
+    # restart: always
     build:
       context: .
       dockerfile: TelegramQueueBot/Dockerfile
     environment:
-      - TZ=Europe/Istanbul
+      - TZ=Europe/Helsinki
       - DOTNET_ENVIRONMENT=Production
       - MONGO_CONNECTION=${MONGO_CONNECTION}
       - MONGO_DATABASE=${MONGO_DATABASE}
@@ -29,8 +29,8 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USER} 
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
     volumes:
-      - mongo_data:/data/db
-      - mongo_config:/data/configdb
+      - queuebot_mongo_data:/data/db
+      - queuebot_mongo_config:/data/configdb
     networks:
       - app_net
     healthcheck:
@@ -42,9 +42,9 @@ services:
     ports:
       - "27000:27017"
 volumes: 
-  mongo_data:
+  queuebot_mongo_data:
     external: true
-  mongo_config:
+  queuebot_mongo_config:
     external: true
 networks:
   app_net:

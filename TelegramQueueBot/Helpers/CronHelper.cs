@@ -1,4 +1,5 @@
 ﻿using Cronos;
+using TelegramQueueBot.Extensions;
 
 namespace TelegramQueueBot.Helpers
 {
@@ -18,7 +19,7 @@ namespace TelegramQueueBot.Helpers
                 throw new Exception();
             }
 
-            var timeToOccure = nextOccurence.Value.ToLocalTime().AddMinutes(minutesToAdd).ToUniversalTime();
+            var timeToOccure = nextOccurence.Value.ToKyivTime().AddMinutes(minutesToAdd).ToUniversalTime();
 
             int minute = timeToOccure.Minute;
             int hour = timeToOccure.Hour;

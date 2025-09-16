@@ -106,7 +106,7 @@ namespace TelegramQueueBot.UpdateHandlers.Others
 
             var msg = new MessageBuilder(chat)
                 .AppendTextLine(TextResources.GetValue(TextKeys.ScheduledQueue))
-                .AppendTextLine(TextResources.GetValue(TextKeys.CreatedQueue))
+                .AppendTextLine(queue.Name ?? TextResources.GetValue(TextKeys.CreatedQueue))
                 .AddDefaultQueueMarkup(new List<User>(new User[chat.DefaultQueueSize]), chat.View);
 
             await DeleteLastMessageAndSendNew(chat, msg);

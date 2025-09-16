@@ -130,7 +130,7 @@ namespace TelegramQueueBot.Extensions
         {
             builder
                 .AppendText(TextResources.GetValue(TextKeys.JobMenu)).AppendTextLine(job.JobName)
-                .AppendText(TextResources.GetValue(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTimeUtc.ToLocalTime().ToString("dd.MM.yyyy"));
+                .AppendText(TextResources.GetValue(TextKeys.JobNextTime)).AppendTextLine(job.NextRunTimeUtc.ToKyivTime().ToString("dd.MM.yyyy"));
 
             return builder;
         }
@@ -159,7 +159,7 @@ namespace TelegramQueueBot.Extensions
             {
                 builder.AddButton($"-{minutes[i]}", $"{Common.Action.AddMinutes}{-minutes[i]}/{job.Id}");
             }
-            builder.AddButton(job.NextRunTimeUtc.ToLocalTime().ToString("HH:mm"), "_");
+            builder.AddButton(job.NextRunTimeUtc.ToKyivTime().ToString("HH:mm"), "_");
             for (var i = 0; i < minutes.Length - 1; i++)
             {
 
@@ -195,7 +195,7 @@ namespace TelegramQueueBot.Extensions
             var culture = new CultureInfo("uk-UA");
             return builder
                 .AddButton(TextResources.GetValue(TextKeys.MoveLeftBtn), $"{Common.Action.AddDays}{-shift}/{job.Id}")
-                .AddButton(culture.DateTimeFormat.GetDayName(job.NextRunTimeUtc.ToLocalTime().DayOfWeek), "_")
+                .AddButton(culture.DateTimeFormat.GetDayName(job.NextRunTimeUtc.ToKyivTime().DayOfWeek), "_")
                 .AddButtonNextRow(TextResources.GetValue(TextKeys.MoveRightBtn), $"{Common.Action.AddDays}{shift}/{job.Id}");
         }
 

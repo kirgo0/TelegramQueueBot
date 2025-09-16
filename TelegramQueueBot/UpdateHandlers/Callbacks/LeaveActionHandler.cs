@@ -50,7 +50,7 @@ namespace TelegramQueueBot.UpdateHandlers.Callbacks
 
             var queueCount = await _queueService.GetQueueCountAsync(chat.CurrentQueueId);
             var msg = new MessageBuilder(chat);
-            if (queueCount == 1)
+            if (queueCount == 1 && chat.Mode == Models.Enums.ChatMode.CallingUsers)
             {
                 var result = await _queueService.DequeueIfFirstAsync(chat.CurrentQueueId, user.TelegramId);
 

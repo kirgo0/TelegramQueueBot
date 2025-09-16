@@ -4,8 +4,6 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using System.Globalization;
 using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using TelegramQueueBot.Extensions;
 using TelegramQueueBot.Helpers;
 using TelegramQueueBot.Models;

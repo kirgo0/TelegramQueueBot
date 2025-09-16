@@ -49,7 +49,7 @@ namespace TelegramQueueBot.UpdateHandlers.Commands.Job
                 msg.AppendText(TextResources.GetValue(TextKeys.JobsList));
                 foreach (var job in jobs)
                 {
-                    msg.AddButtonNextRow($"{job.JobName} - {job.NextRunTimeUtc.ToLocalTime().ToString("HH:mm")}", $"{Common.Action.JobMenu}{job.Id}");
+                    msg.AddButtonNextRow($"{job.JobName} - {job.NextRunTimeUtc.ToKyivTime().ToString("HH:mm")}", $"{Common.Action.JobMenu}{job.Id}");
                 }
             }
             if (update.CallbackQuery is not null)
