@@ -100,6 +100,8 @@ try
                           CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
                       })
                       .UseActivator(new HangfireActivator(provider.GetRequiredService<IServiceScopeFactory>()));
+
+                GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
             });
 
             services.AddHangfireServer();

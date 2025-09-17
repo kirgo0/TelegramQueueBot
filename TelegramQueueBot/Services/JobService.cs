@@ -63,7 +63,7 @@ namespace TelegramQueueBot.Services
                 await UpdateJobAsync(job);
             else
                 await DeleteJobAsync(job.Id);
-
+            _log.LogInformation("Finished processing chat job {chatJobId} successfully", job.Id);
         }
 
         public async Task DeleteJobAsync(string chatJobId)

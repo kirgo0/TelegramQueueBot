@@ -147,8 +147,12 @@ namespace TelegramQueueBot.UpdateHandlers.Others
 
         protected async Task SendUserMessageAsync(long userId, MessageBuilder messageTemplate)
         {
-            messageTemplate.SetChatId(userId);
-            await _bot.BuildAndSendAsync(messageTemplate);
+            try
+            {
+                messageTemplate.SetChatId(userId);
+                await _bot.BuildAndSendAsync(messageTemplate);
+            }
+            catch (Exception) { }
         }
     }
 }
